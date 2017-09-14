@@ -30,6 +30,7 @@
     "koa-router": "^4.3.2",
     "koa-static": "^1.4.9",
     "koa-views": "^3.0.0",
+    "mysql": "^2.14.1",
     "mysql2": "^1.4.2",
     "sequelize": "^4.8.2",
     "waterline": "^0.10.21"
