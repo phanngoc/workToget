@@ -1,0 +1,20 @@
+{
+  "database": {
+    "database": "opencollective_localhost",
+    "username": "root",
+    "password": "Phann123@123"
+  },
+  "keys": {
+    "opencollective": {
+      "resetPasswordSecret": "O4ExDVzM7OviRzQBhRSV0Z2P1w4impwH"
+    }
+  },
+  "host": {
+    "api": "http://localhost:3060",
+    "webapp": "http://localhost:3000/app",
+    "website": "http://localhost:3000"
+  },
+  "email": {
+    "from": "OpenCollective <info@opencollective.com>"
+  }
+}
