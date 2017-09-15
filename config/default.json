@@ -2,7 +2,11 @@
   "database": {
     "database": "opencollective_localhost",
     "username": "root",
-    "password": "Phann123@123"
+    "password": "Phann123@123",
+    "options": {
+        "host": "localhost",
+        "dialect": "mysql",
+    }
   },
   "keys": {
     "opencollective": {
