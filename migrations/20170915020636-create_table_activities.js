@@ -9,22 +9,23 @@ module.exports = {
       Example:
       return queryInterface.createTable('users', { id: Sequelize.INTEGER });
     */
-    return queryInterface.createTable('task_labels', {
+    return queryInterface.createTable('activities', {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true
       },
 
-      task_id: {
+      user_id: {
         type: Sequelize.INTEGER,
+        onDelete: 'SET NULL',
+        onUpdate: 'CASCADE',
         allowNull: false
       },
 
-      label_id: {
-        type: Sequelize.INTEGER,
-        allowNull: false
-      },
+      type: Sequelize.STRING,
+
+      data: Sequelize.JSON,
 
       created_at: {
         type: Sequelize.DATE,
@@ -50,8 +51,8 @@ module.exports = {
       Return a promise to correctly handle asynchronicity.
 
       Example:
-      return queryInterface.dropTable('users');
+      return queryInterface.dropTable('activities');
     */
-    return queryInterface.dropTable('task_labels');
+    return queryInterface.dropTable('activities');
   }
 };

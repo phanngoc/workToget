@@ -1,13 +1,25 @@
-var koa = require('koa'),
-    path = require('path'),
-    views = require('koa-views'),
-    config = require('config'),
-    serve = require('koa-static');
+require('babel-core/register');
 
-var app = module.exports = koa();
+import { Strategy as LocalStrategy } from 'passport-local';
+import bodyParser from 'koa-bodyparser';
+import session from 'koa-session';
+import passport from 'koa-passport';
+import Koa from 'koa';
+import path from 'path';
+import views from 'koa-views';
+import config from 'config';
+import serve from 'koa-static';
 
-// initialize render helper
+var app = new Koa();
+
 app.use(views(config.template.path, config.template.options));
+app.use(bodyParser());
+
+app.keys = ['bombay'];
+app.use(session({}, app));
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 require('./app/routes')(app);
 

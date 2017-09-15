@@ -9,20 +9,22 @@ module.exports = {
       Example:
       return queryInterface.createTable('users', { id: Sequelize.INTEGER });
     */
-    return queryInterface.createTable('task_labels', {
+    return queryInterface.createTable('comments', {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true
       },
 
-      task_id: {
-        type: Sequelize.INTEGER,
+      content: {
+        type: Sequelize.STRING,
         allowNull: false
       },
 
-      label_id: {
+      user_id: {
         type: Sequelize.INTEGER,
+        onDelete: 'SET NULL',
+        onUpdate: 'CASCADE',
         allowNull: false
       },
 
@@ -30,6 +32,16 @@ module.exports = {
         type: Sequelize.DATE,
         defaultValue: Sequelize.NOW,
         allowNull: false
+      },
+
+      commentable: {
+          type: Sequelize.STRING,
+          allowNull: false
+      },
+
+      commentable_id: {
+          type: Sequelize.INTEGER,
+          allowNull: false
       },
 
       updated_at: {
@@ -52,6 +64,6 @@ module.exports = {
       Example:
       return queryInterface.dropTable('users');
     */
-    return queryInterface.dropTable('task_labels');
+    return queryInterface.dropTable('comments');
   }
 };

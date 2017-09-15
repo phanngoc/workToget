@@ -21,10 +21,6 @@ module.exports = {
 
         project_id: {
           type: Sequelize.INTEGER,
-          references: {
-            model: 'Project',
-            key: 'id'
-          },
           onDelete: 'SET NULL',
           onUpdate: 'CASCADE',
           allowNull: false
@@ -56,5 +52,6 @@ module.exports = {
       Example:
       return queryInterface.dropTable('users');
     */
+    return queryInterface.dropTable('files');
   }
 };

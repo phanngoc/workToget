@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node --harmony index.js",
-    "test": "mocha --harmony"
+    "test": "mocha --harmony",
+    "dev": "nodemon index.js -x babel-node"
   },
   "repository": {
     "type": "git",
@@ -23,20 +24,32 @@
   },
   "homepage": "https://github.com/justmyfreak/koa-starter",
   "dependencies": {
+    "async": "^2.5.0",
+    "babel-preset-es2015": "^6.24.1",
     "config": "^1.12.0",
     "ect": "^0.5.9",
-    "koa": "^0.19.1",
-    "koa-bodyparser": "^1.5.0",
-    "koa-router": "^4.3.2",
+    "koa": "^2.3.0",
+    "koa-bodyparser": "^4.2.0",
+    "koa-passport": "^4.0.0",
+    "koa-router": "^7.2.1",
+    "koa-session": "^5.5.0",
     "koa-static": "^1.4.9",
-    "koa-views": "^3.0.0",
+    "koa-views": "^6.0.2",
     "mysql": "^2.14.1",
     "mysql2": "^1.4.2",
-    "sequelize": "^4.8.2",
+    "passport": "^0.4.0",
+    "passport-local": "^1.0.0",
+    "pug": "^2.0.0-rc.4",
+    "sequelize": "^4.8.4",
     "sequelize-cli": "^3.0.0-2",
     "waterline": "^0.10.21"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-plugin-add-module-exports": "^0.2.1",
+    "babel-preset-env": "^1.6.0",
+    "babel-register": "^6.26.0",
     "mocha": "^2.2.4",
     "should": "^6.0.1",
     "supertest": "^0.15.0"
