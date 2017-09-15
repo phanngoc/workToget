@@ -1,26 +1,26 @@
 import Promise from 'bluebird';
 
-export default function (Sequelize, DataTypes) {
+export default function (Sequelize) {
 
   const File = Sequelize.define('files', {
     id: {
-      type: DataTypes.INTEGER,
+      type: Sequelize.INTEGER,
       primaryKey: true,
       autoIncrement: true
     },
 
     name: {
-      type: DataTypes.STRING,
+      type: Sequelize.STRING,
       allowNull: false
     },
 
     link: {
-      type: DataTypes.STRING,
+      type: Sequelize.STRING,
       allowNull: false
     },
 
     project_id: {
-      type: DataTypes.INTEGER,
+      type: Sequelize.INTEGER,
       references: {
         model: 'Project',
         key: 'id'
@@ -31,19 +31,19 @@ export default function (Sequelize, DataTypes) {
     },
 
     created_at: {
-      type: DataTypes.DATE,
+      type: Sequelize.DATE,
       defaultValue: Sequelize.NOW,
       allowNull: false
     },
 
     updated_at: {
-      type: DataTypes.DATE,
+      type: Sequelize.DATE,
       defaultValue: Sequelize.NOW,
       allowNull: false
     },
 
     deleted_at: {
-      type: DataTypes.DATE
+      type: Sequelize.DATE
     }
   }, {
     paranoid: true,

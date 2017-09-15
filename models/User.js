@@ -37,8 +37,7 @@ export default (Sequelize, DataTypes) => {
       defaultValue: 0
     },
 
-    firstName: DataTypes.STRING,
-    lastName: DataTypes.STRING,
+    fullName: DataTypes.STRING,
 
     name: {
       type: DataTypes.VIRTUAL(DataTypes.STRING, ['firstName', 'lastName']),
