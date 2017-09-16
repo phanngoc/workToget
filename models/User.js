@@ -134,36 +134,7 @@ export default (Sequelize, DataTypes) => {
     paranoid: true,
 
     getterMethods: {
-      minimal() {
-        return {
-          id: this.id,
-          username: this.username,
-          avatar: this.avatar,
-          firstName: this.firstName,
-          lastName: this.lastName,
-          name: this.name,
-          email: this.email,
-          paypalEmail: this.paypalEmail
-        };
-      },
 
-      // Used for the public group
-      public() {
-        return {
-          id: this.id,
-          avatar: this.avatar,
-          firstName: this.firstName,
-          lastName: this.lastName,
-          name: this.name,
-          username: this.username,
-          website: this.website,
-          mission: this.mission,
-          description: this.description,
-          longDescription: this.longDescription,
-          isOrganization: this.isOrganization,
-          twitterHandle: this.twitterHandle
-        };
-      }
     },
 
     instanceMethods: {

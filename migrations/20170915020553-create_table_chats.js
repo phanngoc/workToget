@@ -9,20 +9,34 @@ module.exports = {
       Example:
       return queryInterface.createTable('users', { id: Sequelize.INTEGER });
     */
-    return queryInterface.createTable('task_labels', {
+    return queryInterface.createTable('chats', {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true
       },
 
-      task_id: {
-        type: Sequelize.INTEGER,
+      content: {
+        type: Sequelize.STRING,
         allowNull: false
       },
 
-      label_id: {
+      type: {
         type: Sequelize.INTEGER,
+        defaultValue: 0
+      },
+
+      user_id: {
+        type: Sequelize.INTEGER,
+        onDelete: 'SET NULL',
+        onUpdate: 'CASCADE',
+        allowNull: false
+      },
+
+      project_id: {
+        type: Sequelize.INTEGER,
+        onDelete: 'SET NULL',
+        onUpdate: 'CASCADE',
         allowNull: false
       },
 
@@ -52,6 +66,6 @@ module.exports = {
       Example:
       return queryInterface.dropTable('users');
     */
-    return queryInterface.dropTable('task_labels');
+    return queryInterface.dropTable('chats');
   }
 };

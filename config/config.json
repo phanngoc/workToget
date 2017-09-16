@@ -1,8 +1,8 @@
 {
   "development": {
     "username": "root",
-    "password": "Phann123@123",
-    "database": "workToget",
+    "password": "",
+    "database": "worktoget",
     "host": "127.0.0.1",
     "dialect": "mysql"
   },

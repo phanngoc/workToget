@@ -9,22 +9,26 @@ module.exports = {
       Example:
       return queryInterface.createTable('users', { id: Sequelize.INTEGER });
     */
-    return queryInterface.createTable('task_labels', {
+    return queryInterface.createTable('notifications', {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true
       },
 
-      task_id: {
+      user_id: {
         type: Sequelize.INTEGER,
+        onDelete: 'SET NULL',
+        onUpdate: 'CASCADE',
         allowNull: false
       },
 
-      label_id: {
-        type: Sequelize.INTEGER,
-        allowNull: false
+      status: {
+        type:   Sequelize.ENUM,
+        values: ['no_seen', 'seen']
       },
+
+      data: Sequelize.JSON,
 
       created_at: {
         type: Sequelize.DATE,
@@ -52,6 +56,6 @@ module.exports = {
       Example:
       return queryInterface.dropTable('users');
     */
-    return queryInterface.dropTable('task_labels');
+    return queryInterface.dropTable('notifications');
   }
 };

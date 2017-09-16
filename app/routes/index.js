@@ -1,17 +1,12 @@
+import HomeController from '../controllers/homeController';
+
 module.exports = function(app) {
-	var Router 		= require('koa-router'), 
-		indexCtrl 	= require('../controllers/index');
+  var Router    = require('koa-router');
+  var homeController = new HomeController;
 
-	var router = new Router();
+  var router = new Router();
 
-	router
-		.get('/', indexCtrl.index)
-		.get('/link/:id', function *(next) {
-			console.log('/link/'+this.params.id);
-			this.body = "Get value from params : "+ this.params.id;
-		})
-		.get('/render/view', indexCtrl.view)
-		.get('/view/:id', indexCtrl.test);
+  router.get('/', homeController.index);
 
-	app.use(router.middleware());
+  app.use(router.routes()).use(router.allowedMethods());
 };

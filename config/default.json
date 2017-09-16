@@ -5,7 +5,7 @@
     "password": "Phann123@123",
     "options": {
         "host": "localhost",
-        "dialect": "mysql",
+        "dialect": "mysql"
     }
   },
   "keys": {
