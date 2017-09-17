@@ -8,5 +8,7 @@ module.exports = function(app) {
 
   router.get('/', homeController.index);
 
+  router.get('/projects', homeController.getProjects);
+
   app.use(router.routes()).use(router.allowedMethods());
 };

@@ -39,7 +39,7 @@ export default function (Sequelize, DataTypes) {
     commentable_id: {
         type: DataTypes.INTEGER,
         allowNull: false
-    }
+    },
 
     updated_at: {
       type: DataTypes.DATE,

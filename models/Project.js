@@ -67,5 +67,5 @@ export default function (Sequelize, DataTypes) {
 
     }
   });
-  return Task;
+  return Project;
 }

@@ -17,9 +17,9 @@ module.exports = {
       },
       fullname: Sequelize.STRING,
       username: Sequelize.STRING,
-      password: Sequelize.STRING,
+      password_hash: Sequelize.STRING,
       avatar: Sequelize.STRING,
-
+      _salt: Sequelize.STRING,
       created_at: {
         type: Sequelize.DATE,
         defaultValue: Sequelize.NOW
