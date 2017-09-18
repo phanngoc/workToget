@@ -17,8 +17,12 @@ class HomeController {
           title: 'This is title'
         })]).then(function(results) {
           console.log(results);
-            return results[1];
+          return results[1];
       });
+  }
+
+  async login(ctx, next) {
+
   }
 
   async getProjects(next) {

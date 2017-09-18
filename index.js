@@ -23,4 +23,22 @@ app.use(passport.session());
 
 require('./app/routes')(app);
 
-if (!module.parent) app.listen(3000);
+process.on('SIGUSR2', () => {
+  console.log('SIGUSR2');
+  // process.exit(1);
+});
+
+process.on('SIGINT', function() {
+  console.log('SIGINT');
+  // process.exit(1);
+});
+
+
+
+if (!module.parent) app.listen(3000).on('error', (err) => {
+  if (err.errno === 'EADDRINUSE') {
+    console.error('Error: Port busy', err);
+    process.exit(1);
+  } else
+    console.log(err);
+});
