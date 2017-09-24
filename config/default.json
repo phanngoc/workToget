@@ -1,8 +1,8 @@
 {
   "database": {
-    "database": "opencollective_localhost",
+    "database": "workToget",
     "username": "root",
-    "password": "Phann123@123",
+    "password": "",
     "options": {
         "host": "localhost",
         "dialect": "mysql"

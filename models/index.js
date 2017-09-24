@@ -4,10 +4,6 @@
 import Sequelize from 'sequelize';
 import { database as config } from 'config';
 
-// this is needed to prevent sequelize from converting integers to strings, when model definition isn't clear
-// like in case of the key totalDonations and raw query (like User.getTopBackers())
-pg.defaults.parseInt8 = true;
-
 /**
  * Database connection.
  */
@@ -36,6 +32,8 @@ export const sequelize = new Sequelize(
   config.options
 );
 
+console.log("Application start");
+
 const models = setupModels(sequelize);
 export default models;
 
@@ -58,6 +56,7 @@ export function setupModels(client) {
     'Board',
     'TaskUser',
     'TaskLabel',
+    'Label',
     'ProjectUser',
     'Comment',
     'Activity',
@@ -73,13 +72,13 @@ export function setupModels(client) {
 
     m.User.hasMany(m.Chat, {as: 'Chats'});
 
-    m.User.belongsToMany(m.Project, { as: 'Projects', through: 'ProjectUser' });
+    m.User.belongsToMany(m.Project, { as: 'Projects', through:{model: m.ProjectUser, unique:false}});
 
-    m.Project.belongsToMany(m.User, { as: 'Users', through: 'ProjectUser' });
+    m.Project.belongsToMany(m.User, { as: 'Users', through: m.ProjectUser});
 
-    m.Task.belongsToMany(m.Label, { as: 'Labels', through: 'TaskLabel' });
+    m.Task.belongsToMany(m.Label, { as: 'Labels', through:{model: m.TaskLabel, unique:false}});
 
-    m.Label.belongsToMany(m.Task, { as: 'Tasks', through: 'TaskLabel' });
+    m.Label.belongsToMany(m.Task, { as: 'Tasks', through: m.TaskLabel});
 
     m.Board.hasMany(m.Comment, {
         foreignKey: 'commentable_id',
@@ -89,7 +88,7 @@ export function setupModels(client) {
         }
     });
 
-    m.Comment.belongsTo(this.Post, {
+    m.Comment.belongsTo(m.Board, {
         foreignKey: 'commentable_id',
         constraints: false,
         as: 'board'
@@ -103,7 +102,7 @@ export function setupModels(client) {
         }
      });
 
-    m.Comment.belongsTo(this.Post, {
+    m.Comment.belongsTo(m.Task, {
         foreignKey: 'commentable_id',
         constraints: false,
         as: 'task'
