@@ -19,7 +19,9 @@ mix.js('resources/js/index.js', 'public/js')
 
    .copy('node_modules/jquery/dist/jquery.min.js', 'public/js')
    .sass('resources/sass/home.scss', 'public/css')
-   .copy('resources/public/', 'public/', true);
+   .sass('resources/sass/login.scss', 'public/css')
+   .copy('resources/public/', 'public/', true)
+   .setPublicPath('public');
 
 // Full API
 // mix.js(src, output);

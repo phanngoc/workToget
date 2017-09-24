@@ -1,4 +1,7 @@
 import models from '../../models';
+import errors from '../lib/errors';
+import passport from 'koa-passport';
+import debug from 'debug';
 
 class HomeController {
   constructor(...args) {
@@ -6,28 +9,25 @@ class HomeController {
   }
 
   async index(ctx, next) {
-    return await Promise.all([
-        models.User.create({
-          fullname: "Phan Ngoc",
-          username: "phann123",
-          password: "123456",
-          avatar: "sdsdd"
-        }),
-        ctx.render('index.pug', {
-          title: 'This is title'
-        })]).then(function(results) {
-          console.log(results);
-          return results[1];
-      });
+    debug('http')('asdasd');
+    return ctx.render('index.pug', {
+      title: 'This is title'
+    });
   }
 
   async login(ctx, next) {
-
+    return await ctx.render('login.pug').then(function(results) {
+      return results;
+    });
   }
 
-  async getProjects(next) {
-
+  async postLogin(ctx, next) {
+    return ctx.redirect('/');
   }
+
+  // async getProjects(next) {
+
+  // }
 };
 
 export default HomeController;

@@ -1,4 +1,8 @@
 import HomeController from '../controllers/homeController';
+import passport from 'koa-passport';
+import {isAuthenticated} from '../lib/auth';
+import {authenticate} from '../controllers/middleware';
+import debug from 'debug';
 
 module.exports = function(app) {
   var Router    = require('koa-router');
@@ -6,21 +10,13 @@ module.exports = function(app) {
 
   var router = new Router();
 
+  // router.get('/projects', homeController.getProjects);
+
+  router.get('/login', homeController.login);
+
+  router.post('/login', passport.authenticate('local', { failureRedirect: '/login' }), homeController.postLogin);
+
   router.get('/', homeController.index);
-
-  router.get('/projects', homeController.getProjects);
-
-  router.post('/login', function(ctx) {
-      return passport.authenticate('local', function(err, user, info, status) {
-        if (user === false) {
-          ctx.body = { success: false }
-          ctx.throw(401)
-        } else {
-          ctx.body = { success: true }
-          return ctx.login(user)
-        }
-      })(ctx)
-  });
 
   app.use(router.routes()).use(router.allowedMethods());
 };

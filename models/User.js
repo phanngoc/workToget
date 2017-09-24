@@ -80,6 +80,11 @@ export default (Sequelize, DataTypes) => {
       defaultValue: Sequelize.NOW
     },
 
+    deletedAt: {
+      field: 'deleted_at',
+      type: DataTypes.DATE,
+    }
+
   }, {
     paranoid: true,
 
@@ -107,11 +112,39 @@ export default (Sequelize, DataTypes) => {
           issuer: config.host.api
         });
       },
-    },
-
-    classMethods: {
     }
   });
+  User.auth = function(usernameOrEmail, password, cb) {
+    const msg = 'Invalid username/email or password.';
+    usernameOrEmail = usernameOrEmail.toLowerCase();
+
+    User.find({
+      where: {$or: [
+                {username: usernameOrEmail},
+                {email: usernameOrEmail}
+              ]}
+    })
+    .then((user) => {
+      if (!user) return cb(new errors.BadRequest(msg));
+
+      bcrypt.compare(password, user.password_hash, (err, matched) => {
+        if (!err && matched) {
+          user.updateAttributes({
+            updated_at: new Date()
+          })
+            .tap(user => cb(null, user))
+            .catch(cb);
+        } else {
+          cb(new errors.BadRequest(msg));
+        }
+      });
+    })
+    .catch(cb);
+  };
+
+  User.hashPass = function(password) {
+    return bcrypt.hashSync(password, bcrypt.genSaltSync(SALT_WORK_FACTOR));
+  };
 
   return User;
 };

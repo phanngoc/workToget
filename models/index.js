@@ -32,7 +32,7 @@ export const sequelize = new Sequelize(
   config.options
 );
 
-console.log(config.database, config.username, config.password);
+console.log("Application start");
 
 const models = setupModels(sequelize);
 export default models;

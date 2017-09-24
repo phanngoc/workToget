@@ -17,6 +17,7 @@ module.exports = {
       },
       fullname: Sequelize.STRING,
       username: Sequelize.STRING,
+      email: Sequelize.STRING,
       password_hash: Sequelize.STRING,
       avatar: Sequelize.STRING,
       _salt: Sequelize.STRING,
