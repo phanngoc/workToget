@@ -10,6 +10,10 @@ import views from 'koa-views';
 import config from 'config';
 import serve from 'koa-static';
 import models from './models';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 const {
   User
 } = models;
@@ -24,7 +28,6 @@ app.use(bodyParser());
 app.use(serve('./public'));
 
 
-
 passport.use(new LocalStrategy({
     usernameField: 'username',
     passwordField: 'password',
@@ -32,8 +35,6 @@ passport.use(new LocalStrategy({
     session: true
   },
   async function(req, username, password, done) {
-    // request object is now first argument
-    console.log('new LocalStrategy', req);
     let result = await User.auth(username, password, function(error, user) {
       if (error) { return done(error); }
       if (!user) { return done(null, false); }
@@ -54,18 +55,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 require('./app/routes')(app);
-
-// process.on('SIGUSR2', () => {
-//   console.log('SIGUSR2');
-//   // process.exit(1);
-// });
-
-// process.on('SIGINT', function() {
-//   console.log('SIGINT');
-//   // process.exit(1);
-// });
-
-
 
 if (!module.parent) app.listen(3000).on('error', (err) => {
   if (err.errno === 'EADDRINUSE') {

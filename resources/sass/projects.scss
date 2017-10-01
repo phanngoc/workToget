@@ -1,0 +1,12 @@
+@mixin clearfix {
+  &:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+}
+
+#app-project{
+  @include clearfix;
+  margin-top: 56px;
+}
