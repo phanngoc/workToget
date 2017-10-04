@@ -1,0 +1,15 @@
+//- page-a.pug
+extends layouts/template.pug
+
+block append scripts
+
+block append styles
+  link(type="text/css", href=baseUrl + "/css/projects.css", rel='stylesheet')
+block content
+  div.ui-login.container
+    div.center-block
+      div#app-project
+        h3 Basecamp of me.
+        list-project
+
+

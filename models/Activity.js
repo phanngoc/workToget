@@ -24,20 +24,21 @@ export default function (Sequelize, DataTypes) {
 
     data: DataTypes.JSON,
 
-    created_at: {
+    createdAt: {
+      field: 'created_at',
       type: DataTypes.DATE,
-      defaultValue: Sequelize.NOW,
-      allowNull: false
+      defaultValue: Sequelize.NOW
     },
 
-    updated_at: {
+    updatedAt: {
+      field: 'updated_at',
       type: DataTypes.DATE,
-      defaultValue: Sequelize.NOW,
-      allowNull: false
+      defaultValue: Sequelize.NOW
     },
 
-    deleted_at: {
-      type: DataTypes.DATE
+    deletedAt: {
+      field: 'deleted_at',
+      type: DataTypes.DATE,
     }
   }, {
     paranoid: true,

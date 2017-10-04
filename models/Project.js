@@ -38,23 +38,25 @@ export default function (Sequelize, DataTypes) {
       },
       onDelete: 'SET NULL',
       onUpdate: 'CASCADE',
-      allowNull: false
+      allowNull: false,
+      defaultValue: 0
     },
 
-    created_at: {
+    createdAt: {
+      field: 'created_at',
       type: DataTypes.DATE,
-      defaultValue: Sequelize.NOW,
-      allowNull: false
+      defaultValue: Sequelize.NOW
     },
 
-    updated_at: {
+    updatedAt: {
+      field: 'updated_at',
       type: DataTypes.DATE,
-      defaultValue: Sequelize.NOW,
-      allowNull: false
+      defaultValue: Sequelize.NOW
     },
 
-    deleted_at: {
-      type: DataTypes.DATE
+    deletedAt: {
+      field: 'deleted_at',
+      type: DataTypes.DATE,
     }
   }, {
     paranoid: true,

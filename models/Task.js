@@ -19,26 +19,26 @@ export default function (Sequelize, DataTypes) {
       allowNull: false
     },
 
-
-    created_at: {
-      type: DataTypes.DATE,
-      defaultValue: Sequelize.NOW,
-      allowNull: false
-    },
-
     due_date: {
       type: DataTypes.DATE,
       allowNull: true
     },
 
-    updated_at: {
+    createdAt: {
+      field: 'created_at',
       type: DataTypes.DATE,
-      defaultValue: Sequelize.NOW,
-      allowNull: false
+      defaultValue: Sequelize.NOW
     },
 
-    deleted_at: {
-      type: DataTypes.DATE
+    updatedAt: {
+      field: 'updated_at',
+      type: DataTypes.DATE,
+      defaultValue: Sequelize.NOW
+    },
+
+    deletedAt: {
+      field: 'deleted_at',
+      type: DataTypes.DATE,
     }
   }, {
     paranoid: true,
