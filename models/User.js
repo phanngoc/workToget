@@ -22,7 +22,7 @@ export default (Sequelize, DataTypes) => {
 
   const models = Sequelize.models;
 
-  const User = Sequelize.define('User', {
+  const User = Sequelize.define('users', {
 
     fullname: DataTypes.STRING,
 

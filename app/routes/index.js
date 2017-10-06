@@ -15,9 +15,6 @@ module.exports = function(app) {
 
   router.get('/:id/projects', projectController.index);
 
-  router.get('/api/:id/projects', projectController.getProjects);
-  router.get('/api/projects/:id/update', projectController.update);
-
   router.get('/seed', homeController.seed);
 
   router.get('/login', homeController.login);
@@ -25,6 +22,16 @@ module.exports = function(app) {
   router.post('/login', passport.authenticate('local', { failureRedirect: '/login' }), homeController.postLogin);
 
   router.get('/', homeController.index);
+
+  router.get('/projects/:id/trello', projectController.trello);
+
+  router.get('/api/:id/projects', projectController.getProjects);
+
+  router.get('/api/projects/:id/frames', projectController.getFrames);
+
+  router.post('/api/projects/:id/update', projectController.update);
+
+  router.put('/api/projects/:id/update-pin', projectController.updatePin);
 
   app.use(router.routes()).use(router.allowedMethods());
 };

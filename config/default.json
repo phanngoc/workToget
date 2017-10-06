@@ -2,7 +2,7 @@
   "database": {
     "database": "workToget",
     "username": "root",
-    "password": "",
+    "password": "Phann123@123",
     "options": {
         "host": "localhost",
         "dialect": "mysql"

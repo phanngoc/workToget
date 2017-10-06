@@ -1,11 +1,12 @@
 <template lang="html">
   <section class="card-fra" v-if="mode==0">
     <img class="logo" :src="project.logo" alt="Card image cap">
-      <div class="card-block">
-        <h4 class="card-title">{{project.name}}</h4>
-        <p class="card-text">{{project.description}}</p>
-        <a href="#" class="btn btn-primary" :id="project.id" @click="switchEditMode">Edit</a>
-      </div>
+    <div class="card-block">
+      <h4 class="card-title"><a :href="'/projects/'+project.id">{{project.name}}</a></h4>
+      <p class="card-text">{{project.description}}</p>
+      <a href="#" class="btn btn-primary" :id="project.id" @click="switchEditMode">Edit</a>
+      <a href="#" @click="togglePint"><i :class="{'fa fa-bookmark': is_pinned, 'fa fa-bookmark-o': !is_pinned}" aria-hidden="true"></i></a>
+    </div>
   </section>
   <section class="card-fra" v-else-if="mode==1">
     <form @submit.prevent="saveProject">
@@ -18,7 +19,7 @@
         <label for="name">Description</label>
         <textarea class="form-control" name="description" v-model="description"></textarea>
       </div>
-      <a href="javascript" class="btn btn-default" @click="switchBack">Back</a>
+      <a href="javascript:" class="btn btn-default" @click="switchBack">Back</a>
       <button type="submit" class="btn btn-primary">Save</button>
     </form>
   </section>
@@ -40,7 +41,8 @@ export default {
       mode: 0,
       id: this.project.id,
       name: this.project.name,
-      description: this.project.description
+      description: this.project.description,
+      is_pinned: this.project.is_pinned
     }
   },
   methods: {
@@ -50,18 +52,34 @@ export default {
     switchBack: function() {
       this.mode=0;
     },
+    togglePint: function() {
+      let self = this;
+      this.is_pinned = 1 - this.is_pinned;
+      axios({
+        method: 'put',
+        url: this.baseUrl + '/api/projects/' + self.id + '/update-pin',
+        data: {
+          is_pinned: self.is_pinned
+        }
+      }).then(function(response) {
+        if (response.status != 200) {
+          self.is_pinned = 1 - self.is_pinned;
+        }
+      });
+    },
     saveProject: function() {
-      console.log("Save project");
       var self = this;
       axios({
         method: 'post',
         url: this.baseUrl + '/api/projects/' + self.id + '/update',
         data: {
-          firstName: 'Fred',
-          lastName: 'Flintstone'
+          name: self.name,
+          description: self.description
         }
       }).then(function(response) {
-
+        if (response.status == 200) {
+          self.mode=0;
+        }
       });
     }
   },

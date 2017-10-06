@@ -6,26 +6,26 @@ import _ from 'lodash';
 export default co.wrap(function* () {
   var data = [];
 
-  for (var i=1; i<=20; i++) {
+  for (var i=1; i<=3; i++) {
     let item = {
       id: i,
-      name: faker.fake("{{lorem.words}}"),
-      description:  faker.fake('{{lorem.sentence}}'),
-      num_star: 0, owner_id: 3
+      name: faker.fake("Frame {{lorem.words}}"),
+      order: i,
+      project_id: 1
     };
     data.push(item);
   }
 
-  var step1 = yield models.Project.destroy({
+  var step1 = yield models.Frame.destroy({
     where: {},
     truncate: true,
     force: true
   }).then(() => {Promise.resolve(true)});
 
-  var step2 = yield models.Project.bulkCreate(data).then(() => {
+  var step2 = yield models.Frame.bulkCreate(data).then(() => {
     Promise.resolve(true);
-  }).then(users => {
-    console.log(users) // ... in order to get the array of user objects
+  }).then(frames => {
+    console.log(frames) // ... in order to get the array of user objects
   })
 
   return yield Promise.resolve(true);

@@ -2,6 +2,7 @@ html
   head
     title #{title}
     block styles
+      link(href=baseUrl + '/css/font-awesome.min.css', rel='stylesheet', type='text/css')
       link(href=baseUrl + '/css/bootstrap.css', rel='stylesheet', type='text/css')
       link(href=baseUrl + '/css/app.css', rel='stylesheet', type='text/css')
     meta(name="baseUrl", content=baseUrl)
@@ -38,4 +39,6 @@ html
       script(src=baseUrl + '/js/popper.min.js')
       script(src=baseUrl + '/js/jquery.min.js')
       script(src=baseUrl + '/js/bootstrap.js')
+      script(src=baseUrl + '/js/Sortable.min.js')
+      script(src=baseUrl + '/js/vuedraggable.js')
       script(src=baseUrl + '/js/app.js')

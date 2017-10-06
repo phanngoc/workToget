@@ -11,8 +11,7 @@ let mix = require('laravel-mix');
  |
  */
 
-mix.js('resources/js/index.js', 'public/js')
-   .sass('resources/sass/app.scss', 'public/css')
+mix.sass('resources/sass/app.scss', 'public/css')
 
    .copy('node_modules/bootstrap/dist/css/bootstrap.css', 'public/css')
    .copy('node_modules/bootstrap/dist/js/bootstrap.js', 'public/js')
@@ -21,6 +20,16 @@ mix.js('resources/js/index.js', 'public/js')
    .sass('resources/sass/home.scss', 'public/css')
    .sass('resources/sass/login.scss', 'public/css')
    .copy('resources/public/', 'public/', true)
+
+   .js('resources/js/project.js', 'public/js/app.js')
+   .sass('resources/sass/projects.scss', 'public/css')
+
+   .copy('node_modules/font-awesome/fonts/', 'public/fonts')
+   .copy('node_modules/font-awesome/css/font-awesome.min.css', 'public/css/font-awesome.min.css')
+
+   .copy('node_modules/sortablejs/Sortable.min.js', 'public/js')
+   .copy('node_modules/vuedraggable/dist/vuedraggable.js', 'public/js')
+
    .setPublicPath('public');
 
 // Full API

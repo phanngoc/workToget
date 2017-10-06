@@ -2,32 +2,29 @@ import Promise from 'bluebird';
 
 export default function (Sequelize, DataTypes) {
 
-  const Task = Sequelize.define('tasks', {
+  const Frame = Sequelize.define('frames', {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true
     },
 
-    title: {
+    name: {
       type: DataTypes.STRING,
       allowNull: false
     },
 
-    frame_id: {
+    order: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
       allowNull: false
     },
 
-    description: {
-      type: DataTypes.STRING,
+    project_id: {
+      type: DataTypes.INTEGER,
+      onDelete: 'SET NULL',
+      onUpdate: 'CASCADE',
       allowNull: false
-    },
-
-    due_date: {
-      type: DataTypes.DATE,
-      allowNull: true
     },
 
     createdAt: {
@@ -57,5 +54,5 @@ export default function (Sequelize, DataTypes) {
 
     }
   });
-  return Task;
+  return Frame;
 }
