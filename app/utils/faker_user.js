@@ -9,24 +9,23 @@ export default co.wrap(function* () {
   for (var i=1; i<=20; i++) {
     let item = {
       id: i,
-      name: faker.fake("{{lorem.words}}"),
-      description:  faker.fake('{{lorem.sentence}}'),
-      num_star: 0, owner_id: 3
+      fullname: faker.fake("{{name.lastName}}, {{name.firstName}} {{name.suffix}}"),
+      username:  faker.fake('{{internet.userName}}'),
+      password: "123456",
+      avatar: "default_avatar.png"
     };
     data.push(item);
   }
 
-  var step1 = yield models.Project.destroy({
+  var step1 = yield models.User.destroy({
     where: {},
     truncate: true,
     force: true
   }).then(() => {Promise.resolve(true)});
 
-  var step2 = yield models.Project.bulkCreate(data).then(() => {
+  var step2 = yield models.User.bulkCreate(data).then(() => {
     Promise.resolve(true);
-  }).then(users => {
-    console.log(users) // ... in order to get the array of user objects
-  })
+  });
 
   return yield Promise.resolve(true);
 });

@@ -11,6 +11,7 @@ import config from 'config';
 import serve from 'koa-static';
 import models from './models';
 import dotenv from 'dotenv';
+import nodemon from 'nodemon';
 
 dotenv.config();
 
@@ -55,6 +56,22 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 require('./app/routes')(app);
+
+let terminator = function(sig){
+    if (typeof sig === "string") {
+       console.log('%s: Received %s - terminating sample app ...',
+                   Date(Date.now()), sig);
+       process.exit(1);
+    }
+    console.log('%s: Node server stopped.', Date(Date.now()) );
+};
+
+// then implement it for every process signal related to exit/quit
+['SIGHUP', 'SIGINT', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT',
+ 'SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV', 'SIGUSR2', 'SIGTERM'
+].forEach(function(element, index, array) {
+    process.on(element, function() { terminator(element); });
+});
 
 if (!module.parent) app.listen(3000).on('error', (err) => {
   if (err.errno === 'EADDRINUSE') {

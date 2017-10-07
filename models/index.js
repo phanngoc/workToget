@@ -26,13 +26,14 @@ if (config.options.logging) {
 }
 
 export const sequelize = new Sequelize(
-  config.database,
-  config.username,
-  config.password,
-  config.options
+  process.env.DATABASE,
+  process.env.USERNAME,
+  process.env.PASSWORD,
+  {
+    "host": process.env.HOST,
+    "dialect": process.env.DIALECT
+  }
 );
-
-console.log("Application start");
 
 const models = setupModels(sequelize);
 export default models;
@@ -60,7 +61,8 @@ export function setupModels(client) {
     'ProjectUser',
     'Comment',
     'Activity',
-    'Notification'
+    'Notification',
+    'Frame'
   ].forEach((model) => {
     m[model] = client.import(`${__dirname}/${model}`);
   });
@@ -68,15 +70,23 @@ export function setupModels(client) {
   /**
    * Relationships
    */
+    m.Project.hasMany(m.Frame, {as: 'Frames', foreignKey: 'project_id'});
     m.Project.hasMany(m.Chat, {as: 'Chats'});
-
-    m.User.hasMany(m.Chat, {as: 'Chats'});
-
-    m.User.belongsToMany(m.Project, { as: 'Projects', through:{model: m.ProjectUser, unique:false}});
-
     m.Project.belongsToMany(m.User, { as: 'Users', through: m.ProjectUser});
 
+    m.User.hasMany(m.Chat, {as: 'Chats'});
+    m.User.belongsToMany(m.Project, { as: 'Projects', through:{model: m.ProjectUser, unique:false}});
+
+    m.Frame.hasMany(m.Task, {as: 'Tasks', foreignKey: 'frame_id'});
+
     m.Task.belongsToMany(m.Label, { as: 'Labels', through:{model: m.TaskLabel, unique:false}});
+    m.Task.hasMany(m.Comment, {
+        foreignKey: 'commentable_id',
+        constraints: false,
+        scope: {
+            commentable: 'task'
+        }
+     });
 
     m.Label.belongsToMany(m.Task, { as: 'Tasks', through: m.TaskLabel});
 
@@ -93,15 +103,6 @@ export function setupModels(client) {
         constraints: false,
         as: 'board'
     });
-
-    m.Task.hasMany(m.Comment, {
-        foreignKey: 'commentable_id',
-        constraints: false,
-        scope: {
-            commentable: 'task'
-        }
-     });
-
     m.Comment.belongsTo(m.Task, {
         foreignKey: 'commentable_id',
         constraints: false,

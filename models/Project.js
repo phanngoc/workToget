@@ -30,6 +30,12 @@ export default function (Sequelize, DataTypes) {
       defaultValue: 0
     },
 
+    is_pinned: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0
+    },
+
     owner_id: {
       type: DataTypes.INTEGER,
       references: {
