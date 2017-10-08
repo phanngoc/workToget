@@ -21,7 +21,7 @@ mix.sass('resources/sass/app.scss', 'public/css')
    .sass('resources/sass/login.scss', 'public/css')
    .copy('resources/public/', 'public/', true)
 
-   .js('resources/js/project.js', 'public/js/app.js')
+   .js('resources/js/app.js', 'public/js/app.js')
    .sass('resources/sass/projects.scss', 'public/css')
 
    .copy('node_modules/font-awesome/fonts/', 'public/fonts')

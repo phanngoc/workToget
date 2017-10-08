@@ -2,8 +2,11 @@
 extends layouts/template.pug
 
 block append scripts
-  script(src='/vendor/three.js')
-  script(src='/game.js')
+
+block append styles
 
 block content
-  h1= title
+  div#main-app.container
+    <router-view></router-view>
+
+

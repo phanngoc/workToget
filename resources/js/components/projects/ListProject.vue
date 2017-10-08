@@ -1,13 +1,15 @@
 <template lang="html">
-  <div class="trello row">
-
+  <div class="list-pro row">
+    <div v-for="project in projects" class="card col-md-3">
+      <ItemProject :project="project"></ItemProject>
+    </div>
   </div>
 </template>
 
 <script>
 
 import axios from 'axios';
-import draggable from 'vuedraggable';
+import ItemProject from './ItemProject.vue';
 
 export default {
   created() {
@@ -15,7 +17,8 @@ export default {
   },
   data: () => {
     return {
-      frames: [],
+      projects: [],
+      mode: 0
     }
   },
   methods: {
@@ -24,15 +27,14 @@ export default {
     }
   },
   components: {
-
+    ItemProject
   },
   mounted() {
     var self = this;
-    axios.get(this.baseUrl + '/api/projects/' + 1 + '/frames')
+    axios.get(this.baseUrl + '/api/'+this.$route.params.id+'/projects')
       .then(function (response) {
-        console.log(response);
         if (response.status == 200) {
-
+          self.projects = response.data.projects;
         }
       })
       .catch(function (error) {
@@ -43,5 +45,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  .list-pro {
 
+  }
 </style>

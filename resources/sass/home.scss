@@ -1,6 +1,6 @@
-.home {
-    background-color: red;
-    text-align: center;
-    color: red;
-    float: left;
+@import '_vars.scss';
+
+#main-content{
+  @include clearfix;
+  margin-top: 56px;
 }

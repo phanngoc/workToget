@@ -44,8 +44,8 @@ class ProjectController {
               {
                   model: models.Label,
                   as: 'Labels',
-                  duplicating: false,
-                  required: true,
+                  duplicating: true,
+                  required: false,
               }
           ]
       }]
