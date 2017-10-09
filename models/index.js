@@ -79,7 +79,7 @@ export function setupModels(client) {
 
     m.Frame.hasMany(m.Task, {as: 'Tasks', foreignKey: 'frame_id'});
 
-    m.Task.belongsToMany(m.Label, { as: 'Labels', through:{model: m.TaskLabel, unique:false}});
+    m.Task.belongsToMany(m.Label, { as: 'Labels', through:{model: m.TaskLabel, unique:false}, foreignKey: 'task_id'});
     m.Task.hasMany(m.Comment, {
         foreignKey: 'commentable_id',
         constraints: false,
@@ -88,7 +88,7 @@ export function setupModels(client) {
         }
      });
 
-    m.Label.belongsToMany(m.Task, { as: 'Tasks', through: m.TaskLabel});
+    m.Label.belongsToMany(m.Task, { as: 'Tasks', through: m.TaskLabel, foreignKey: 'label_id'});
 
     m.Board.hasMany(m.Comment, {
         foreignKey: 'commentable_id',

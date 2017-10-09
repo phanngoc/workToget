@@ -14,7 +14,6 @@ class HomeController {
   }
 
   async index(ctx, next) {
-    console.log(ctx.request);
     return ctx.render('index.pug', {
       title: 'This is title',
       baseUrl: process.env.BASE_URL
