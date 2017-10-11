@@ -8,7 +8,7 @@ import config from 'config';
 import moment from 'moment';
 import Promise from 'bluebird';
 import slug from 'slug';
-
+import errors from '../app/lib/errors';
 /**
  * Constants.
  */
@@ -91,29 +91,25 @@ export default (Sequelize, DataTypes) => {
     getterMethods: {
 
     },
-
-    instanceMethods: {
-      // JWT token.
-      jwt(payload, expiresInHours) {
-        const { secret } = config.keys.opencollective;
-        expiresInHours = expiresInHours || 24*30; // 1 month
-
-        // We are sending too much data (large jwt) but the app and website
-        // need the id and email. We will refactor that progressively to have
-        // a smaller token.
-        const data = _.extend({}, payload, {
-          id: this.id,
-          email: this.email
-        });
-
-        return jwt.sign(data, secret, {
-          expiresIn: 60 * 60 * expiresInHours,
-          subject: this.id, // user
-          issuer: config.host.api
-        });
-      },
-    }
   });
+
+  // JWT token.
+  User.prototype.jwt = function(payload, expiresInHours) {
+    const SECRET = process.env.SECRET;
+    expiresInHours = expiresInHours || 24*30; // 1 month
+
+    // We are sending too much data (large jwt) but the app and website
+    // need the id and email. We will refactor that progressively to have
+    // a smaller token.
+    const data = {id: this.id, email: this.email};
+    
+    return jwt.sign(data, SECRET, {
+      expiresIn: 60 * 60 * expiresInHours,
+      subject: this.id + "", // user
+      issuer: process.env.BASE_URL
+    });
+  };
+
   User.auth = function(usernameOrEmail, password, cb) {
     const msg = 'Invalid username/email or password.';
     usernameOrEmail = usernameOrEmail.toLowerCase();

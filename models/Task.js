@@ -25,6 +25,12 @@ export default function (Sequelize, DataTypes) {
       allowNull: false
     },
 
+    order: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+      allowNull: false
+    },
+
     due_date: {
       type: DataTypes.DATE,
       allowNull: true

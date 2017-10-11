@@ -87,6 +87,11 @@ export function setupModels(client) {
             commentable: 'task'
         }
      });
+    m.Task.belongsTo(m.Frame, {
+        foreignKey: 'frame_id',
+        constraints: false,
+        as: 'Frame'
+    });
 
     m.Label.belongsToMany(m.Task, { as: 'Tasks', through: m.TaskLabel, foreignKey: 'label_id'});
 

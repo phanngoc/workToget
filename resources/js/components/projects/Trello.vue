@@ -1,13 +1,8 @@
 <template lang="html">
   <div class="trello row">
     <draggable v-model="frames" @end="onEndFrame">
-      <div v-for="frame in frames" class="frame" :key="frame.id">
-        <p class="name-frame">{{frame.name}}</p>
-        <draggable v-model="frame.Tasks" class="dragArea" :options="{group:'people'}">
-            <Task v-for="task in frame.Tasks" :task="task" :key="task.id"
-            ></Task>
-        </draggable>
-      </div>
+      <Frame v-for="(frame, index) in frames" :id="index" :key="frame.id">
+      </Frame>
     </draggable>
     <ModalTask></ModalTask>
   </div>
@@ -19,22 +14,31 @@ import axios from 'axios';
 import draggable from 'vuedraggable';
 import Task from './Task';
 import ModalTask from './ModalTask';
+import Frame from './Frame';
 import { mapGetters, mapActions, mapState } from 'vuex';
+import _ from 'lodash';
 
 export default {
   created() {
-
+    this.$store.dispatch('trello/loadFrames', this.$route.params.id);
   },
-  data: () => {
+  data: function() {
     return {
-      frames: [],
     }
   },
   computed: {
     ...mapState('trello', [
         'isOpen',
         'activeTask'
-    ])
+    ]),
+    frames: {
+      get() {
+        return this.$store.state.trello.frames;
+      },
+      set(value) {
+        this.$store.dispatch('trello/updateFrameSort', value);
+      }
+    }
   },
 
   methods: {
@@ -43,25 +47,20 @@ export default {
         'closeEditTask'
     ]),
     onEndFrame: function(evt) {
-      console.log(evt.item);
+      let data = _.map(this.frames, function(value, key) {
+          return {id: value.id, order: key};
+      });
+      this.$store.dispatch('trello/syncFrameSort', {project_id: this.$route.params.id, data: data});
     },
   },
   components: {
     draggable,
     Task,
-    ModalTask
+    ModalTask,
+    Frame
   },
   mounted() {
-    var self = this;
-    axios.get(this.baseUrl + '/api/projects/' + this.$route.params.id + '/frames')
-      .then(function (response) {
-        if (response.status == 200) {
-          self.frames = response.data.frames;
-        }
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+
   }
 }
 </script>
