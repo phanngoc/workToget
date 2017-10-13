@@ -39,9 +39,23 @@ module.exports = function(app) {
 
   apiRouter.put('/task/:id/update', taskController.updateTask);
 
-  apiRouter.put('/task/:id/comments', taskController.getListCommentTask);
+  apiRouter.get('/task/:id/comments', taskController.getListCommentTask);
+
+  apiRouter.post('/task/:id/comment', taskController.addCommentTask);
+
+  apiRouter.put('/task/comment/:id', taskController.updateCommentTask);
+
+  apiRouter.put('/task/:id/update-due-date', taskController.updateDueDate);
+
+  apiRouter.delete('/task/:id/delete', taskController.deleteLabel);
+
+  apiRouter.put('/labels/:id/update', taskController.updateLabel);
+
+  apiRouter.put('/task/:id/update-label', taskController.updateTaskLabel);
 
   apiRouter.get('/projects/:id/frames', projectController.getFrames);
+
+  apiRouter.get('/projects/:id/labels', projectController.getLabels);
 
   apiRouter.post('/projects/:id/update', projectController.update);
 

@@ -21,6 +21,7 @@ import _ from 'lodash';
 export default {
   created() {
     this.$store.dispatch('trello/loadFrames', this.$route.params.id);
+    this.$store.dispatch('trello/loadLabels', this.$route.params.id);
   },
   data: function() {
     return {

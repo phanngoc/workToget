@@ -32,7 +32,7 @@ export default {
 <style lang="scss" scoped>
   .contentedit{
     min-width: 150px;
-    background-color: #dddddd;
+    background-color: #eee;
     border: 1px solid #bfbfbf;
     border-radius: 4px;
   }
