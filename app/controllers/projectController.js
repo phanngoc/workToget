@@ -3,6 +3,7 @@ import errors from '../lib/errors';
 import passport from 'koa-passport';
 import debug from 'debug';
 import Sequelize from 'sequelize';
+import async from 'async';
 
 class ProjectController {
   constructor(...args) {
@@ -37,6 +38,10 @@ class ProjectController {
       where: {
         project_id: ctx.params.id,
       },
+      order: [
+        ['order', 'ASC'],
+        ['Tasks', 'order', 'ASC' ]
+      ],
       include: [{
           model: models.Task,
           as: 'Tasks',
@@ -77,6 +82,61 @@ class ProjectController {
       return res;
     }) ;
     ctx.body = {status: 200, result: result};
+  }
+
+  async updateSortFrame(ctx, next) {
+    let result = await new Promise((resolve, reject) => {
+      async.map(ctx.request.body.data, function(frame, callback) {
+        models.Frame.update({order: frame.order}, {
+          where: {
+              id: frame.id
+          }
+        }).then(function(response) {
+            callback(null, response);
+        }).catch(function(error) {
+            callback(error);
+        });
+      }, function(err, results) {
+        if (!err) {
+          resolve(results);
+        } else {
+          reject(err);
+        }
+      });
+    })
+
+    if (result) {
+        ctx.body = {status: 200};
+    } else {
+        ctx.body = errors.ServerError;
+    }
+  }
+
+  async updateSortTask(ctx, next) {
+    let result = await new Promise((resolve, reject) => {
+      async.map(ctx.request.body.data, function(task, callback) {
+        models.Task.update({order: task.order, frame_id: ctx.request.body.frame_id}, {
+          where: {
+              id: task.id
+          }
+        }).then(function(response) {
+            callback(null, response);
+        }).catch(function(error) {
+            callback(error);
+        });
+      }, function(err, results) {
+        if (!err) {
+          resolve(results);
+        } else {
+          reject(err);
+        }
+      });
+    })
+    if (result) {
+        ctx.body = {status: 200};
+    } else {
+        ctx.body = errors.ServerError;
+    }
   }
 
   async show(ctx, next) {

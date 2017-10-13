@@ -1,6 +1,10 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import axios from 'axios'
+import store from '../store'
+import VueRouter from 'vue-router'
 
+Vue.use(VueRouter)
 
 /**
  * Create a router instance.
@@ -15,32 +19,28 @@ export default function router(routes) {
         mode: 'history'
     })
 
-    // router.beforeEach((to, from, next) => {
-    //     const components = router.getMatchedComponents(to)
-    //     const access_token = localStorage.getItem('access_token')
+    router.beforeEach((to, from, next) => {
+        const components = router.getMatchedComponents(to)
+        const access_token = localStorage.getItem('access_token')
 
-    //     if (components.length) {
-    //         setTimeout(() => {
-    //             router.app.setLayout(components[components.length - 1].layout || '')
-    //         }, 0);
-    //     }
-
-    //     //check access token exists within Api local storage
-    //     if (!store.state.auth.user.id && access_token) {
-    //         store.dispatch('auth/check')
-    //             // get info user
-    //         get(getUser).then((res) => {
-    //             store.dispatch('auth/setUser', res.data)
-    //             next()
-    //         })
-    //         .catch((err) => {
-    //             store.dispatch('auth/logout')
-    //             next({ name: 'login' })
-    //         })
-    //     } else {
-    //         next()
-    //     }
-    // })
+        //check access token exists within Api local storage
+        if (!store.state.auth.authenticated && access_token) {
+            store.dispatch('auth/check')
+                // get info user
+            axios.get('/api/user').then((res) => {
+              if (res.status == 200) {
+                store.dispatch('auth/setUser', res.data.data.user)
+                next()
+              }
+            })
+            .catch((err) => {
+                store.dispatch('auth/logout')
+                next({ name: 'login' })
+            })
+        } else {
+            next()
+        }
+    })
 
     return router
 }

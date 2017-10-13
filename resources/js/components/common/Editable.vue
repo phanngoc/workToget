@@ -1,5 +1,5 @@
 <template lang="html">
-  <div contenteditable="true" @input="update" :class="className"></div>
+  <div contenteditable="true" @input="update" :class="'contentedit ' + className"></div>
 </template>
 
 <script>
@@ -13,6 +13,7 @@ export default {
   watch: {
     content: function(val, oldVal) {
       this.$el.innerText = val;
+      this.$emit('update', val);
     },
   },
   props:['content', 'className'],
@@ -29,5 +30,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
+  .contentedit{
+    min-width: 150px;
+    background-color: #dddddd;
+    border: 1px solid #bfbfbf;
+    border-radius: 4px;
+  }
 </style>
