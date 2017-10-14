@@ -1,6 +1,6 @@
 <template lang="html">
   <div class="modal fade" id="modal-edit-task">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <Editable name="title" className="modal-title" @update="tempTask.title = $event" :content="activeTask.title"></Editable>
@@ -10,21 +10,59 @@
           </button>
         </div>
         <div class="modal-body">
-          <Editable name="description" className="description" @update="tempTask.description = $event" :content="activeTask.description"></Editable>
-          <span v-show="errors.has('description')" class="help is-danger">{{ errors.first('description') }}</span>
-          <button type="button" class="btn btn-primary" @click="saveAndClose">Save</button>
-          <hr>
-          <div class="task-comments">
-            <h4>Add Comment</h4>
-            <div class="new-comment">
-              <div class="member">
-                <img :src="'/img/' + user.avatar" alt="" class="sm-avatar">
+          <div class="wr-af-ti d-flex flex-row justify-content-end">
+            <div class="wr-description p-2 mr-auto">
+              <div class="sub-label">
+                <h4 class="su-ti-la ti-sm">Labels</h4>
+                <div class="su-li-la">
+                  <span v-for="(label, index) in tempTask.Labels" class="badge" :style="'background-color:' + label.color">
+                    {{label.name}}
+                  </span>
+                </div>
               </div>
-              <div class="add-comment">
-                <textarea name="comment" class="form-control" v-model="newComment" rows="5" cols="80">
-                </textarea>
+              <Editable name="description" className="description" @update="tempTask.description = $event" :content="activeTask.description"></Editable>
+              <span v-show="errors.has('description')" class="help is-danger">{{ errors.first('description') }}</span>
+              <button type="button" class="btn btn-primary btn-save" @click="saveAndClose">Save</button>
+            </div>
+            <div class="wr-action p-2">
+              <div class="wr-add">
+                <h4>Add</h4>
+                <Labels></Labels>
+                <div class="list-btn add-duedate dropdown">
+                  <a href="javascript:" class="btn btn-outline-primary" data-toggle="dropdown">Due Date</a>
+                  <div class="dropdown-menu">
+                    <el-date-picker
+                      v-model="tempTask.due_date"
+                      type="datetime"
+                      @change="changeDueDate"
+                      placeholder="Select date and time">
+                    </el-date-picker>
+                  </div>
+                </div>
               </div>
             </div>
+          </div>
+          <hr>
+          <div class="task-comments">
+            <h4 class="ti-sm">Add Comment</h4>
+            <form class="d-flex flex-column new-comment">
+              <div class="d-flex flex-row">
+                <div class="p-2">
+                  <img :src="'/img/' + user.avatar" alt="" class="sm-avatar">
+                </div>
+                <div class="p-2">
+                  <textarea name="comment" class="form-control" v-model="newComment" rows="5" cols="80">
+                  </textarea>
+                </div>
+              </div>
+              <div class="d-flex flex-row">
+                <button type="button" class="btn btn-primary" @click="addComment">Save</button>
+              </div>
+            </form>
+          </div>
+          <hr>
+          <div class="list-comments">
+            <Comment v-for="(comment, index) in comments" :comment="comment" :key="index"></Comment>
           </div>
         </div>
         <div class="modal-footer">
@@ -42,6 +80,8 @@ import draggable from 'vuedraggable';
 import Editable from '../common/Editable';
 import { mapGetters, mapActions, mapState } from 'vuex';
 import { Validator } from 'vee-validate';
+import Comment from './Comment';
+import Labels from './Labels';
 
 export default {
   created() {
@@ -55,7 +95,8 @@ export default {
     ...mapState('trello', [
         'isOpen',
         'activeTask',
-        'saveSimpleTask'
+        'saveSimpleTask',
+        'comments'
     ]),
     ...mapState('auth', [
         'user',
@@ -70,8 +111,10 @@ export default {
       }
     },
     activeTask: function(val, oldVal) {
-      this.tempTask = _.pick(val, ['id', 'title', 'description', 'frame_id']);
-    }
+      this.$store.dispatch('trello/getListComment', val.id);
+      this.tempTask = _.pick(val, ['id', 'title', 'description', 'frame_id',
+        'due_date', 'Labels']);
+    },
   },
   updated: function () {
     this.$nextTick(function () {
@@ -87,6 +130,12 @@ export default {
     }
   },
   methods: {
+    addComment: function() {
+      this.$store.dispatch('trello/addComment', {task_id: this.activeTask.id,
+        content: this.newComment,
+        user_id: this.user.id
+      });
+    },
     saveAndClose: function() {
       this.validator.validateAll({
         title: this.tempTask.title,
@@ -103,11 +152,17 @@ export default {
     },
     clearErrors() {
       this.errors.clear();
+    },
+    changeDueDate: function() {
+      this.$store.dispatch('trello/changeDueDate', {id: this.tempTask.id,
+        due_date: this.tempTask.due_date});
     }
   },
   components: {
     draggable,
-    Editable
+    Editable,
+    Comment,
+    Labels
   },
   mounted() {
     var self = this;
@@ -119,6 +174,22 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  .btn-save{
+    margin-top: 6px;
+  }
+  .sub-label{
+    margin-bottom: 22px;
+  }
+  .list-btn{
+    margin-bottom: 4px;
+    a{
+      width: 92px;
+      margin-bottom: 3px;
+    }
+  }
+  .description{
+
+  }
   .is-danger{
     display: block;
     color: red;

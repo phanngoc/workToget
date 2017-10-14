@@ -145,6 +145,15 @@ class ProjectController {
       baseUrl: process.env.BASE_URL
     });
   }
+
+  async getLabels(ctx, next) {
+    let labels = await models.Label.findAll({
+      where: {
+        project_id: ctx.params.id,
+      }
+    });
+    ctx.body = {status: 200, data: labels};
+  }
 };
 
 export default ProjectController;

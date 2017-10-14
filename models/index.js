@@ -113,6 +113,11 @@ export function setupModels(client) {
         constraints: false,
         as: 'task'
     });
+    m.Comment.belongsTo(m.User, {
+        foreignKey: 'user_id',
+        constraints: true,
+        as: 'User'
+    });
 
   return m;
 }
