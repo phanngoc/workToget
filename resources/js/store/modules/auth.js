@@ -47,7 +47,7 @@ const actions = {
     commit(CHECK);
   },
   login({ commit }, data) {
-    axios.post('/api/authenticate', data).then(function(res) {
+    axios.post('/authenticate', data).then(function(res) {
       if (res.status == 200) {
         commit(LOGIN, res.data.data);
       }

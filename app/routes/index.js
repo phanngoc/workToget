@@ -27,7 +27,7 @@ module.exports = function(app) {
 
   router.post('/login', passport.authenticate('local', { failureRedirect: '/login' }), homeController.postLogin);
 
-  router.post('/api/authenticate', authenticateUsernameAndPass);
+  router.post('/authenticate', authenticateUsernameAndPass);
 
   router.get(/^\/(.*)(?:\/|$)/, homeController.index);
 

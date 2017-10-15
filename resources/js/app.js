@@ -7,6 +7,9 @@ import Vuex from 'vuex'
 import VeeValidate from 'vee-validate';
 import Element from 'element-ui';
 import 'element-ui/lib/theme-default/index.css';
+import VueSocketio from 'vue-socket.io';
+
+Vue.use(VueSocketio, 'http://localhost:3000', store);
 
 Vue.use(Element);
 

@@ -6,7 +6,7 @@
             <span class="badge badge-pill" v-for="label in task.Labels"
               :style="'background-color:'+label.color">{{label.name}}</span>
         </div>
-        <span class="list-card-title">
+        <span class="list-card-title" @click="emitSocket">
           {{task.title}}
         </span>
         <span class="icon-edit btn btn-sm btn-outline-primary">
@@ -23,6 +23,14 @@ import axios from 'axios';
 import { mapGetters, mapActions } from 'vuex';
 
 export default {
+  sockets:{
+    connect: function(){
+      console.log('socket connected')
+    },
+    customEmit: function(val){
+      console.log('this method was fired by the socket server. eg: io.emit("customEmit", data)')
+    }
+  },
   created() {
   },
   props: ['task'],
@@ -36,6 +44,9 @@ export default {
         'openEditTask',
         'closeEditTask'
     ]),
+    emitSocket: function() {
+      this.$socket.emit('emit_method', this.task.id);
+    }
   },
   components: {
   },

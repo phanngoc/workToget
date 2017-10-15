@@ -12,8 +12,10 @@ class TaskController {
   }
 
   async updateTask(ctx, next) {
-    let task = await models.Task.findOne({
-      id: ctx.params.id
+    let task = await models.Task.find({
+      where: {
+        id: ctx.params.id,
+      }
     });
 
     task.title = ctx.request.body.title;
@@ -22,6 +24,14 @@ class TaskController {
     let result = await task.save().then(function(res){
       return res;
     }) ;
+    let data = {
+      type: 'updateModels',
+      deltas: task,
+      typeName: 'Task',
+      frameId: task.frame_id
+    }
+    // ctx.io.emit('broadcast', data);
+    ctx.io.to('UPDATE_MODELS').emit(data);
     ctx.body = {status: 200, result: result};
   }
 

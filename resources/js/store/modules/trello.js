@@ -14,6 +14,8 @@ export const LOAD_LABELS = 'LOAD_LABELS'
 export const UPDATE_LABEL = 'UPDATE_LABEL'
 
 export const ERROR = 'ERROR'
+export const SOCKET_CONNECT = 'SOCKET_CONNECT'
+export const SOCKET_UPDATE_MODELS = 'SOCKET_UPDATE_MODELS'
 
 // import {ERROR} from '../mutation-types'
 
@@ -26,7 +28,8 @@ const state = {
   activeTask: {},
   comments: [],
   frames: [],
-  labels: []
+  labels: [],
+  connect: false,
 }
 
 // getters
@@ -201,6 +204,12 @@ const actions = {
 }
 
 const mutations = {
+  [SOCKET_CONNECT]: (state) => {
+      state.connect = true;
+  },
+  [SOCKET_UPDATE_MODELS] (state, data) {
+    console.log('co vao emit method:', data);
+  },
   [UPDATE_LABEL] (state, label) {
     var key = _.findKey(state.labels, function(o) { return o.id == label.id; });
     state.labels[key] = label;

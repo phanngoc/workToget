@@ -42,6 +42,7 @@ export async function authenticateUsernameAndPass(ctx, next) {
   let username = ctx.request.body.username;
   let password = ctx.request.body.password;
   if (username && password) {
+
     let result = await verifyUser(username, password);
     ctx.body = result;
   } else {
