@@ -21,7 +21,7 @@
                 </div>
               </div>
               <div class="sub-label" v-if="tempTask.due_date">
-                <h4 class="su-ti-la ti-sm">Dua date</h4>
+                <h4 class="su-ti-la ti-sm">Due date</h4>
                 <div class="su-li-la m-due-date" :style="'background-color:' + colorDuaDate">
                   <span>{{ tempTask.due_date | moment("calendar") }}</span>
                 </div>
@@ -89,6 +89,7 @@ import { Validator } from 'vee-validate';
 import Comment from './Comment';
 import Labels from './Labels';
 import moment from 'moment';
+import _ from 'lodash';
 
 export default {
   created() {
@@ -129,23 +130,7 @@ export default {
         'due_date', 'Labels']);
     },
     due_date: function(val, oldVal) {
-      let countDay = moment(val).diff(moment(), 'days');
-      if (countDay > 1) {
-        this.colorDuaDate = this.color.none;
-        this.diffTime = 'future';
-      } else if (countDay == 1) {
-        this.colorDuaDate = this.color.future;
-        this.diffTime = 'tomorrow';
-      } else if (countDay == -1) {
-        this.colorDuaDate = this.color.past;
-        this.diffTime = 'yesterday';
-      } else if (countDay == 0) {
-        this.colorDuaDate = this.color.past;
-        this.diffTime = 'today';
-      } else if (countDay < -1) {
-        this.colorDuaDate = this.color.none;
-        this.diffTime = 'future';
-      }
+      this.colorDuaDate = this.getColorByTime(val);
     }
   },
   updated: function () {
@@ -191,8 +176,10 @@ export default {
       this.errors.clear();
     },
     changeDueDate: function() {
-      this.$store.dispatch('trello/changeDueDate', {id: this.tempTask.id,
-        due_date: this.tempTask.due_date});
+      if (!_.isNull(this.tempTask.due_date)) {
+        this.$store.dispatch('trello/changeDueDate', {id: this.tempTask.id,
+          due_date: this.tempTask.due_date});
+      }
     }
   },
   components: {

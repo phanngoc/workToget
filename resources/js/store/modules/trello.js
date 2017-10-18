@@ -99,7 +99,7 @@ const actions = {
     axios.get('/api/projects/' + project_id + '/frames')
     .then(function (response) {
       if (response.status == 200) {
-        commit(LOAD_FRAMES, response.data.frames);
+        commit(LOAD_FRAMES, response.data.data.frames);
       }
     })
     .catch(function (error) {
@@ -219,7 +219,6 @@ const mutations = {
       state.connect = true;
   },
   [SOCKET_SAVE_DUE_DATE] (state, data) {
-    console.log(SOCKET_SAVE_DUE_DATE, data);
     let due_date = data.deltas;
     var frame = _.find(state.frames, function(o) { return o.id == data.frameId; });
     var taskSet = _.find(frame.Tasks, function(o) { return o.id == data.taskId; });
@@ -229,6 +228,9 @@ const mutations = {
   [SOCKET_SAVE_ADD_COMMENT] (state, data) {
     let comment = data.deltas;
     state.comments.unshift(comment);
+    var frame = _.find(state.frames, function(o) { return o.id == data.frameId; });
+    var taskSet = _.find(frame.Tasks, function(o) { return o.id == data.taskId; });
+    taskSet.countComment = data.countComment;
   },
   [SOCKET_SAVE_EDIT_COMMENT] (state, data) {
     let comment = data.deltas;

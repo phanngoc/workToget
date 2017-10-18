@@ -66,7 +66,13 @@ class TaskController {
     let task = await models.Task.find({
       where: {
         id: ctx.params.id,
-      }
+      },
+      attributes: Object.keys(models.Task.attributes).concat([
+        [
+        Sequelize.literal('(SELECT COUNT("comments.id") FROM comments WHERE comments.commentable="task" AND comments.commentable_id=tasks.id)'),
+        'countComment'
+        ]
+      ])
     });
 
     let comment = await task.createComment({
@@ -74,20 +80,28 @@ class TaskController {
       user_id: ctx.request.body.user_id,
     });
 
-    let user = await comment.getUser();
+    if (comment) {
+      let user = await comment.getUser();
 
-    comment = comment.toJSON();
-    user = user.toJSON();
+      comment = comment.toJSON();
+      user = user.toJSON();
 
-    comment.User = user;
+      comment.User = user;
 
-    let data = {
-      type: 'updateModels',
-      deltas: comment,
-      typeName: 'add_comment_task',
+      let data = {
+        type: 'updateModels',
+        deltas: comment,
+        taskId: task.id,
+        frameId: task.frame_id,
+        countComment: task.toJSON().countComment + 1,
+        typeName: 'add_comment_task',
+      };
+
+      ioEmitter.to('project_' + ctx.request.body.project_id).emit('SAVE_ADD_COMMENT', data);
+    } else {
+      ctx.body = errors.ServerError("Can't create comment");
     }
 
-    ioEmitter.to('project_' + ctx.request.body.project_id).emit('SAVE_ADD_COMMENT', data);
     ctx.body = {status: 200, data: comment};
   }
 

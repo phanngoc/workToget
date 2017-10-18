@@ -55,17 +55,26 @@ class ProjectController {
       include: [{
           model: models.Task,
           as: 'Tasks',
+          attributes: Object.keys(models.Task.attributes).concat([
+            [
+            Sequelize.literal('(SELECT COUNT("comments.id") FROM comments WHERE comments.commentable="task" AND comments.commentable_id=Tasks.id)'),
+            'countComment'
+            ]
+          ]),
           include: [
               {
                   model: models.Label,
                   as: 'Labels',
                   duplicating: true,
                   required: false,
-              }
-          ]
+              },
+          ],
+          group: ['tasks.id']
       }]
     });
-    ctx.body = {status: 200, frames: frames};
+
+    let countComments = [];
+    ctx.body = {status: 200, data: {frames: frames, countComments: countComments}};
   }
 
   async update(ctx, next) {
