@@ -5,6 +5,7 @@ import debug from 'debug';
 import Sequelize from 'sequelize';
 import async from 'async';
 import _ from 'lodash';
+import {ioEmitter} from '../../io.js';
 
 class TaskController {
   constructor(...args) {
@@ -23,15 +24,17 @@ class TaskController {
 
     let result = await task.save().then(function(res){
       return res;
-    }) ;
+    });
+
     let data = {
       type: 'updateModels',
       deltas: task,
-      typeName: 'Task',
-      frameId: task.frame_id
+      typeName: 'simple_task',
+      frameId: task.frame_id,
+      projectId: ctx.request.body.project_id
     }
-    // ctx.io.emit('broadcast', data);
-    ctx.io.to('UPDATE_MODELS').emit(data);
+
+    ioEmitter.to('project_'+ctx.request.body.project_id).emit('SAVE_SIMPLE_TASK', data);
     ctx.body = {status: 200, result: result};
   }
 
@@ -77,6 +80,14 @@ class TaskController {
     user = user.toJSON();
 
     comment.User = user;
+
+    let data = {
+      type: 'updateModels',
+      deltas: comment,
+      typeName: 'add_comment_task',
+    }
+
+    ioEmitter.to('project_' + ctx.request.body.project_id).emit('SAVE_ADD_COMMENT', data);
     ctx.body = {status: 200, data: comment};
   }
 
@@ -104,6 +115,14 @@ class TaskController {
 
     comment.User = user;
 
+    let data = {
+      type: 'updateModels',
+      deltas: comment,
+      typeName: 'add_comment_task',
+    }
+
+    ioEmitter.to('project_' + ctx.request.body.project_id).emit('SAVE_EDIT_COMMENT', data);
+
     ctx.body = {status: 200, data: comment};
   }
 
@@ -122,6 +141,15 @@ class TaskController {
             return count;
           }
         });
+      let data = {
+        type: 'updateModels',
+        deltas: ctx.request.body.due_date,
+        typeName: 'save_due_date',
+        taskId: ctx.params.id,
+        frameId: task.frame_id,
+      }
+
+      ioEmitter.to('project_' + ctx.params.project_id).emit('SAVE_DUE_DATE', data);
       ctx.body = {status: 200, data: result};
     }
   }
@@ -145,7 +173,16 @@ class TaskController {
     });
 
     let result = await task.setLabels(ctx.request.body.label_ids);
+    let labels = await task.getLabels();
+    let data = {
+      type: 'updateModels',
+      deltas: labels,
+      taskId: task.id,
+      frameId: task.frame_id,
+      typeName: 'update_label_for_task'
+    }
 
+    ioEmitter.to('project_' + ctx.params.project_id).emit('UPDATE_LABEL_FOR_TASK', data);
     ctx.body = {status: 200, data: result};
   }
 
@@ -160,6 +197,14 @@ class TaskController {
     let result = await label.save().then(function(res){
       return res;
     });
+
+    let data = {
+      type: 'updateModels',
+      deltas: label,
+      typeName: 'update_label'
+    }
+
+    ioEmitter.to('project_' + ctx.params.project_id).emit('UPDATE_LABEL', data);
 
     ctx.body = {status: 200, data: label};
   }

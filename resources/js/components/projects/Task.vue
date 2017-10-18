@@ -6,7 +6,7 @@
             <span class="badge badge-pill" v-for="label in task.Labels"
               :style="'background-color:'+label.color">{{label.name}}</span>
         </div>
-        <span class="list-card-title" @click="emitSocket">
+        <span class="list-card-title">
           {{task.title}}
         </span>
         <span class="icon-edit btn btn-sm btn-outline-primary">
@@ -44,9 +44,6 @@ export default {
         'openEditTask',
         'closeEditTask'
     ]),
-    emitSocket: function() {
-      this.$socket.emit('emit_method', this.task.id);
-    }
   },
   components: {
   },

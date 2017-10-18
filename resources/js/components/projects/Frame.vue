@@ -1,7 +1,7 @@
 <template lang="html">
   <div class="frame" >
     <p class="name-frame">{{frame.name}}</p>
-    <draggable v-model="tasks" class="dragArea" :options="{group:'frames'}">
+    <draggable v-model="tasks" class="dragArea" :options="{group:'frames'}" @end="onEndFrame">
         <Task v-for="task in tasks" :task="task" :key="task.id"
         ></Task>
     </draggable>
@@ -35,7 +35,6 @@ export default {
         return this.$store.state.trello.frames[this.id].Tasks;
       },
       set(value) {
-        console.log('Frame', this.id, value);
         this.$store.dispatch('trello/syncTaskSort', {index: this.id, data: value});
       }
     }
@@ -46,11 +45,6 @@ export default {
 
     ]),
     onEndFrame: function(evt) {
-      
-      // let data = _.map(this.frames, function(value, key) {
-      //     return {id: value.id, order: key};
-      // });
-      // this.$store.dispatch('trello/syncFrameSort', {project_id: this.$route.params.id, data: data});
     },
   },
   components: {

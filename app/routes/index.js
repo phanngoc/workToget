@@ -45,13 +45,15 @@ module.exports = function(app) {
 
   apiRouter.put('/task/comment/:id', taskController.updateCommentTask);
 
-  apiRouter.put('/task/:id/update-due-date', taskController.updateDueDate);
+  apiRouter.put('/projects/:project_id/task/:id/update-due-date', taskController.updateDueDate);
 
   apiRouter.delete('/task/:id/delete', taskController.deleteLabel);
 
-  apiRouter.put('/labels/:id/update', taskController.updateLabel);
+  apiRouter.put('/projects/:project_id/labels/:id/update', taskController.updateLabel);
 
-  apiRouter.put('/task/:id/update-label', taskController.updateTaskLabel);
+  apiRouter.put('/projects/:project_id/task/:id/update-label', taskController.updateTaskLabel);
+
+  apiRouter.get('/projects/:id', projectController.show);
 
   apiRouter.get('/projects/:id/frames', projectController.getFrames);
 
@@ -61,7 +63,7 @@ module.exports = function(app) {
 
   apiRouter.post('/projects/:id/update-sort-frame', projectController.updateSortFrame);
 
-  apiRouter.post('/projects/update-sort-task', projectController.updateSortTask);
+  apiRouter.post('/projects/:id/update-sort-task', projectController.updateSortTask);
 
   apiRouter.put('/projects/:id/update-pin', projectController.updatePin);
 

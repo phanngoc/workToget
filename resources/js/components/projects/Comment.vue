@@ -48,6 +48,10 @@ export default {
   watch: {
     content_edit: function(val, oldVal) {
       this.isCanSave = _.isEmpty(val) ? false: true;
+    },
+    comment: function(val, oldVal) {
+      this.content_edit = val.content;
+      this.content_html = marked(val.content);
     }
   },
   computed: {

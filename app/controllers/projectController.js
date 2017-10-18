@@ -4,6 +4,7 @@ import passport from 'koa-passport';
 import debug from 'debug';
 import Sequelize from 'sequelize';
 import async from 'async';
+import {ioEmitter} from '../../io.js';
 
 class ProjectController {
   constructor(...args) {
@@ -15,6 +16,15 @@ class ProjectController {
       title: 'This is basecamp me!',
       baseUrl: process.env.BASE_URL
     });
+  }
+
+  async show(ctx, next) {
+    let project = await models.Project.findOne({
+      where: {
+        id: ctx.params.id,
+      }
+    });
+    ctx.body = {status: 200, data: project};
   }
 
   async getProjects(ctx, next) {
@@ -103,12 +113,19 @@ class ProjectController {
           reject(err);
         }
       });
-    })
+    });
 
     if (result) {
-        ctx.body = {status: 200};
+      let data = {
+        type: 'updateModels',
+        deltas: ctx.request.body.data,
+        typeName: 'update_sort_frame'
+      }
+
+      ioEmitter.to('project_' + ctx.params.id).emit('UPDATE_SORT_FRAME', data);
+      ctx.body = {status: 200};
     } else {
-        ctx.body = errors.ServerError;
+      ctx.body = errors.ServerError;
     }
   }
 
@@ -133,17 +150,18 @@ class ProjectController {
       });
     })
     if (result) {
-        ctx.body = {status: 200};
-    } else {
-        ctx.body = errors.ServerError;
-    }
-  }
+      let data = {
+        type: 'updateModels',
+        deltas: ctx.request.body.data,
+        typeName: 'update_sort_task',
+        frameId: ctx.request.body.frame_id
+      }
 
-  async show(ctx, next) {
-    return ctx.render('show.pug', {
-      title: 'This is basecamp me!',
-      baseUrl: process.env.BASE_URL
-    });
+      ioEmitter.to('project_' + ctx.params.id).emit('UPDATE_SORT_TASK', data);
+      ctx.body = {status: 200};
+    } else {
+      ctx.body = errors.ServerError;
+    }
   }
 
   async getLabels(ctx, next) {

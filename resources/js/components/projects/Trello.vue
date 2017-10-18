@@ -22,6 +22,8 @@ export default {
   created() {
     this.$store.dispatch('trello/loadFrames', this.$route.params.id);
     this.$store.dispatch('trello/loadLabels', this.$route.params.id);
+    this.$store.dispatch('project/loadProject', this.$route.params.id);
+    this.$socket.emit('JOIN_PROJECT', this.$route.params.id);
   },
   data: function() {
     return {
@@ -32,6 +34,9 @@ export default {
         'isOpen',
         'activeTask'
     ]),
+    ...mapState('project', [
+        'project'
+    ]),
     frames: {
       get() {
         return this.$store.state.trello.frames;
@@ -41,7 +46,11 @@ export default {
       }
     }
   },
+  watch: {
+    project: function(val, oldVal) {
 
+    }
+  },
   methods: {
     ...mapActions('trello', [
         'openEditTask',

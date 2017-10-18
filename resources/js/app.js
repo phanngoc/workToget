@@ -1,5 +1,4 @@
 import Vue from 'vue'
-import VueRouter from 'vue-router'
 import store from './store'
 import routes from './router'
 import middleware from './router/middleware'
@@ -8,6 +7,9 @@ import VeeValidate from 'vee-validate';
 import Element from 'element-ui';
 import 'element-ui/lib/theme-default/index.css';
 import VueSocketio from 'vue-socket.io';
+import { sync } from 'vuex-router-sync';
+
+Vue.use(require('vue-moment'));
 
 Vue.use(VueSocketio, 'http://localhost:3000', store);
 
@@ -32,6 +34,8 @@ Vue.mixin({
 Vue.use(VeeValidate, {errorBagName: 'vErrors'});
 
 const router = middleware(routes);
+
+const unsync = sync(store, router)
 
 const app = new Vue({
     el: '#main-app',
