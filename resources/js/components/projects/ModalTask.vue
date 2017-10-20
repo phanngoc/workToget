@@ -15,12 +15,18 @@
               <div class="sub-label">
                 <h4 class="su-ti-la ti-sm">Labels</h4>
                 <div class="su-li-la">
-                  <span v-for="(label, index) in tempTask.Labels" class="badge" :style="'background-color:' + label.color">
+                  <span v-for="(label, index) in tempTask.Labels" :key="label.id" class="badge" :style="'background-color:' + label.color">
                     {{label.name}}
                   </span>
                 </div>
               </div>
-              <Editable name="description" className="description" @update="tempTask.description = $event" :content="activeTask.description"></Editable>
+              <div class="sub-label" v-if="tempTask.due_date">
+                <h4 class="su-ti-la ti-sm">Due date</h4>
+                <div class="su-li-la m-due-date" :style="'background-color:' + colorDuaDate">
+                  <span>{{ tempTask.due_date | moment("calendar") }}</span>
+                </div>
+              </div>
+              <Editable name="description" className="description" @update="tempTask.description = $event" :content="activeTask.description | emptyString"></Editable>
               <span v-show="errors.has('description')" class="help is-danger">{{ errors.first('description') }}</span>
               <button type="button" class="btn btn-primary btn-save" @click="saveAndClose">Save</button>
             </div>
@@ -62,7 +68,7 @@
           </div>
           <hr>
           <div class="list-comments">
-            <Comment v-for="(comment, index) in comments" :comment="comment" :key="index"></Comment>
+            <Comment v-for="(comment, index) in comments" :comment="comment" :key="comment.id"></Comment>
           </div>
         </div>
         <div class="modal-footer">
@@ -82,6 +88,8 @@ import { mapGetters, mapActions, mapState } from 'vuex';
 import { Validator } from 'vee-validate';
 import Comment from './Comment';
 import Labels from './Labels';
+import moment from 'moment';
+import _ from 'lodash';
 
 export default {
   created() {
@@ -100,8 +108,21 @@ export default {
     ]),
     ...mapState('auth', [
         'user',
-    ])
+    ]),
+    ...mapState('project', [
+        'project',
+    ]),
+    due_date() {
+      return this.tempTask.due_date;
+    }
   },
+  filters: {
+     emptyString: function (value) {
+       if (_.isUndefined(value) || _.isNull(value)) {
+         return "";
+       }
+     }
+   },
   watch: {
     isOpen: function(val, oldVal) {
       if (val) {
@@ -115,6 +136,9 @@ export default {
       this.tempTask = _.pick(val, ['id', 'title', 'description', 'frame_id',
         'due_date', 'Labels']);
     },
+    due_date: function(val, oldVal) {
+      this.colorDuaDate = this.getColorByTime(val);
+    }
   },
   updated: function () {
     this.$nextTick(function () {
@@ -126,7 +150,10 @@ export default {
     return {
       tempTask: {},
       errors: null,
-      newComment: ''
+      newComment: '',
+      color: {past: '#b04632', future: '#D9B51C', none: '#97a8be'},
+      diffTime: '',
+      colorDuaDate: '#97a8be',
     }
   },
   methods: {
@@ -135,15 +162,17 @@ export default {
         content: this.newComment,
         user_id: this.user.id
       });
+      this.newComment = "";
     },
     saveAndClose: function() {
+      let that = this;
       this.validator.validateAll({
         title: this.tempTask.title,
         description: this.tempTask.description
       }).then((result) => {
         if (result) {
           // eslint-disable-next-line
-          this.$store.dispatch('trello/saveSimpleTask', this.tempTask);
+          this.$store.dispatch('trello/saveSimpleTask', _.assignIn(this.tempTask, {project_id: that.$route.params.id}));
           return;
         }
         // eslint-disable-next-line
@@ -154,8 +183,10 @@ export default {
       this.errors.clear();
     },
     changeDueDate: function() {
-      this.$store.dispatch('trello/changeDueDate', {id: this.tempTask.id,
-        due_date: this.tempTask.due_date});
+      if (!_.isNull(this.tempTask.due_date)) {
+        this.$store.dispatch('trello/changeDueDate', {id: this.tempTask.id,
+          due_date: this.tempTask.due_date});
+      }
     }
   },
   components: {
@@ -174,11 +205,19 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  .m-due-date{
+    border-radius: 4px;
+    padding: 1px;
+    color: white;
+    font-size: 15px;
+  }
   .btn-save{
     margin-top: 6px;
   }
   .sub-label{
     margin-bottom: 22px;
+    display: inline-block;
+    margin-right: 8px;
   }
   .list-btn{
     margin-bottom: 4px;

@@ -7,17 +7,20 @@ export default co.wrap(function* () {
   var data = [{
       id: 1,
       name: "Bug",
-      color: "#a8345c"
+      color: "#a8345c",
+      project_id: 1
   },
   {
       id: 2,
       name: "Task",
-      color: "#259b25"
+      color: "#259b25",
+      project_id: 1
   },
   {
       id: 3,
       name: "Document",
-      color: "#e9f26a"
+      color: "#e9f26a",
+      project_id: 1
   }
   ];
 

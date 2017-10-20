@@ -149,7 +149,7 @@ export default {
     },
     switchEdit: function(label) {
       this.mode=1;
-      this.labelEdit=Object.assign({}, label);
+      this.labelEdit=Object.assign({project_id: this.$route.params.id}, label);
     },
     chooseColor: function(color) {
       this.labelEdit.color = color;

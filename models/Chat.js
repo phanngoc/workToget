@@ -31,6 +31,7 @@ export default function (Sequelize, DataTypes) {
     },
 
     project_id: {
+      field: 'project_id',
       type: DataTypes.INTEGER,
       references: {
         model: 'Project',
@@ -68,5 +69,7 @@ export default function (Sequelize, DataTypes) {
 
     }
   });
+  Chat.TEXT = 0;
+  Chat.ATTACHMENT = 1;
   return Chat;
 }

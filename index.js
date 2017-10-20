@@ -1,7 +1,7 @@
 require('babel-core/register');
 
 import { Strategy as LocalStrategy } from 'passport-local';
-import bodyParser from 'koa-bodyparser';
+import bodyParser from 'koa-body';
 import session from 'koa-session';
 import passport from 'koa-passport';
 import Koa from 'koa';
@@ -12,6 +12,8 @@ import serve from 'koa-static';
 import models from './models';
 import dotenv from 'dotenv';
 import nodemon from 'nodemon';
+import {ioEmitter, wrapIo} from './io';
+import logger from 'koa-logger';
 
 dotenv.config();
 
@@ -23,9 +25,9 @@ var app = new Koa();
 
 app.keys = ['bombay'];
 app.use(session({}, app));
-
+app.use(logger());
 app.use(views(config.template.path, config.template.options));
-app.use(bodyParser());
+app.use(bodyParser({multipart: true}));
 app.use(serve('./public'));
 
 
@@ -73,7 +75,21 @@ let terminator = function(sig){
     process.on(element, function() { terminator(element); });
 });
 
-if (!module.parent) app.listen(3000).on('error', (err) => {
+var server = require('http').createServer(app.callback());
+app.context.io = wrapIo(server);
+
+// var io = require('socket.io')(server);
+
+// io.on('connection', function(socket){
+//   console.log("io connection");
+//   socket.on('emit_method', data => {
+//     console.log('co data gui len', data);
+//     socket.emit('EMIT_METHOD', 'an event sent to all connected clients' + data);
+//   })
+// });
+
+
+if (!module.parent) server.listen(3000).on('error', (err) => {
   if (err.errno === 'EADDRINUSE') {
     console.error('Error: Port busy', err);
     process.exit(1);

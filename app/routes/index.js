@@ -1,9 +1,12 @@
 import HomeController from '../controllers/homeController';
 import ProjectController from '../controllers/projectController';
 import TaskController from '../controllers/taskController';
+import ChatController from '../controllers/chatController';
+
 import passport from 'koa-passport';
 import {isAuthenticated} from '../lib/auth';
 import {authenticate, authenticateUsernameAndPass, authenticateTokenGetUser} from '../controllers/middleware';
+import {uploadMiddeware, processUploadMiddleware} from '../controllers/uploadMiddeware';
 import debug from 'debug';
 import jwt from 'koa-jwt';
 import mount from 'koa-mount';
@@ -15,6 +18,7 @@ module.exports = function(app) {
   var homeController = new HomeController;
   var projectController = new ProjectController;
   var taskController = new TaskController;
+  var chatController = new ChatController;
 
   var router = new Router();
   var apiRouter = new Router();
@@ -25,13 +29,20 @@ module.exports = function(app) {
 
   // router.get('/login', homeController.login);
 
+
   router.post('/login', passport.authenticate('local', { failureRedirect: '/login' }), homeController.postLogin);
 
-  router.post('/api/authenticate', authenticateUsernameAndPass);
+  router.post('/authenticate', authenticateUsernameAndPass);
 
   router.get(/^\/(.*)(?:\/|$)/, homeController.index);
 
-  // app.use(jwt({ secret: process.env.SECRET }).unless({ path: ["[^\/api/]"] }));
+  apiRouter.post('/upload', processUploadMiddleware);
+
+  apiRouter.get('/projects/:project_id/messages', chatController.loadMessages);
+
+  apiRouter.post('/projects/:project_id/messages/create', chatController.createMessage);
+
+  apiRouter.post('/projects/:project_id/tasks', taskController.createTask);
 
   apiRouter.get('/user', authenticateTokenGetUser);
 
@@ -45,13 +56,15 @@ module.exports = function(app) {
 
   apiRouter.put('/task/comment/:id', taskController.updateCommentTask);
 
-  apiRouter.put('/task/:id/update-due-date', taskController.updateDueDate);
+  apiRouter.put('/projects/:project_id/task/:id/update-due-date', taskController.updateDueDate);
 
   apiRouter.delete('/task/:id/delete', taskController.deleteLabel);
 
-  apiRouter.put('/labels/:id/update', taskController.updateLabel);
+  apiRouter.put('/projects/:project_id/labels/:id/update', taskController.updateLabel);
 
-  apiRouter.put('/task/:id/update-label', taskController.updateTaskLabel);
+  apiRouter.put('/projects/:project_id/task/:id/update-label', taskController.updateTaskLabel);
+
+  apiRouter.get('/projects/:id', projectController.show);
 
   apiRouter.get('/projects/:id/frames', projectController.getFrames);
 
@@ -61,7 +74,7 @@ module.exports = function(app) {
 
   apiRouter.post('/projects/:id/update-sort-frame', projectController.updateSortFrame);
 
-  apiRouter.post('/projects/update-sort-task', projectController.updateSortTask);
+  apiRouter.post('/projects/:id/update-sort-task', projectController.updateSortTask);
 
   apiRouter.put('/projects/:id/update-pin', projectController.updatePin);
 

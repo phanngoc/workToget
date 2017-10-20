@@ -9,7 +9,17 @@
         <span class="list-card-title">
           {{task.title}}
         </span>
-        <span class="icon-edit btn btn-sm btn-outline-primary">
+        <div class="badges">
+            <div class="badge" v-if="task.due_date" :style="'background-color:'+colorDuaDate" title="This card is recently overdue!">
+              <i class="fa fa-clock-o" aria-hidden="true"></i>
+              <span class="badge-text">{{ task.due_date | moment("calendar") }}</span>
+            </div>
+            <div class="badge count-comment" v-if="task.countComment" title="Comments">
+              <i class="fa fa-comments-o" aria-hidden="true"></i>
+              <span class="badge-text">{{task.countComment}}</span>
+            </div>
+        </div>
+        <span class="icon-edit">
           <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
         </span>
       </div>
@@ -23,12 +33,27 @@ import axios from 'axios';
 import { mapGetters, mapActions } from 'vuex';
 
 export default {
+  sockets:{
+    connect: function(){
+      console.log('socket connected')
+    },
+  },
+  computed: {
+    due_date() {
+      return this.task.due_date;
+    },
+  },
+  watch: {
+    due_date: function(val, oldVal) {
+      this.colorDuaDate = this.getColorByTime(val);
+    },
+  },
   created() {
   },
   props: ['task'],
   data: function() {
     return {
-
+      colorDuaDate: this.getColorByTime(this.task.due_date),
     }
   },
   methods: {
@@ -52,8 +77,17 @@ export default {
     text-decoration: none;
     .card{
       .card-block{
+        position: relative;
         .list-card-labels{
           @include clearfix;
+        }
+        .count-comment{
+          background-color: #cecece;
+        }
+        .icon-edit{
+          position: absolute;
+          top: 1px;
+          right: 2px;
         }
       }
     }

@@ -2,6 +2,8 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import trello from './modules/trello'
 import auth from './modules/auth'
+import project from './modules/project'
+import chat from './modules/chat'
 
 Vue.use(Vuex)
 
@@ -11,7 +13,9 @@ export default new Vuex.Store({
     //Assign the modules to the store
     modules: {
         trello,
-        auth
+        auth,
+        project,
+        chat
     },
     // #root state
     state: {
