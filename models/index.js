@@ -71,10 +71,10 @@ export function setupModels(client) {
    * Relationships
    */
     m.Project.hasMany(m.Frame, {as: 'Frames', foreignKey: 'project_id'});
-    m.Project.hasMany(m.Chat, {as: 'Chats'});
+    m.Project.hasMany(m.Chat, {as: 'Chats', foreignKey: 'project_id'});
     m.Project.belongsToMany(m.User, { as: 'Users', through: m.ProjectUser});
 
-    m.User.hasMany(m.Chat, {as: 'Chats'});
+    m.User.hasMany(m.Chat, {as: 'Chats', foreignKey: 'user_id'});
     m.User.belongsToMany(m.Project, { as: 'Projects', through:{model: m.ProjectUser, unique:false}});
 
     m.Frame.hasMany(m.Task, {as: 'Tasks', foreignKey: 'frame_id'});
@@ -102,6 +102,9 @@ export function setupModels(client) {
             commentable: 'board'
         }
     });
+
+    m.Chat.belongsTo(m.User, {as: 'User', foreignKey: 'user_id'});
+    m.Chat.belongsTo(m.Project, {as: 'Project', foreignKey: 'project_id'});
 
     m.Comment.belongsTo(m.Board, {
         foreignKey: 'commentable_id',

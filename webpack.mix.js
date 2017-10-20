@@ -30,6 +30,9 @@ mix.sass('resources/sass/app.scss', 'public/css')
    .copy('node_modules/sortablejs/Sortable.min.js', 'public/js')
    .copy('node_modules/vuedraggable/dist/vuedraggable.js', 'public/js')
 
+   .copy('node_modules/trix/dist/trix.js', 'public/js')
+   .copy('node_modules/trix/dist/trix.css', 'public/css')
+
    .setPublicPath('public');
 
 // Full API

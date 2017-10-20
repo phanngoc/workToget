@@ -1,7 +1,7 @@
 require('babel-core/register');
 
 import { Strategy as LocalStrategy } from 'passport-local';
-import bodyParser from 'koa-bodyparser';
+import bodyParser from 'koa-body';
 import session from 'koa-session';
 import passport from 'koa-passport';
 import Koa from 'koa';
@@ -13,6 +13,7 @@ import models from './models';
 import dotenv from 'dotenv';
 import nodemon from 'nodemon';
 import {ioEmitter, wrapIo} from './io';
+import logger from 'koa-logger';
 
 dotenv.config();
 
@@ -24,9 +25,9 @@ var app = new Koa();
 
 app.keys = ['bombay'];
 app.use(session({}, app));
-
+app.use(logger());
 app.use(views(config.template.path, config.template.options));
-app.use(bodyParser());
+app.use(bodyParser({multipart: true}));
 app.use(serve('./public'));
 
 

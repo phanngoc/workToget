@@ -1,9 +1,12 @@
 import HomeController from '../controllers/homeController';
 import ProjectController from '../controllers/projectController';
 import TaskController from '../controllers/taskController';
+import ChatController from '../controllers/chatController';
+
 import passport from 'koa-passport';
 import {isAuthenticated} from '../lib/auth';
 import {authenticate, authenticateUsernameAndPass, authenticateTokenGetUser} from '../controllers/middleware';
+import {uploadMiddeware, processUploadMiddleware} from '../controllers/uploadMiddeware';
 import debug from 'debug';
 import jwt from 'koa-jwt';
 import mount from 'koa-mount';
@@ -15,6 +18,7 @@ module.exports = function(app) {
   var homeController = new HomeController;
   var projectController = new ProjectController;
   var taskController = new TaskController;
+  var chatController = new ChatController;
 
   var router = new Router();
   var apiRouter = new Router();
@@ -25,13 +29,20 @@ module.exports = function(app) {
 
   // router.get('/login', homeController.login);
 
+
   router.post('/login', passport.authenticate('local', { failureRedirect: '/login' }), homeController.postLogin);
 
   router.post('/authenticate', authenticateUsernameAndPass);
 
   router.get(/^\/(.*)(?:\/|$)/, homeController.index);
 
-  // app.use(jwt({ secret: process.env.SECRET }).unless({ path: ["[^\/api/]"] }));
+  apiRouter.post('/upload', processUploadMiddleware);
+
+  apiRouter.get('/projects/:project_id/messages', chatController.loadMessages);
+
+  apiRouter.post('/projects/:project_id/messages/create', chatController.createMessage);
+
+  apiRouter.post('/projects/:project_id/tasks', taskController.createTask);
 
   apiRouter.get('/user', authenticateTokenGetUser);
 

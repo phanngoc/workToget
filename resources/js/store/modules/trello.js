@@ -23,6 +23,7 @@ export const SOCKET_UPDATE_SORT_TASK = 'SOCKET_UPDATE_SORT_TASK'
 export const SOCKET_SAVE_ADD_COMMENT = 'SOCKET_SAVE_ADD_COMMENT'
 export const SOCKET_SAVE_EDIT_COMMENT = 'SOCKET_SAVE_EDIT_COMMENT'
 export const SOCKET_SAVE_DUE_DATE = 'SOCKET_SAVE_DUE_DATE'
+export const SOCKET_SAVE_ADD_TASK = 'SOCKET_SAVE_ADD_TASK'
 
 // import {ERROR} from '../mutation-types'
 
@@ -46,6 +47,20 @@ const getters = {
 
 // actions
 const actions = {
+  saveAddTask({commit, state, rootState}, obj) {
+    axios.post('/api/projects/' + rootState.route.params.id + '/tasks', {
+      title: obj.title,
+      frame_id: obj.frame_id
+    })
+    .then(function (response) {
+      if (response.status == 200) {
+
+      }
+    })
+    .catch(function (error) {
+        commit(ERROR, error);
+    });
+  },
   chooseLabel({commit, state, rootState}, obj) {
     axios.put('/api/projects/' + rootState.route.params.id + '/task/' + obj.id + '/update-label', {
       label_ids: obj.label_ids
@@ -215,8 +230,12 @@ const actions = {
 }
 
 const mutations = {
+  [SOCKET_SAVE_ADD_TASK]: (state, data) => {
+    var frame = _.find(state.frames, function(o) { return o.id == data.frameId; });
+    frame.Tasks.unshift(data.deltas);
+  },
   [SOCKET_CONNECT]: (state) => {
-      state.connect = true;
+    state.connect = true;
   },
   [SOCKET_SAVE_DUE_DATE] (state, data) {
     let due_date = data.deltas;

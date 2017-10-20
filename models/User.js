@@ -101,8 +101,10 @@ export default (Sequelize, DataTypes) => {
     // We are sending too much data (large jwt) but the app and website
     // need the id and email. We will refactor that progressively to have
     // a smaller token.
-    const data = {id: this.id, email: this.email};
-    
+    const data = {id: this.id, email: this.email,
+      fullname: this.fullname,
+      avatar: this.avatar};
+
     return jwt.sign(data, SECRET, {
       expiresIn: 60 * 60 * expiresInHours,
       subject: this.id + "", // user

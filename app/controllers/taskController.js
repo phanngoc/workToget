@@ -12,6 +12,28 @@ class TaskController {
     this.args = args;
   }
 
+  async createTask(ctx, next) {
+    let updated = await models.Task.update({ order: Sequelize.literal('`order` + 1') }, { where: { frame_id: ctx.request.body.frame_id }});
+
+    let task = await models.Task
+        .create({ title: ctx.request.body.title,
+          order: 0,
+          frame_id: ctx.request.body.frame_id });
+
+    task.Labels = [];
+    task.countComment = 0;
+    
+    let data = {
+      type: 'trello',
+      deltas: task,
+      typeName: 'save_add_task',
+      frameId: task.frame_id
+    }
+
+    ioEmitter.to('project_' + ctx.params.project_id).emit('SAVE_ADD_TASK', data);
+    ctx.body = {status: 200, data: task.toJSON()};
+  }
+
   async updateTask(ctx, next) {
     let task = await models.Task.find({
       where: {

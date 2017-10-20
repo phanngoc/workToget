@@ -26,7 +26,7 @@
                   <span>{{ tempTask.due_date | moment("calendar") }}</span>
                 </div>
               </div>
-              <Editable name="description" className="description" @update="tempTask.description = $event" :content="activeTask.description"></Editable>
+              <Editable name="description" className="description" @update="tempTask.description = $event" :content="activeTask.description | emptyString"></Editable>
               <span v-show="errors.has('description')" class="help is-danger">{{ errors.first('description') }}</span>
               <button type="button" class="btn btn-primary btn-save" @click="saveAndClose">Save</button>
             </div>
@@ -116,6 +116,13 @@ export default {
       return this.tempTask.due_date;
     }
   },
+  filters: {
+     emptyString: function (value) {
+       if (_.isUndefined(value) || _.isNull(value)) {
+         return "";
+       }
+     }
+   },
   watch: {
     isOpen: function(val, oldVal) {
       if (val) {
