@@ -4,8 +4,8 @@
       <div class="wr-scroll-page p-2">
         <div class="wr-content-scroll">
           <div class="wr-chat-line" v-for="(item, index) in chats">
-            <Divider :chat1="chats[index-1]" :chat2="item"/>
-            <ChatLine :chat="item"></ChatLine>
+            <Divider :chat1="chats[index-1]" :chat2="item" :key="item.id"/>
+            <ChatLine :chat="item" :key="item.id"></ChatLine>
           </div>
         </div>
       </div>
@@ -57,6 +57,9 @@ export default {
     ]),
     keymonitor(e) {
       console.log('keymonitor', e);
+    },
+    scrollToBottom() {
+      $(".wr-scroll-page").animate({ scrollTop: '+=999999px' }, "slow");
     }
   },
   components: {
@@ -65,12 +68,21 @@ export default {
   },
   mounted() {
     let that = this;
-
+    this.scrollToBottom();
+    $('.wr-scroll-page').scroll(function(e) {
+      if ($(this).scrollTop() == 0) {
+        $(this).scrollTop(1);
+        that.$store.dispatch('chat/loadMoreMessage', {createdAt: that.chats[0].createdAt});
+      }
+    });
     document.addEventListener('trix-initialize', function(element) {
+      element.target.focus();
       element.target.addEventListener('keypress', function(e) {
         if (e.keyCode == 13) {
           that.$store.dispatch('chat/addMessage', {type:0, text: that.text});
           element.target.editor.loadHTML("");
+          element.target.focus();
+          that.scrollToBottom();
         }
       });
     });
@@ -89,10 +101,12 @@ export default {
     document.addEventListener("trix-attachment-add", function(event) {
       var attachment;
       attachment = event.attachment;
-      console.log('trix-attachment-add', attachment);
+
       if (attachment.file) {
         uploadAttachment(attachment).then(function(result) {
           that.$store.dispatch('chat/addMessage', {type:1, text: result});
+        }).catch( (err) => {
+          that.$message('Upload failed', err);
         });
       }
     });
@@ -158,7 +172,7 @@ export default {
       .wr-scroll-page{
         display: block;
         overflow-y: scroll;
-        height: 660px;
+        height: 610px;
         @include clearfix;
         .wr-content-scroll{
 

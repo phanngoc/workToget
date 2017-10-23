@@ -29,7 +29,6 @@ module.exports = function(app) {
 
   // router.get('/login', homeController.login);
 
-
   router.post('/login', passport.authenticate('local', { failureRedirect: '/login' }), homeController.postLogin);
 
   router.post('/authenticate', authenticateUsernameAndPass);
@@ -41,6 +40,8 @@ module.exports = function(app) {
   apiRouter.get('/projects/:project_id/messages', chatController.loadMessages);
 
   apiRouter.post('/projects/:project_id/messages/create', chatController.createMessage);
+
+  apiRouter.delete('/projects/:project_id/messages/:id/delete', chatController.deleteMessage);
 
   apiRouter.post('/projects/:project_id/tasks', taskController.createTask);
 
