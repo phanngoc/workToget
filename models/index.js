@@ -62,7 +62,8 @@ export function setupModels(client) {
     'Comment',
     'Activity',
     'Notification',
-    'Frame'
+    'Frame',
+    'Event',
   ].forEach((model) => {
     m[model] = client.import(`${__dirname}/${model}`);
   });
@@ -72,10 +73,10 @@ export function setupModels(client) {
    */
     m.Project.hasMany(m.Frame, {as: 'Frames', foreignKey: 'project_id'});
     m.Project.hasMany(m.Chat, {as: 'Chats', foreignKey: 'project_id'});
-    m.Project.belongsToMany(m.User, { as: 'Users', through: m.ProjectUser});
+    m.Project.belongsToMany(m.User, { as: 'Users', through: m.ProjectUser, foreignKey: 'project_id'});
 
     m.User.hasMany(m.Chat, {as: 'Chats', foreignKey: 'user_id'});
-    m.User.belongsToMany(m.Project, { as: 'Projects', through:{model: m.ProjectUser, unique:false}});
+    m.User.belongsToMany(m.Project, { as: 'Projects', through: {model: m.ProjectUser, unique:false}, foreignKey: 'user_id'});
 
     m.Frame.hasMany(m.Task, {as: 'Tasks', foreignKey: 'frame_id'});
 
@@ -106,6 +107,9 @@ export function setupModels(client) {
     m.Chat.belongsTo(m.User, {as: 'User', foreignKey: 'user_id'});
     m.Chat.belongsTo(m.Project, {as: 'Project', foreignKey: 'project_id'});
 
+    m.Event.belongsTo(m.User, {as: 'User', foreignKey: 'user_id'});
+    m.Event.belongsTo(m.Project, {as: 'Project', foreignKey: 'project_id'});
+
     m.Comment.belongsTo(m.Board, {
         foreignKey: 'commentable_id',
         constraints: false,
@@ -121,6 +125,8 @@ export function setupModels(client) {
         constraints: true,
         as: 'User'
     });
+
+    m.ProjectUser.belongsTo(m.User, {as: 'User', foreignKey: 'user_id'});
 
   return m;
 }

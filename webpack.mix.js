@@ -33,6 +33,11 @@ mix.sass('resources/sass/app.scss', 'public/css')
    .copy('node_modules/trix/dist/trix.js', 'public/js')
    .copy('node_modules/trix/dist/trix.css', 'public/css')
 
+   .copy('node_modules/fullcalendar/dist/fullcalendar.min.js', 'public/js')
+   .copy('node_modules/fullcalendar/dist/fullcalendar.min.css', 'public/css')
+
+   .copy('node_modules/moment/min/moment.min.js', 'public/js')
+
    .setPublicPath('public');
 
 // Full API

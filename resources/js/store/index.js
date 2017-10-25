@@ -4,6 +4,7 @@ import trello from './modules/trello'
 import auth from './modules/auth'
 import project from './modules/project'
 import chat from './modules/chat'
+import calendar from './modules/calendar'
 
 Vue.use(Vuex)
 
@@ -15,7 +16,8 @@ export default new Vuex.Store({
         trello,
         auth,
         project,
-        chat
+        chat,
+        calendar
     },
     // #root state
     state: {

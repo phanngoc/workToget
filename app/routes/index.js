@@ -2,6 +2,7 @@ import HomeController from '../controllers/homeController';
 import ProjectController from '../controllers/projectController';
 import TaskController from '../controllers/taskController';
 import ChatController from '../controllers/chatController';
+import CalendarController from '../controllers/calendarController';
 
 import passport from 'koa-passport';
 import {isAuthenticated} from '../lib/auth';
@@ -19,11 +20,12 @@ module.exports = function(app) {
   var projectController = new ProjectController;
   var taskController = new TaskController;
   var chatController = new ChatController;
+  var calendarController = new CalendarController;
 
   var router = new Router();
   var apiRouter = new Router();
 
-  router.get('/:id/projects', projectController.index);
+  // router.get('/:id/projects', projectController.index);
 
   router.get('/seed', homeController.seed);
 
@@ -37,17 +39,33 @@ module.exports = function(app) {
 
   apiRouter.post('/upload', processUploadMiddleware);
 
+  apiRouter.get('/user', authenticateTokenGetUser);
+
+  apiRouter.get('/:id/projects', projectController.getProjects);
+
+  apiRouter.get('/projects/:id', projectController.show);
+
+  /* Route for chat */
   apiRouter.get('/projects/:project_id/messages', chatController.loadMessages);
 
   apiRouter.post('/projects/:project_id/messages/create', chatController.createMessage);
 
   apiRouter.delete('/projects/:project_id/messages/:id/delete', chatController.deleteMessage);
 
+  /* Route for trello */
   apiRouter.post('/projects/:project_id/tasks', taskController.createTask);
 
-  apiRouter.get('/user', authenticateTokenGetUser);
+  apiRouter.get('/projects/:id/frames', projectController.getFrames);
 
-  apiRouter.get('/:id/projects', projectController.getProjects);
+  apiRouter.get('/projects/:id/labels', projectController.getLabels);
+
+  apiRouter.post('/projects/:id/update', projectController.update);
+
+  apiRouter.post('/projects/:id/update-sort-frame', projectController.updateSortFrame);
+
+  apiRouter.post('/projects/:id/update-sort-task', projectController.updateSortTask);
+
+  apiRouter.put('/projects/:id/update-pin', projectController.updatePin);
 
   apiRouter.put('/task/:id/update', taskController.updateTask);
 
@@ -65,20 +83,12 @@ module.exports = function(app) {
 
   apiRouter.put('/projects/:project_id/task/:id/update-label', taskController.updateTaskLabel);
 
-  apiRouter.get('/projects/:id', projectController.show);
-
-  apiRouter.get('/projects/:id/frames', projectController.getFrames);
-
-  apiRouter.get('/projects/:id/labels', projectController.getLabels);
-
-  apiRouter.post('/projects/:id/update', projectController.update);
-
-  apiRouter.post('/projects/:id/update-sort-frame', projectController.updateSortFrame);
-
-  apiRouter.post('/projects/:id/update-sort-task', projectController.updateSortTask);
-
-  apiRouter.put('/projects/:id/update-pin', projectController.updatePin);
-
+  /* Route for calendar */
+  apiRouter.get('/projects/:project_id/calendars/events', calendarController.loadEvents);
+  apiRouter.get('/projects/:project_id/calendars/users', calendarController.loadUserBelongProject);
+  apiRouter.post('/projects/:project_id/calendars/events/create', calendarController.createEvent);
+  apiRouter.put('/projects/:project_id/calendars/events/:id/update', calendarController.updateEvent);
+  apiRouter.del('/projects/:project_id/calendars/events/:id/archive', calendarController.archiveEvent);
 
   app.use(mount('/api', compose([jwt({secret: process.env.SECRET}), apiRouter.middleware(), apiRouter.allowedMethods()])));
   app.use(mount('/', router.middleware(), router.allowedMethods()));

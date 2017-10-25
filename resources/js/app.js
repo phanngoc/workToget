@@ -9,6 +9,9 @@ import 'element-ui/lib/theme-default/index.css';
 import VueSocketio from 'vue-socket.io';
 import { sync } from 'vuex-router-sync';
 import moment from 'moment';
+import FullCalendar from 'vue-full-calendar';
+
+Vue.use(FullCalendar);
 
 Vue.use(require('vue-moment'));
 
