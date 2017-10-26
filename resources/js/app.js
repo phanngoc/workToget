@@ -28,6 +28,12 @@ Vue.mixin({
     }
   },
   methods: {
+    slugUrl: function(text) {
+      return text
+        .toLowerCase()
+        .replace(/[^\w ]+/g,'')
+        .replace(/ +/g,'-');
+    },
     showLess: function (text, length, textMore) {
       textMore = (typeof textMore !== 'undefined') ?  textMore : "...";
       return text.slice(0, length) + ' ...';

@@ -53,6 +53,11 @@ module.exports = function(app) {
   apiRouter.delete('/projects/:project_id/messages/:id/delete', chatController.deleteMessage);
 
   /* Route for trello */
+
+  apiRouter.put('/projects/:project_id/frames/:id/update', projectController.updateFrame);
+
+  apiRouter.post('/projects/:project_id/frames', projectController.createFrame);
+
   apiRouter.post('/projects/:project_id/tasks', taskController.createTask);
 
   apiRouter.get('/projects/:id/frames', projectController.getFrames);

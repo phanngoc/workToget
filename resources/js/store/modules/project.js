@@ -18,7 +18,6 @@ const mutations = {
 
 const actions = {
   loadProject({ commit }, projectId) {
-    console.log('loadProject', projectId);
     axios.get('/api/projects/' + projectId).then(function(res) {
       if (res.status == 200) {
         commit(LOAD_PROJECT, res.data.data);

@@ -11,6 +11,7 @@ export const SAVE_EDIT_COMMENT = 'SAVE_EDIT_COMMENT'
 export const SAVE_DUE_DATE = 'SAVE_DUE_DATE'
 export const LOAD_LABELS = 'LOAD_LABELS'
 export const UPDATE_LABEL = 'UPDATE_LABEL'
+export const ADD_FRAME = 'ADD_FRAME'
 
 export const ERROR = 'ERROR'
 
@@ -24,6 +25,8 @@ export const SOCKET_SAVE_ADD_COMMENT = 'SOCKET_SAVE_ADD_COMMENT'
 export const SOCKET_SAVE_EDIT_COMMENT = 'SOCKET_SAVE_EDIT_COMMENT'
 export const SOCKET_SAVE_DUE_DATE = 'SOCKET_SAVE_DUE_DATE'
 export const SOCKET_SAVE_ADD_TASK = 'SOCKET_SAVE_ADD_TASK'
+export const SOCKET_ADD_FRAME = 'SOCKET_ADD_FRAME'
+export const SOCKET_UPDATE_FRAME = 'SOCKET_UPDATE_FRAME'
 
 // import {ERROR} from '../mutation-types'
 
@@ -47,6 +50,32 @@ const getters = {
 
 // actions
 const actions = {
+  updateFrame({commit, state, rootState}, data) {
+    axios.put('/api/projects/' + rootState.route.params.id + '/frames/' + data.id + '/update', {
+      name: data.name,
+    })
+    .then(function (response) {
+      if (response.status == 200) {
+
+      }
+    })
+    .catch(function (error) {
+        commit(ERROR, error);
+    });
+  },
+  addFrame({commit, state, rootState}, data) {
+    axios.post('/api/projects/' + rootState.route.params.id + '/frames', {
+      name: data.name,
+    })
+    .then(function (response) {
+      if (response.status == 200) {
+
+      }
+    })
+    .catch(function (error) {
+        commit(ERROR, error);
+    });
+  },
   saveAddTask({commit, state, rootState}, obj) {
     axios.post('/api/projects/' + rootState.route.params.id + '/tasks', {
       title: obj.title,
@@ -121,8 +150,24 @@ const actions = {
         commit(ERROR, error);
     });
   },
-  openEditTask ({ commit, state }, task) {
-    commit(OPEN_EDIT_TASK, task);
+  openEditTask ({ commit, state }, data) {
+    let taskS = data;
+    let isFind = false;
+    console.log('openEditTask', data, state.frames);
+    if (_.isNumber(data)) {
+      _.forEach(state.frames, function(f) {
+        if (isFind) return false;
+        _.forEach(f.Tasks, function(task) {
+          console.log('compare',task.id, data);
+          if (task.id == data) {
+            taskS = task;
+            isFind = true;
+            return false;
+          }
+        });
+      });
+    }
+    commit(OPEN_EDIT_TASK, taskS);
   },
   closeEditTask ({ commit, state }) {
     commit(CLOSE_EDIT_TASK);
@@ -230,6 +275,14 @@ const actions = {
 }
 
 const mutations = {
+  [SOCKET_UPDATE_FRAME]: (state, data) => {
+    let deltas = data.deltas;
+    let frame = _.find(state.frames, function(o) { return o.id == deltas.id; });
+    frame.name = deltas.name;
+  },
+  [SOCKET_ADD_FRAME]: (state, data) => {
+    state.frames.push(data.deltas);
+  },
   [SOCKET_SAVE_ADD_TASK]: (state, data) => {
     var frame = _.find(state.frames, function(o) { return o.id == data.frameId; });
     frame.Tasks.unshift(data.deltas);

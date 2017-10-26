@@ -91,10 +91,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  @import "~styles/_vars.scss";
   .inner-chat{
     margin: 0px auto;
   }
   .chat-line__trash{
     cursor: pointer;
+  }
+  .image{
+    color: red;
+    background-color: green;
+    @include respond-to(handhelds) {width: 276px;}
   }
 </style>

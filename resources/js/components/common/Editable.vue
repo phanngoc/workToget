@@ -12,8 +12,12 @@ export default {
   },
   watch: {
     content: function(val, oldVal) {
-      this.$el.innerText = val;
-      this.$emit('update', val);
+      if (_.isUndefined(val) || _.isNull(val)) {
+        this.$el.innerText = "";
+      } else {
+        this.$el.innerText = val;
+      }
+      this.$emit('update', this.$el.innerText);
     },
   },
   props:['content', 'className'],
