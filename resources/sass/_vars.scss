@@ -19,3 +19,11 @@
 }
 
 $width-feature: 850px;
+
+@mixin box-content {
+  -webkit-box-shadow: inset 0px 0px 9px 0px rgba(163,163,163,1);
+  -moz-box-shadow: inset 0px 0px 9px 0px rgba(163,163,163,1);
+  box-shadow: inset 0px 0px 9px 0px rgba(163,163,163,1);
+  background-color: white;
+  border-radius: 8px;
+}

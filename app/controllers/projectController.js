@@ -77,8 +77,32 @@ class ProjectController {
     ctx.body = {status: 200, data: {frames: frames, countComments: countComments}};
   }
 
-  async updateFrame(ctx, next) {
+  async deleteFrame(ctx, next) {
+    let isDestroyed = models.Frame.findById(ctx.params.id)
+      .tap((frame) => {
+        return models.Task.destroy({
+            where: {
+              frame_id: frame.id
+            }
+        })
+      })
+      .tap(frame => frame.destroy());
 
+    if (isDestroyed) {
+      let data = {
+        type: 'trello',
+        deltas: ctx.params.id,
+        typeName: 'archive_frame',
+      }
+
+      ioEmitter.to('project_' + ctx.params.project_id).emit('ARCHIVE_FRAME', data);
+      ctx.body = {status: 200, data: isDestroyed};
+    } else {
+      ctx.body = errors.ServerError(isDestroyed);
+    }
+  }
+
+  async updateFrame(ctx, next) {
     let updated = await models.Frame.update({ name: ctx.request.body.name},
         {where: { id: ctx.params.id }});
 

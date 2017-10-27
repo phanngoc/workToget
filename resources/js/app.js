@@ -10,6 +10,10 @@ import VueSocketio from 'vue-socket.io';
 import { sync } from 'vuex-router-sync';
 import moment from 'moment';
 import FullCalendar from 'vue-full-calendar';
+import infiniteScroll from 'vue-infinite-scroll';
+import MainApp from './components/MainApp.vue';
+
+Vue.use(infiniteScroll)
 
 Vue.use(FullCalendar);
 
@@ -71,7 +75,7 @@ const router = middleware(routes);
 const unsync = sync(store, router)
 
 const app = new Vue({
-    el: '#main-app',
+    el: '#app',
     store,
     router,
 });

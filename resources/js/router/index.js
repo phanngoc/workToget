@@ -11,30 +11,35 @@ import AddEvent from '../components/calendar/AddEvent.vue'
 import EditEvent from '../components/calendar/EditEvent.vue'
 import Overview from '../components/projects/Overview.vue'
 import TreeProject from '../components/TreeProject.vue'
+import MainApp from '../components/MainApp.vue'
 
 const router = [
     ...authGuard([
-
-      { path: '/projects/:id', component: Overview, name: 'overview_project' },
-      { path: '/projects/:id', component: TreeProject,
+      {
+        path: '/', component: MainApp,
         children: [
-          { path: 'trello', component: Trello,
+          { path: '/projects/:id', component: Overview, name: 'overview_project' },
+          { path: '/projects/:id', component: TreeProject,
             children: [
-                { path: '/', component: Trello, name: 'trello' },
-                { path: ':task_id/:title', component: Trello, name: 'trello.modal' },
-            ]
-          },
-          { path: 'chat', component: Chat, name: 'chat.index' },
-          { path: 'calendar',
-            component: Calendar,
-            children: [
-                { path: '/', component: ListCalendar, name: 'calendar.list_event' },
-                { path: 'add-event', component: AddEvent, name: 'calendar.add_event' },
-                { path: 'edit-event/:event_id', component: EditEvent, name: 'calendar.edit_event' },
+              { path: 'trello', component: Trello,
+                children: [
+                    { path: '/', component: Trello, name: 'trello' },
+                    { path: ':task_id/:title', component: Trello, name: 'trello.modal' },
+                ]
+              },
+              { path: 'chat', component: Chat, name: 'chat.index' },
+              { path: 'calendar',
+                component: Calendar,
+                children: [
+                    { path: '/', component: ListCalendar, name: 'calendar.list_event' },
+                    { path: 'add-event', component: AddEvent, name: 'calendar.add_event' },
+                    { path: 'edit-event/:event_id', component: EditEvent, name: 'calendar.edit_event' },
+                ]
+              },
             ]
           },
         ]
-      },
+      }
       // { path: '/projects/:id/trello', component: Trello, name: 'trello' },
       // { path: '/projects/:id/chat', component: Chat, name: 'chat.index' },
       // { path: '/projects/:id/calendar',

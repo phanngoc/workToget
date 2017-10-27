@@ -1,5 +1,5 @@
 <template lang="html">
-  <div class="tree-wr-fea row d-flex flex-column">
+  <div class="tree-wr-fea d-flex flex-column">
     <div class="breadcrumbs p-2">
       <header class="wr-link">
         <span class="dock-breadcrumb-menu">
@@ -77,6 +77,13 @@ export default {
             url: {}
           });
           break;
+        case 'trello.modal':
+          this.links.push({
+            title: 'Trello',
+            clickable: false,
+            url: {}
+          });
+          break;
         case 'calendar.list_event':
           this.links.push({
             title: 'Calendar',
@@ -128,6 +135,7 @@ export default {
     padding: 2px;
   }
   .tree-wr-fea{
+    height: 100%;
     .wr-link{
       text-align: center;
       .dock-breadcrumb-menu{

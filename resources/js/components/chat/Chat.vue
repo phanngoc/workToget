@@ -169,6 +169,7 @@ export default {
   .page-chat{
     .inner-chat{
       display: block;
+      @include box-content;
       @include respond-to(handhelds) { width: 100% ; height: 100%}
       @include respond-to(medium-screens) { width: 100%;}
       @include respond-to(wide-screens) { width: $width-feature; }
