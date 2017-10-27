@@ -4,7 +4,6 @@
       <img :src="'/img/' + chat.User.avatar" width="64" height="64" class="avatar" />
     </div>
     <div class="chat-line__bubble p-2 d-flex flex-column">
-      <div class="chat-line__trash" data-behavior="delete_chat_line"></div>
       <span class="chat-line__meta d-flex" :class="{'flex-row-reverse': isMe, 'flex-row': !isMe}">
         <strong class="chat-line__author p-2">{{chat.User.fullname}}</strong>
         <span class="chat-line__timestamp p-2">
@@ -15,6 +14,9 @@
             </time>
           </span>
         </span>
+        <div class="chat-line__trash p-2" data-behavior="delete_chat_line" v-if="isMe" @click="deleteChat">
+          <i class="fa fa-trash-o" aria-hidden="true"></i>
+        </div>
       </span>
       <div class="chat-line__body p-2">
         <div class="text-content" v-if="chat.type == 0">
@@ -63,7 +65,18 @@ export default {
 
   },
   methods: {
+    deleteChat() {
+      var that = this;
+      this.$confirm('Are you sure to delete this chat ?', 'Warning', {
+         confirmButtonText: 'OK',
+         cancelButtonText: 'Cancel',
+         type: 'warning'
+       }).then(() => {
+         that.$store.dispatch('chat/deleteChat', this.chat.id);
+       }).catch(() => {
 
+       });
+    },
   },
   components: {
 
@@ -78,7 +91,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  @import "~styles/_vars.scss";
   .inner-chat{
     margin: 0px auto;
+  }
+  .chat-line__trash{
+    cursor: pointer;
+  }
+  .image{
+    color: red;
+    background-color: green;
+    @include respond-to(handhelds) {width: 276px;}
   }
 </style>

@@ -15,6 +15,7 @@ export default function (Sequelize, DataTypes) {
     },
 
     project_id: {
+      field: 'project_id',
       type: DataTypes.INTEGER,
       allowNull: false
     },

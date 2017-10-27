@@ -77,6 +77,42 @@ class ProjectController {
     ctx.body = {status: 200, data: {frames: frames, countComments: countComments}};
   }
 
+  async updateFrame(ctx, next) {
+
+    let updated = await models.Frame.update({ name: ctx.request.body.name},
+        {where: { id: ctx.params.id }});
+
+    let data = {
+      type: 'trello',
+      deltas: {id: ctx.params.id, name: ctx.request.body.name},
+      typeName: 'update_frame',
+    }
+
+    ioEmitter.to('project_' + ctx.params.project_id).emit('UPDATE_FRAME', data);
+
+    ctx.body = {status: 200, data: updated};
+  }
+
+  async createFrame(ctx, next) {
+    let max_order = await models.Frame.max('order', {where : {'project_id': ctx.params.project_id}});
+    let frame = await models.Frame
+        .create({
+          name: ctx.request.body.name,
+          order: max_order+1,
+          project_id: ctx.params.project_id
+        });
+
+    let data = {
+      type: 'trello',
+      deltas: frame,
+      typeName: 'add_frame',
+    }
+
+    ioEmitter.to('project_' + ctx.params.project_id).emit('ADD_FRAME', data);
+
+    ctx.body = {status: 200, data: frame};
+  }
+
   async update(ctx, next) {
     let project = await models.Project.findOne({
       id: ctx.params.id

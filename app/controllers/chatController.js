@@ -5,6 +5,8 @@ import Sequelize from 'sequelize';
 import async from 'async';
 import _ from 'lodash';
 import {ioEmitter} from '../../io.js';
+import fs from 'fs';
+import path from 'path';
 
 class ChatController {
   constructor(...args) {
@@ -12,13 +14,20 @@ class ChatController {
   }
 
   async loadMessages(ctx, next) {
+    let lastTime = ctx.query.createdAt;
+
+    let objWhere = {project_id: ctx.params.project_id};
+    if (!_.isUndefined(lastTime)) {
+      objWhere['createdAt'] = {
+        $lt: lastTime
+      };
+    }
     let messages = await models.Chat.findAll({
-      where: {
-        project_id: ctx.params.project_id
-      },
+      where: objWhere,
       order: [
-        ['createdAt', 'ASC'],
+        ['createdAt', 'DESC'],
       ],
+      limit: 8,
       include: [{
           model: models.User,
           as: 'User',
@@ -27,6 +36,31 @@ class ChatController {
     });
 
     ctx.body = {status: 200, data: messages};
+  }
+
+  async deleteMessage(ctx, next) {
+    let isDestroyed = models.Chat.findById(ctx.params.id)
+      .tap((chat) => {
+        if (chat.type == 1) {
+          let content = JSON.parse(chat.content);
+          fs.unlink(path.resolve('./resources/public' + content.link), function(err) {
+            console.log(err);
+          });
+        }
+      }).tap(chat => chat.destroy());
+
+    if (isDestroyed) {
+      let data = {
+        type: 'chat',
+        deltas: ctx.params.id,
+        typeName: 'delete_message',
+      }
+
+      ioEmitter.to('project_' + ctx.params.project_id).emit('DELETE_MESSAGE', data);
+      ctx.body = {status: 200, data: isDestroyed};
+    } else {
+      ctx.body = errors.ServerError(isDestroyed);
+    }
   }
 
   async createMessage(ctx, next) {

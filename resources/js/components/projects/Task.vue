@@ -1,5 +1,5 @@
 <template lang="html">
-  <a href="javascript:" class="wr-card" @click="openEditTask(task)">
+  <a href="javascript:" class="wr-card" @click="openModalEdit">
     <div class="card">
       <div class="card-block">
         <div class="list-card-labels">
@@ -61,6 +61,14 @@ export default {
         'openEditTask',
         'closeEditTask'
     ]),
+    openModalEdit: function() {
+      this.$store.dispatch('trello/openEditTask', this.task);
+      this.$router.push({name: 'trello.modal', params: {
+        id: this.$route.params.id,
+        task_id: this.task.id,
+        title: this.slugUrl(this.task.title)
+      }});
+    }
   },
   components: {
   },
@@ -75,6 +83,7 @@ export default {
   .wr-card{
     display:block;
     text-decoration: none;
+    white-space: normal;
     .card{
       .card-block{
         position: relative;

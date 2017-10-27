@@ -10,6 +10,15 @@ let mix = require('laravel-mix');
  | file for your application, as well as bundling up your JS files.
  |
  */
+console.log(path.resolve(__dirname, './resources/sass'));
+
+mix.webpackConfig({
+  resolve: {
+    alias: {
+      styles: path.resolve(__dirname, './resources/sass') // relative to the location of the webpack config file!
+    }
+  }
+});
 
 mix.sass('resources/sass/app.scss', 'public/css')
 
@@ -19,7 +28,7 @@ mix.sass('resources/sass/app.scss', 'public/css')
    .copy('node_modules/jquery/dist/jquery.min.js', 'public/js')
    .sass('resources/sass/home.scss', 'public/css')
    .sass('resources/sass/login.scss', 'public/css')
-   .copyDirectory('resources/public/', 'public/')
+  //  .copyDirectory('resources/public/', 'public/')
 
    .js('resources/js/app.js', 'public/js/app.js')
    .sass('resources/sass/projects.scss', 'public/css')
@@ -32,6 +41,11 @@ mix.sass('resources/sass/app.scss', 'public/css')
 
    .copy('node_modules/trix/dist/trix.js', 'public/js')
    .copy('node_modules/trix/dist/trix.css', 'public/css')
+
+   .copy('node_modules/fullcalendar/dist/fullcalendar.min.js', 'public/js')
+   .copy('node_modules/fullcalendar/dist/fullcalendar.min.css', 'public/css')
+
+   .copy('node_modules/moment/min/moment.min.js', 'public/js')
 
    .setPublicPath('public');
 

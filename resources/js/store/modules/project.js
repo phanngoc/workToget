@@ -11,8 +11,8 @@ const getters = {
 }
 
 const mutations = {
-    [LOAD_PROJECT](state, data) {
-        state.project=data;
+    [LOAD_PROJECT] (state, data) {
+      state.project = data;
     }
 };
 
