@@ -20,9 +20,10 @@ class TaskController {
           order: 0,
           frame_id: ctx.request.body.frame_id });
 
+    task = task.toJSON();
     task.Labels = [];
     task.countComment = 0;
-    
+
     let data = {
       type: 'trello',
       deltas: task,
@@ -31,7 +32,7 @@ class TaskController {
     }
 
     ioEmitter.to('project_' + ctx.params.project_id).emit('SAVE_ADD_TASK', data);
-    ctx.body = {status: 200, data: task.toJSON()};
+    ctx.body = {status: 200, data: task};
   }
 
   async updateTask(ctx, next) {

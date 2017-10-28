@@ -54,6 +54,8 @@ module.exports = function(app) {
 
   /* Route for trello */
 
+  apiRouter.delete('/projects/:project_id/frames/:id/delete', projectController.deleteFrame);
+
   apiRouter.put('/projects/:project_id/frames/:id/update', projectController.updateFrame);
 
   apiRouter.post('/projects/:project_id/frames', projectController.createFrame);

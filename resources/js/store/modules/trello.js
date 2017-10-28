@@ -12,6 +12,7 @@ export const SAVE_DUE_DATE = 'SAVE_DUE_DATE'
 export const LOAD_LABELS = 'LOAD_LABELS'
 export const UPDATE_LABEL = 'UPDATE_LABEL'
 export const ADD_FRAME = 'ADD_FRAME'
+export const ARCHIVE_FRAME = 'ARCHIVE_FRAME'
 
 export const ERROR = 'ERROR'
 
@@ -27,6 +28,7 @@ export const SOCKET_SAVE_DUE_DATE = 'SOCKET_SAVE_DUE_DATE'
 export const SOCKET_SAVE_ADD_TASK = 'SOCKET_SAVE_ADD_TASK'
 export const SOCKET_ADD_FRAME = 'SOCKET_ADD_FRAME'
 export const SOCKET_UPDATE_FRAME = 'SOCKET_UPDATE_FRAME'
+export const SOCKET_ARCHIVE_FRAME = 'SOCKET_ARCHIVE_FRAME'
 
 // import {ERROR} from '../mutation-types'
 
@@ -50,6 +52,17 @@ const getters = {
 
 // actions
 const actions = {
+  archiveFrame({commit, state, rootState}, id) {
+    axios.delete('/api/projects/' + rootState.route.params.id + '/frames/' + id + '/delete')
+    .then(function (response) {
+      if (response.status == 200) {
+
+      }
+    })
+    .catch(function (error) {
+        commit(ERROR, error);
+    });
+  },
   updateFrame({commit, state, rootState}, data) {
     axios.put('/api/projects/' + rootState.route.params.id + '/frames/' + data.id + '/update', {
       name: data.name,
@@ -129,36 +142,43 @@ const actions = {
     });
   },
   loadLabels({commit, state}, project_id) {
-    axios.get('/api/projects/' + project_id + '/labels')
-    .then(function (response) {
-      if (response.status == 200) {
-        commit(LOAD_LABELS, response.data.data);
-      }
-    })
-    .catch(function (error) {
+    return new Promise((resolve, reject) => {
+      axios.get('/api/projects/' + project_id + '/labels')
+      .then(function (response) {
+        if (response.status == 200) {
+          resolve(response.data.data);
+          commit(LOAD_LABELS, response.data.data);
+        }
+      })
+      .catch(function (error) {
+        reject(error);
         commit(ERROR, error);
+      });
     });
   },
   loadFrames({commit, state}, project_id) {
-    axios.get('/api/projects/' + project_id + '/frames')
-    .then(function (response) {
-      if (response.status == 200) {
-        commit(LOAD_FRAMES, response.data.data.frames);
-      }
-    })
-    .catch(function (error) {
+    return new Promise((resolve, reject) => {
+      axios.get('/api/projects/' + project_id + '/frames')
+      .then(function (response) {
+        if (response.status == 200) {
+          commit(LOAD_FRAMES, response.data.data.frames);
+          resolve(response.data.data.frames);
+        }
+      })
+      .catch(function (error) {
+        reject(error);
         commit(ERROR, error);
+      });
     });
   },
   openEditTask ({ commit, state }, data) {
     let taskS = data;
     let isFind = false;
-    console.log('openEditTask', data, state.frames);
-    if (_.isNumber(data)) {
+    data = parseInt(data);
+    if (!_.isNaN(data)) {
       _.forEach(state.frames, function(f) {
         if (isFind) return false;
         _.forEach(f.Tasks, function(task) {
-          console.log('compare',task.id, data);
           if (task.id == data) {
             taskS = task;
             isFind = true;
@@ -275,6 +295,10 @@ const actions = {
 }
 
 const mutations = {
+  [SOCKET_ARCHIVE_FRAME]: (state, data) => {
+    let frameId = data.deltas;
+    state.frames = _.filter(state.frames, function(o) { return o.id != frameId; });
+  },
   [SOCKET_UPDATE_FRAME]: (state, data) => {
     let deltas = data.deltas;
     let frame = _.find(state.frames, function(o) { return o.id == deltas.id; });
@@ -284,6 +308,7 @@ const mutations = {
     state.frames.push(data.deltas);
   },
   [SOCKET_SAVE_ADD_TASK]: (state, data) => {
+    console.log(SOCKET_SAVE_ADD_TASK, data);
     var frame = _.find(state.frames, function(o) { return o.id == data.frameId; });
     frame.Tasks.unshift(data.deltas);
   },
@@ -366,6 +391,7 @@ const mutations = {
     let labels = data.deltas;
     var frame = _.find(state.frames, function(o) { return o.id == data.frameId; });
     var taskSet = _.find(frame.Tasks, function(o) { return o.id == data.taskId; });
+    console.log(SOCKET_UPDATE_LABEL_FOR_TASK, labels, taskSet);
     taskSet.Labels = labels;
     state.activeTask = Object.assign({}, taskSet);
   },

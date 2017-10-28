@@ -191,7 +191,8 @@ export default {
   mounted() {
     var self = this;
     $('#modal-edit-task').on('hide.bs.modal', function () {
-       self.$store.dispatch('trello/closeEditTask');
+      self.$router.push({name: 'trello', params: {id: self.$route.params.id}});
+      self.$store.dispatch('trello/closeEditTask');
     });
   }
 }

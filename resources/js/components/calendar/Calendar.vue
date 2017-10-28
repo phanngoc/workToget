@@ -43,9 +43,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  @import "../../../sass/_vars.scss";
+  @import "~styles/_vars.scss";
   @import '~fullcalendar/dist/fullcalendar.css';
   .content-page{
+    @include box-content;
     @include respond-to(handhelds) { width: 100% ; height: 100%}
     @include respond-to(medium-screens) { width: 100%;}
     @include respond-to(wide-screens) { width: $width-feature; }
