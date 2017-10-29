@@ -19,6 +19,17 @@ export default function (Sequelize, DataTypes) {
       allowNull: false
     },
 
+    project_id: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: 'Project',
+        key: 'id'
+      },
+      onDelete: 'SET NULL',
+      onUpdate: 'CASCADE',
+      allowNull: false
+    },
+
     createdAt: {
       field: 'created_at',
       type: DataTypes.DATE,

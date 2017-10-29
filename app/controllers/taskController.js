@@ -197,9 +197,18 @@ class TaskController {
     });
     try {
       let isRemoveAss = label.setTasks(null);
+      console.log('isRemoveAss', isRemoveAss);
       let isDeleted = label.destroy();
+      let data = {
+        type: 'trello',
+        deltas: label,
+        typeName: 'delete_label'
+      }
+
+      ioEmitter.to('project_' + ctx.params.project_id).emit('DELETE_LABEL', data);
       ctx.body = {status: 200, data: isDeleted};
-    } catch (errors) {
+    } catch (e) {
+      console.log('isRemoveAss Err', e);
       ctx.body = errors.ServerError(errors);
     }
   }
@@ -242,6 +251,24 @@ class TaskController {
     }
 
     ioEmitter.to('project_' + ctx.params.project_id).emit('UPDATE_LABEL', data);
+
+    ctx.body = {status: 200, data: label};
+  }
+
+  async createLabel(ctx, next) {
+    let label = await models.Label.create({
+      project_id: ctx.params.project_id,
+      name: ctx.request.body.name,
+      color: ctx.request.body.color
+    });
+
+    let data = {
+      type: 'trello',
+      deltas: label,
+      typeName: 'create_label',
+    }
+
+    ioEmitter.to('project_' + ctx.params.project_id).emit('CREATE_LABEL', data);
 
     ctx.body = {status: 200, data: label};
   }

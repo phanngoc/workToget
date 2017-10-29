@@ -86,8 +86,9 @@ module.exports = function(app) {
 
   apiRouter.delete('/task/:id/delete', taskController.deleteLabel);
 
+  apiRouter.delete('/projects/:project_id/labels/:id/delete', taskController.deleteLabel);
   apiRouter.put('/projects/:project_id/labels/:id/update', taskController.updateLabel);
-
+  apiRouter.post('/projects/:project_id/labels/create', taskController.createLabel);
   apiRouter.put('/projects/:project_id/task/:id/update-label', taskController.updateTaskLabel);
 
   /* Route for calendar */

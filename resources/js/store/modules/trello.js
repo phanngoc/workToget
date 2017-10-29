@@ -19,6 +19,7 @@ export const ERROR = 'ERROR'
 export const SOCKET_CONNECT = 'SOCKET_CONNECT'
 export const SOCKET_SAVE_SIMPLE_TASK = 'SOCKET_SAVE_SIMPLE_TASK'
 export const SOCKET_UPDATE_LABEL = 'SOCKET_UPDATE_LABEL'
+export const SOCKET_DELETE_LABEL = 'SOCKET_DELETE_LABEL'
 export const SOCKET_UPDATE_LABEL_FOR_TASK = 'SOCKET_UPDATE_LABEL_FOR_TASK'
 export const SOCKET_UPDATE_SORT_FRAME = 'SOCKET_UPDATE_SORT_FRAME'
 export const SOCKET_UPDATE_SORT_TASK = 'SOCKET_UPDATE_SORT_TASK'
@@ -29,6 +30,7 @@ export const SOCKET_SAVE_ADD_TASK = 'SOCKET_SAVE_ADD_TASK'
 export const SOCKET_ADD_FRAME = 'SOCKET_ADD_FRAME'
 export const SOCKET_UPDATE_FRAME = 'SOCKET_UPDATE_FRAME'
 export const SOCKET_ARCHIVE_FRAME = 'SOCKET_ARCHIVE_FRAME'
+export const SOCKET_CREATE_LABEL = 'SOCKET_CREATE_LABEL'
 
 // import {ERROR} from '../mutation-types'
 
@@ -116,11 +118,25 @@ const actions = {
         commit(ERROR, error);
     });
   },
-  deleteLabel({commit, state}, label) {
-    axios.delete('/api/labels/' + label.id + '/delete')
+  deleteLabel({commit, state, rootState}, label) {
+    axios.delete('/api/projects/' + rootState.route.params.id + '/labels/' + label.id + '/delete')
     .then(function (response) {
       if (response.status == 200) {
-        commit(UPDATE_LABEL, response.data.data);
+        // commit(UPDATE_LABEL, response.data.data);
+      }
+    })
+    .catch(function (error) {
+        commit(ERROR, error);
+    });
+  },
+  createLabel({commit, state, rootState}, label) {
+    axios.post('/api/projects/' + rootState.route.params.id + '/labels/create', {
+      name: label.name,
+      color: label.color
+    })
+    .then(function (response) {
+      if (response.status == 200) {
+        // commit(UPDATE_LABEL, response.data.data);
       }
     })
     .catch(function (error) {
@@ -295,6 +311,24 @@ const actions = {
 }
 
 const mutations = {
+  [SOCKET_DELETE_LABEL]: (state, data) => {
+    let label = data.deltas;
+    state.labels = _.filter(state.labels, function(o) { return o.id != label.id; });
+    let isFind = false;
+    _.forEach(state.frames, function(f) {
+      if (isFind) return false;
+      _.forEach(f.Tasks, function(task) {
+        task.Labels = _.filter(task.Labels, function(o) { return o.id != label.id; });
+      });
+    });
+    state.activeTask.Labels = _.filter(state.activeTask.Labels, function(o) { return o.id != label.id; });
+    state.activeTask = Object.assign({}, state.activeTask);
+
+  },
+  [SOCKET_CREATE_LABEL]: (state, data) => {
+    let label = data.deltas;
+    state.labels.push(label);
+  },
   [SOCKET_ARCHIVE_FRAME]: (state, data) => {
     let frameId = data.deltas;
     state.frames = _.filter(state.frames, function(o) { return o.id != frameId; });
@@ -308,7 +342,6 @@ const mutations = {
     state.frames.push(data.deltas);
   },
   [SOCKET_SAVE_ADD_TASK]: (state, data) => {
-    console.log(SOCKET_SAVE_ADD_TASK, data);
     var frame = _.find(state.frames, function(o) { return o.id == data.frameId; });
     frame.Tasks.unshift(data.deltas);
   },

@@ -23,15 +23,16 @@
                   <a href="javascript:" @click="switchEdit(label)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
                 </li>
               </ul>
+              <a href="javascript:" @click="createNewLabel">Create new label</a>
             </div>
           </div>
-          <div class="fr-edit" v-if="mode==1">
+          <div class="fr-edit" v-if="mode==1 || mode==2">
             <div class="title">
               <a href="javascript:" @click="switchShow"><i class="fa fa-chevron-left" aria-hidden="true"></i></a>
               Change Labels
             </div>
             <div class="wr-content">
-              <input type="text" name="name" class="form-control" v-model="labelEdit.name" />
+              <input type="text" name="name" placeholder="Name label" class="form-control" v-model="labelEdit.name" />
             </div>
             <div class="labels">
               <ul class="gr-color">
@@ -43,7 +44,7 @@
               </ul>
             </div>
             <div class="actions">
-              <el-button type="success" @click="saveEditLabel">Save</el-button>
+              <el-button type="success" @click="submitLabel">Save</el-button>
               <el-button type="danger" @click="deleteLabel">Delete</el-button>
             </div>
           </div>
@@ -101,6 +102,10 @@ export default {
     }
   },
   methods: {
+    createNewLabel: function() {
+      this.mode = 2;
+      this.labelEdit = {name: '', color: ''};
+    },
     isChoose: function(id) {
       return this.label_ids.includes(id);
     },
@@ -125,8 +130,12 @@ export default {
     switchShow: function() {
       this.mode = 0;
     },
-    saveEditLabel: function() {
-      this.$store.dispatch('trello/updateLabel', this.labelEdit);
+    submitLabel: function() {
+      if (this.mode==1) {
+        this.$store.dispatch('trello/updateLabel', this.labelEdit);
+      } else if (this.mode==2) {
+          this.$store.dispatch('trello/createLabel', this.labelEdit);
+      }
       this.mode = 0;
     },
     deleteLabel: function() {
