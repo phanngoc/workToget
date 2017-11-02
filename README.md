@@ -1,52 +1,37 @@
-koa-starter
+How to install
 ===========
-
-A simple Koajs application starter template. 
+A simple project base on idea from basecamp.com and trello.com
+Technology from project:
+1. Koa.js : backend and api in project.
+2. Vuejs, vuex: library component to construct single page of project.
 
 quick start
 =============
 
-**Clone koa-starter:**
-
-```sh
-$ git clone https://github.com/justmyfreak/koa-starter.git
-```
-
-**Install dependencies:**
+**Install npm**
 
 ```sh
 $ npm install
 ```
 
-**Run koa-starter:**
+**Configure database:**
 
 ```sh
-$ npm start
+Fill information database into 
+- config/config.json
+- .env
 ```
 
-or 
+**Run project:**
 
 ```sh
-$ node --harmony index.js
+$ nf start --procfile=Procfile_dev
 ```
 Open [http://localhost:3000](http://localhost:3000)
 
-**Run the test:**
+**Create seed:**
 
-```sh
-$ npm test
-```
-
-Components
-==========
-
-koa-starter uses following npm package : 
-
-* `config` for config handling.
-* `koa-router` for request routing purpose.
-* `koa-static` for handling static content or assets.
-* `koa-views` for template switching.
-* `ect` for default templatin engine due to fast performance.
+Open [http://localhost:3000/seed](http://localhost:3000/seed)
 
 Resources
 =========
