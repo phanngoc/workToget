@@ -33,6 +33,10 @@ Open [http://localhost:3000](http://localhost:3000)
 
 Open [http://localhost:3000/seed](http://localhost:3000/seed)
 
+**Access project**
+http://localhost:3000/projects/1
+Login and enjoy :D
+
 Resources
 =========
 
