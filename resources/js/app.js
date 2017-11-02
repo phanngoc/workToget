@@ -31,6 +31,14 @@ Vue.mixin({
       }
     }
   },
+  filters: {
+    calendar: function (value) {
+      return moment(value).calendar();
+    },
+    timeAgo: function(value) {
+      return moment(value).fromNow();
+    }
+  },
   methods: {
     slugUrl: function(text) {
       return text

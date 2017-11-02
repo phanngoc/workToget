@@ -6,6 +6,14 @@ import Sequelize from 'sequelize';
 import async from 'async';
 import _ from 'lodash';
 import {ioEmitter} from '../../io.js';
+import activity from './helper_activity';
+
+let slugUrl = function(text) {
+  return text
+    .toLowerCase()
+    .replace(/[^\w ]+/g,'')
+    .replace(/ +/g,'-');
+}
 
 class TaskController {
   constructor(...args) {
@@ -23,14 +31,37 @@ class TaskController {
     task = task.toJSON();
     task.Labels = [];
     task.countComment = 0;
+    let project = await models.Project.findOne({
+      where: {id: ctx.params.project_id}
+    });
 
+    let dataActivity = {
+      action: 'save_add_task',
+      owner: ctx.state.user,
+      target: {
+        type: 'Task',
+        data: task,
+        link: {
+          name: 'trello.modal',
+          params: {
+            project_id: ctx.params.project_id,
+            task_id: task.id,
+            title: slugUrl(task.title)
+          }
+        }
+      },
+      rely_on: {
+        type: 'Project',
+        data: project,
+      }
+    };
+    activity(ctx.params.project_id, dataActivity);
     let data = {
       type: 'trello',
       deltas: task,
       typeName: 'save_add_task',
       frameId: task.frame_id
     }
-
     ioEmitter.to('project_' + ctx.params.project_id).emit('SAVE_ADD_TASK', data);
     ctx.body = {status: 200, data: task};
   }
@@ -49,15 +80,32 @@ class TaskController {
       return res;
     });
 
+    let dataActivity = {
+      action: 'save_simple_task',
+      owner: ctx.state.user,
+      target: {
+        type: 'Task',
+        data: task,
+        link: {
+          name: 'trello.modal',
+          params: {
+            project_id: ctx.params.project_id,
+            task_id: task.id,
+            title: slugUrl(task.title)
+          }
+        }
+      }
+    };
+    activity(ctx.params.project_id, dataActivity);
     let data = {
-      type: 'updateModels',
+      type: 'trello',
       deltas: task,
-      typeName: 'simple_task',
+      typeName: 'save_simple_task',
       frameId: task.frame_id,
       projectId: ctx.request.body.project_id
     }
 
-    ioEmitter.to('project_'+ctx.request.body.project_id).emit('SAVE_SIMPLE_TASK', data);
+    ioEmitter.to('project_'+ctx.params.project_id).emit('SAVE_SIMPLE_TASK', data);
     ctx.body = {status: 200, result: result};
   }
 
@@ -111,13 +159,35 @@ class TaskController {
 
       comment.User = user;
 
+      let dataActivity = {
+        action: 'save_add_comment',
+        owner: ctx.state.user,
+        target: {
+          type: 'Comment',
+          data: comment,
+          link: {
+            name: 'trello.modal',
+            params: {
+              project_id: ctx.request.body.project_id,
+              task_id: task.id,
+              title: slugUrl(task.title)
+            }
+          }
+        },
+        rely_on: {
+          type: 'Task',
+          data: task
+        }
+      };
+      activity(ctx.params.project_id, dataActivity);
+
       let data = {
-        type: 'updateModels',
+        type: 'trello',
         deltas: comment,
         taskId: task.id,
         frameId: task.frame_id,
         countComment: task.toJSON().countComment + 1,
-        typeName: 'add_comment_task',
+        typeName: 'save_add_comment',
       };
 
       ioEmitter.to('project_' + ctx.request.body.project_id).emit('SAVE_ADD_COMMENT', data);
@@ -146,20 +216,87 @@ class TaskController {
     });
 
     let user = await comment.getUser();
+    let task = await comment.getTask();
 
     comment = comment.toJSON();
     user = user.toJSON();
 
     comment.User = user;
 
+    let dataActivity = {
+      action: 'save_edit_comment',
+      owner: ctx.state.user,
+      target: {
+        type: 'Comment',
+        data: comment,
+        link: {
+          name: 'trello.modal',
+          params: {
+            project_id: ctx.params.project_id,
+            task_id: task.id,
+            title: slugUrl(task.title)
+          }
+        }
+      },
+      rely_on: {
+        type: 'Task',
+        data: task,
+      }
+    };
+    activity(ctx.state.user.id, dataActivity);
+
     let data = {
-      type: 'updateModels',
+      type: 'trello',
       deltas: comment,
-      typeName: 'add_comment_task',
+      typeName: 'save_edit_comment',
     }
 
-    ioEmitter.to('project_' + ctx.request.body.project_id).emit('SAVE_EDIT_COMMENT', data);
+    ioEmitter.to('project_' + ctx.params.project_id).emit('SAVE_EDIT_COMMENT', data);
 
+    ctx.body = {status: 200, data: comment};
+  }
+
+  async deleteCommentTask(ctx, next) {
+    let task = await models.Task.findOne({
+      where: {
+        id: ctx.params.task_id
+      },
+    });
+    let comment = await models.Comment.findOne({
+      where: {id: ctx.params.id}
+    }).tap((comment) => {
+      comment.destroy();
+    });
+
+    let data = {
+      type: 'calendar',
+      deltas: comment,
+      typeName: 'trello_delete_comment',
+    }
+
+    ioEmitter.to('project_' + ctx.params.project_id).emit('TRELLO_DELETE_COMMENT', data);
+
+    let dataActivity = {
+      action: 'trello_delete_comment',
+      owner: ctx.state.user,
+      target: {
+        type: 'Comment',
+        data: comment,
+        link: {
+          name: 'trello.modal',
+          params: {
+            id: ctx.params.project_id,
+            task_id: ctx.params.task_id,
+            title: slugUrl(task.title)
+          }
+        }
+      },
+      rely_on: {
+        type: 'Task',
+        data: task
+      }
+    };
+    activity(ctx.params.project_id, dataActivity);
     ctx.body = {status: 200, data: comment};
   }
 
@@ -179,7 +316,7 @@ class TaskController {
           }
         });
       let data = {
-        type: 'updateModels',
+        type: 'trello',
         deltas: ctx.request.body.due_date,
         typeName: 'save_due_date',
         taskId: ctx.params.id,
@@ -187,6 +324,28 @@ class TaskController {
       }
 
       ioEmitter.to('project_' + ctx.params.project_id).emit('SAVE_DUE_DATE', data);
+
+      let dataActivity = {
+        action: 'save_due_date',
+        owner: ctx.state.user,
+        target: {
+          type: 'String',
+          data: ctx.request.body.due_date,
+          link: {
+            name: 'trello.modal',
+            params: {
+              project_id: ctx.params.project_id,
+              task_id: task.id,
+              title: slugUrl(task.title)
+            }
+          }
+        },
+        rely_on: {
+          type: 'Task',
+          data: task
+        }
+      };
+      activity(ctx.params.project_id, dataActivity);
       ctx.body = {status: 200, data: result};
     }
   }
@@ -195,9 +354,10 @@ class TaskController {
     let label = await models.Label.findOne({
       where: {id: ctx.params.id}
     });
+
+    let labelTemp = label.toJSON();
     try {
       let isRemoveAss = label.setTasks(null);
-      console.log('isRemoveAss', isRemoveAss);
       let isDeleted = label.destroy();
       let data = {
         type: 'trello',
@@ -206,6 +366,25 @@ class TaskController {
       }
 
       ioEmitter.to('project_' + ctx.params.project_id).emit('DELETE_LABEL', data);
+      let dataActivity = {
+        action: 'delete_label',
+        owner: ctx.state.user,
+        target: {
+          type: 'Label',
+          data: labelTemp,
+          link: {
+            name: 'trello',
+            params: {
+              project_id: ctx.params.project_id,
+            }
+          }
+        },
+        rely_on: {
+          type: 'Project',
+          data: ctx.state.project
+        }
+      };
+      activity(ctx.params.project_id, dataActivity);
       ctx.body = {status: 200, data: isDeleted};
     } catch (e) {
       console.log('isRemoveAss Err', e);
@@ -221,7 +400,7 @@ class TaskController {
     let result = await task.setLabels(ctx.request.body.label_ids);
     let labels = await task.getLabels();
     let data = {
-      type: 'updateModels',
+      type: 'trello',
       deltas: labels,
       taskId: task.id,
       frameId: task.frame_id,
@@ -229,6 +408,28 @@ class TaskController {
     }
 
     ioEmitter.to('project_' + ctx.params.project_id).emit('UPDATE_LABEL_FOR_TASK', data);
+
+    let dataActivity = {
+      action: 'update_label_for_task',
+      owner: ctx.state.user,
+      target: {
+        type: 'Label',
+        data: labels,
+        link: {
+          name: 'trello.modal',
+          params: {
+            project_id: ctx.params.project_id,
+            task_id: task.id,
+            title: slugUrl(task.title)
+          }
+        },
+        rely_on: {
+          type: 'Task',
+          data: task
+        }
+      },
+    };
+    activity(ctx.params.project_id, dataActivity);
     ctx.body = {status: 200, data: result};
   }
 
@@ -245,12 +446,32 @@ class TaskController {
     });
 
     let data = {
-      type: 'updateModels',
+      type: 'trello',
       deltas: label,
       typeName: 'update_label'
     }
 
     ioEmitter.to('project_' + ctx.params.project_id).emit('UPDATE_LABEL', data);
+
+    let dataActivity = {
+      action: 'update_label',
+      owner: ctx.state.user,
+      target: {
+        type: 'Label',
+        data: label,
+        link: {
+          name: 'trello',
+          params: {
+            project_id: ctx.params.project_id,
+          }
+        }
+      },
+      rely_on: {
+        type: 'Project',
+        data: ctx.state.project
+      }
+    };
+    activity(ctx.params.project_id, dataActivity);
 
     ctx.body = {status: 200, data: label};
   }
@@ -269,6 +490,26 @@ class TaskController {
     }
 
     ioEmitter.to('project_' + ctx.params.project_id).emit('CREATE_LABEL', data);
+
+    let dataActivity = {
+      action: 'create_label',
+      owner: ctx.state.user,
+      target: {
+        type: 'Label',
+        data: label,
+        link: {
+          name: 'trello',
+          params: {
+            project_id: ctx.params.project_id,
+          }
+        }
+      },
+      rely_on: {
+        type: 'Project',
+        data: ctx.state.project
+      }
+    };
+    activity(ctx.params.project_id, dataActivity);
 
     ctx.body = {status: 200, data: label};
   }

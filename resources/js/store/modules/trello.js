@@ -31,6 +31,7 @@ export const SOCKET_ADD_FRAME = 'SOCKET_ADD_FRAME'
 export const SOCKET_UPDATE_FRAME = 'SOCKET_UPDATE_FRAME'
 export const SOCKET_ARCHIVE_FRAME = 'SOCKET_ARCHIVE_FRAME'
 export const SOCKET_CREATE_LABEL = 'SOCKET_CREATE_LABEL'
+export const SOCKET_TRELLO_DELETE_COMMENT = 'SOCKET_TRELLO_DELETE_COMMENT'
 
 // import {ERROR} from '../mutation-types'
 
@@ -266,7 +267,7 @@ const actions = {
     });
   },
   addComment ({commit, state, rootState}, obj) {
-    axios.post('/api/task/'+obj.task_id+'/comment', {
+    axios.post('/api/projects/'+rootState.route.params.id+'/task/'+obj.task_id+'/comment', {
       content: obj.content,
       user_id: obj.user_id,
       project_id: rootState.route.params.id,
@@ -281,13 +282,24 @@ const actions = {
     });
   },
   saveComment ({commit, state, rootState}, obj) {
-    axios.put('/api/task/comment/' + obj.id, {
+    axios.put('/api/projects/'+rootState.route.params.id+'/task/'+rootState.route.params.task_id+'/comment/' + obj.id, {
       content: obj.content,
-      project_id: rootState.route.params.id
     })
     .then(function (response) {
       if (response.status==200) {
           commit(SAVE_EDIT_COMMENT, response.data.data);
+      }
+    })
+    .catch(function (error) {
+      console.log('error ne', error);
+      commit(ERROR, error);
+    });
+  },
+  deleteComment({commit, state, rootState}, id) {
+    axios.delete('/api/projects/'+rootState.route.params.id+'/tasks/'+rootState.route.params.task_id+'/comments/' + id + '/delete')
+    .then(function (response) {
+      if (response.status==200) {
+
       }
     })
     .catch(function (error) {
@@ -311,6 +323,10 @@ const actions = {
 }
 
 const mutations = {
+  [SOCKET_TRELLO_DELETE_COMMENT]: (state, data) => {
+    let comment = data.deltas;
+    state.comments = _.filter(state.comments, function(o) { return o.id != comment.id; });
+  },
   [SOCKET_DELETE_LABEL]: (state, data) => {
     let label = data.deltas;
     state.labels = _.filter(state.labels, function(o) { return o.id != label.id; });
