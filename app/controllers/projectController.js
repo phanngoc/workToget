@@ -5,6 +5,7 @@ import debug from 'debug';
 import Sequelize from 'sequelize';
 import async from 'async';
 import {ioEmitter} from '../../io.js';
+import {load_activity} from './helper_activity';
 
 class ProjectController {
   constructor(...args) {
@@ -240,6 +241,11 @@ class ProjectController {
       }
     });
     ctx.body = {status: 200, data: labels};
+  }
+
+  async getActivities(ctx, next) {
+    let results = await load_activity(ctx.params.project_id);
+    ctx.body = {status: 200, data: results};
   }
 };
 

@@ -95,6 +95,7 @@ export function setupModels(client) {
     });
 
     m.Label.belongsToMany(m.Task, { as: 'Tasks', through: m.TaskLabel, foreignKey: 'label_id'});
+    m.Label.belongsTo(m.Project, {as: 'Project', foreignKey: 'project_id', constraints: true});
 
     m.Board.hasMany(m.Comment, {
         foreignKey: 'commentable_id',
@@ -109,6 +110,14 @@ export function setupModels(client) {
 
     m.Event.belongsTo(m.User, {as: 'User', foreignKey: 'user_id'});
     m.Event.belongsTo(m.Project, {as: 'Project', foreignKey: 'project_id'});
+    m.Event.hasMany(m.Comment, {
+        foreignKey: 'commentable_id',
+        constraints: false,
+        scope: {
+            commentable: 'event'
+        },
+        as: 'Comment'
+     });
 
     m.Comment.belongsTo(m.Board, {
         foreignKey: 'commentable_id',
@@ -119,6 +128,11 @@ export function setupModels(client) {
         foreignKey: 'commentable_id',
         constraints: false,
         as: 'task'
+    });
+    m.Comment.belongsTo(m.Event, {
+        foreignKey: 'commentable_id',
+        constraints: false,
+        as: 'event'
     });
     m.Comment.belongsTo(m.User, {
         foreignKey: 'user_id',

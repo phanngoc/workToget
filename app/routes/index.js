@@ -13,6 +13,7 @@ import jwt from 'koa-jwt';
 import mount from 'koa-mount';
 import compose from 'koa-compose';
 import Router from 'koa-router';
+import {load_project} from './params';
 
 module.exports = function(app) {
 
@@ -25,7 +26,7 @@ module.exports = function(app) {
   var router = new Router();
   var apiRouter = new Router();
 
-  // router.get('/:id/projects', projectController.index);
+  apiRouter.param('project_id', load_project);
 
   router.get('/seed', homeController.seed);
 
@@ -74,17 +75,15 @@ module.exports = function(app) {
 
   apiRouter.put('/projects/:id/update-pin', projectController.updatePin);
 
-  apiRouter.put('/task/:id/update', taskController.updateTask);
-
   apiRouter.get('/task/:id/comments', taskController.getListCommentTask);
-
-  apiRouter.post('/task/:id/comment', taskController.addCommentTask);
-
-  apiRouter.put('/task/comment/:id', taskController.updateCommentTask);
+  apiRouter.post('/projects/:project_id/task/:id/comment', taskController.addCommentTask);
+  apiRouter.put('/projects/:project_id/task/:task_id/comment/:id', taskController.updateCommentTask);
+  apiRouter.delete('/projects/:project_id/tasks/:task_id/comments/:id/delete', taskController.deleteCommentTask);
 
   apiRouter.put('/projects/:project_id/task/:id/update-due-date', taskController.updateDueDate);
 
   apiRouter.delete('/task/:id/delete', taskController.deleteLabel);
+  apiRouter.put('/task/:id/update', taskController.updateTask);
 
   apiRouter.delete('/projects/:project_id/labels/:id/delete', taskController.deleteLabel);
   apiRouter.put('/projects/:project_id/labels/:id/update', taskController.updateLabel);
@@ -92,11 +91,19 @@ module.exports = function(app) {
   apiRouter.put('/projects/:project_id/task/:id/update-label', taskController.updateTaskLabel);
 
   /* Route for calendar */
+  apiRouter.get('/projects/:project_id/calendars/events/:id', calendarController.showEvent);
   apiRouter.get('/projects/:project_id/calendars/events', calendarController.loadEvents);
   apiRouter.get('/projects/:project_id/calendars/users', calendarController.loadUserBelongProject);
   apiRouter.post('/projects/:project_id/calendars/events/create', calendarController.createEvent);
   apiRouter.put('/projects/:project_id/calendars/events/:id/update', calendarController.updateEvent);
-  apiRouter.del('/projects/:project_id/calendars/events/:id/archive', calendarController.archiveEvent);
+  apiRouter.delete('/projects/:project_id/calendars/events/:id/archive', calendarController.archiveEvent);
+
+  apiRouter.post('/projects/:project_id/events/:event_id/comments', calendarController.createComment);
+  apiRouter.put('/projects/:project_id/events/:event_id/comments/:id/update', calendarController.updateComment);
+  apiRouter.delete('/projects/:project_id/events/:event_id/comments/:id/delete', calendarController.deleteComment);
+
+  /* Route for activity */
+  apiRouter.get('/projects/:project_id/activities', projectController.getActivities);
 
   app.use(mount('/api', compose([jwt({secret: process.env.SECRET}), apiRouter.middleware(), apiRouter.allowedMethods()])));
   app.use(mount('/', router.middleware(), router.allowedMethods()));

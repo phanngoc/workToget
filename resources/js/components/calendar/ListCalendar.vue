@@ -63,10 +63,10 @@ export default {
   },
   methods: {
     eventSelected(event) {
-      console.log('eventSelected:', event);
       this.selected = event;
       this.$store.dispatch('calendar/setEditEvent', event);
-      this.$router.push({ name: 'calendar.edit_event', params: {id: this.$route.params.id, event_id: event.id}});
+      // this.$router.push({ name: 'calendar.edit_event', params: {id: this.$route.params.id, event_id: event.id}});
+      this.$router.push({ name: 'calendar.show_event', params: {id: this.$route.params.id, event_id: event.id}});
     },
     eventCreated(...events) {
       console.log('eventCreated', events);

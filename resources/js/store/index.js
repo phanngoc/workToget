@@ -5,6 +5,7 @@ import auth from './modules/auth'
 import project from './modules/project'
 import chat from './modules/chat'
 import calendar from './modules/calendar'
+import activity from './modules/activity'
 
 Vue.use(Vuex)
 
@@ -17,7 +18,8 @@ export default new Vuex.Store({
         auth,
         project,
         chat,
-        calendar
+        calendar,
+        activity
     },
     // #root state
     state: {

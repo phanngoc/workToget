@@ -15,6 +15,8 @@
                 <img class="icon-menu" src="/img/icon_trello.png" alt="chat feature"/>Trello</el-dropdown-item>
               <el-dropdown-item command="calendar.list_event">
                 <img class="icon-menu" src="/img/icon_calendar.png" alt="chat feature"/>Calendar</el-dropdown-item>
+              <el-dropdown-item command="activity">
+                <img class="icon-menu" src="/img/icon_activity.png" alt="chat feature"/>Activity</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
           <div class="segment" v-for="link in links">
@@ -63,6 +65,13 @@ export default {
       var name = this.$route.name;
       this.links = [];
       switch (name) {
+        case 'activity':
+          this.links.push({
+            title: 'Activity',
+            clickable: false,
+            url: {}
+          });
+          break;
         case 'chat.index':
           this.links.push({
             title: 'Chat',
@@ -87,6 +96,18 @@ export default {
         case 'calendar.list_event':
           this.links.push({
             title: 'Calendar',
+            clickable: false,
+            url: {}
+          });
+          break;
+        case 'calendar.show_event':
+          this.links.push({
+            title: 'Calendar',
+            clickable: true,
+            url: { name: 'calendar.list_event', params: { id: this.$route.params.id }}
+          });
+          this.links.push({
+            title: 'Event',
             clickable: false,
             url: {}
           });

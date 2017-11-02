@@ -12,7 +12,11 @@
           <div class="con js-mark" v-html="content_html">
           </div>
           <div class="action">
-            <a href="javascript:" @click="switchEdit">Edit</a>
+            <span class="info-time">
+              {{comment.updatedAt | timeAgo}}
+            </span>
+            <a href="javascript:" @click="switchEdit" class="btn-edit link-action">Edit</a>
+            <a href="javascript:" @click="removeComment" class="btn-delete link-action">Remove</a>
           </div>
         </div>
 
@@ -64,6 +68,17 @@ export default {
         content: this.content_edit});
       this.isEdit = false;
     },
+    removeComment: function() {
+      this.$confirm('Are you want to remove comment?', 'Warning', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        type: 'warning'
+      }).then(() => {
+        this.$store.dispatch('trello/deleteComment', this.comment.id);
+      }).catch(() => {
+
+      });
+    },
     switchEdit: function() {
       this.isEdit = true;
     },
@@ -84,5 +99,8 @@ export default {
     width: 44px;
     height: 44px;
     border-radius: 50%;
+  }
+  .info-time{
+    font-size: 0.8em;
   }
 </style>

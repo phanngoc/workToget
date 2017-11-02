@@ -125,8 +125,8 @@ export default {
     ]),
     eventCreated: {
       get() {
-        console.log('get eventcreated', this.$store.state.calendar.eventCreated);
         let val = this.$store.state.calendar.eventCreated;
+
         if (!_.isEmpty(val)) {
           this.form.title = val.title;
           this.form.start.day = moment(val.start).toDate();
@@ -151,7 +151,7 @@ export default {
       let that = this;
       this.$refs[form].validate((valid) => {
         if (valid) {
-          let data = that.form;
+          let data = Object.assign({}, that.form);
           data.start = moment(that.form.start.day).format('YYYY-MM-DD')+' '+that.form.start.time
           data.end = moment(that.form.end.day).format('YYYY-MM-DD')+' '+that.form.end.time
           that.$store.dispatch('calendar/createEvent', data);

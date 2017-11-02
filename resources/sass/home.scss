@@ -1,10 +1,4 @@
 @import '_vars.scss';
-
-#main-content{
-  // @include clearfix;
-  // margin-top: 56px;
-}
-
 .modal-lg{
   width: 750px;
   margin: auto;
@@ -45,4 +39,21 @@ html, body, #app, #surface {
       bottom: 0px;
     }
   }
+}
+
+.link-action{
+  color: #8391a5;
+  font-weight: bold;
+  font-size: 14px;
+  padding-left: 4px;
+  padding-right: 4px;
+  text-decoration: underline;
+  &:hover{
+    color: #7d7d7d;
+  }
+}
+
+@import url('https://fonts.googleapis.com/css?family=Varela+Round');
+body{
+  font-family: 'Varela Round', Helvetica, Arial, sans-serif;
 }
