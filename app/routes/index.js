@@ -3,6 +3,7 @@ import ProjectController from '../controllers/projectController';
 import TaskController from '../controllers/taskController';
 import ChatController from '../controllers/chatController';
 import CalendarController from '../controllers/calendarController';
+import UserController from '../controllers/userController';
 
 import passport from 'koa-passport';
 import {isAuthenticated} from '../lib/auth';
@@ -22,6 +23,7 @@ module.exports = function(app) {
   var taskController = new TaskController;
   var chatController = new ChatController;
   var calendarController = new CalendarController;
+  var userController = new UserController;
 
   var router = new Router();
   var apiRouter = new Router();
@@ -45,6 +47,10 @@ module.exports = function(app) {
   apiRouter.get('/:id/projects', projectController.getProjects);
 
   apiRouter.get('/projects/:id', projectController.show);
+
+  apiRouter.put('/projects/:project_id/users/add-people', projectController.addMorePeople);
+  apiRouter.put('/projects/:project_id/users/accept-join', projectController.confirmJoinProject);
+
 
   /* Route for chat */
   apiRouter.get('/projects/:project_id/messages', chatController.loadMessages);
@@ -104,6 +110,9 @@ module.exports = function(app) {
 
   /* Route for activity */
   apiRouter.get('/projects/:project_id/activities', projectController.getActivities);
+
+  /* Load user search */
+  apiRouter.get('/users/load', userController.loadUsers);
 
   app.use(mount('/api', compose([jwt({secret: process.env.SECRET}), apiRouter.middleware(), apiRouter.allowedMethods()])));
   app.use(mount('/', router.middleware(), router.allowedMethods()));

@@ -23,13 +23,25 @@ import { mapGetters, mapActions, mapState } from 'vuex';
 export default {
   created() {
   },
+  sockets:{
+    connect: function(){
+      this.$socket.emit('ADD_ID_CONNECT', this.user.id);
+      console.log('socket connected');
+    },
+    disconnect: function(){
+      this.$socket.emit('REMOVE_ID_CONNECT', this.user.id);
+      console.log('socket disconnected');
+    }
+  },
   data: () => {
     return {
-      links: [],
+
     }
   },
   computed: {
-
+    ...mapState('auth', [
+      'user'
+    ]),
   },
   watch: {
 

@@ -1,6 +1,11 @@
-
-
 var redis = require("redis");
+var bluebird = require('bluebird');
+
+bluebird.promisifyAll(redis.RedisClient.prototype);
+bluebird.promisifyAll(redis.Multi.prototype);
+
+var client = redis.createClient();
+
 var sub = redis.createClient(), pub = redis.createClient();
 var msg_count = 0;
 
@@ -32,14 +37,25 @@ let wrapIo = function (server) {
 
   io.on('connection', function(socket) {
     console.log("io connection");
-    socket.on('UPDATE_MODELS', data => {
-      socket.emit('UPDATE_MODELS', 'an event sent to all connected clients' + data);
+    socket.on('ADD_ID_CONNECT', (userId) => {
+      console.log('ADD_ID_CONNECT', userId, socket.id);
+      client.hmset("socket_ids" ,
+        [userId, socket.id], function (err, res) {
+          console.log('response ne:', res, err);
+        });
+    });
+    socket.on('REMOVE_ID_CONNECT', (userId) => {
+      console.log('REMOVE_ID_CONNECT', userId, socket.id);
+      // client.hdel("socket_ids" ,
+      //   userId, function (err, res) {
+      //     console.log('response remove ne:', res, err);
+      //   });
     });
 
-    socket.on('JOIN_PROJECT', projectId => {
+    socket.on('JOIN_PROJECT', (projectId, userId) => {
       socket.join('project_' + projectId, () => {
         let rooms = Object.keys(socket.rooms);
-        console.log('JOIN_PROJECT', rooms);  // [ <socket.id>, 'room 237' ]
+        // console.log('JOIN_PROJECT', rooms);  // [ <socket.id>, 'room 237' ]
       });
     });
   });
