@@ -4,6 +4,7 @@
       <div class="card-block">
         <h4 class="card-title">{{project.name}}</h4>
         <p class="card-text">{{project.description}}</p>
+        <AddPeople />
         <div class="list-features">
           <div class="card-group">
             <div class="card feature-item">
@@ -44,9 +45,11 @@
 
 import axios from 'axios';
 import { mapGetters, mapActions, mapState } from 'vuex';
+import AddPeople from './AddPeople';
 
 export default {
   created() {
+    this.$socket.emit('JOIN_PROJECT', this.$route.params.id);
     this.$store.dispatch('project/loadProject', this.$route.params.id);
   },
   data: () => {
@@ -63,7 +66,7 @@ export default {
 
   },
   components: {
-
+    AddPeople
   },
   mounted() {
     var self = this;
