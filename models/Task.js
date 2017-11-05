@@ -22,7 +22,8 @@ export default function (Sequelize, DataTypes) {
 
     description: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: true,
+      defaultValue: "",
     },
 
     order: {

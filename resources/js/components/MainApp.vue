@@ -5,6 +5,7 @@
         <a class="navbar-brand" href="#">
           <img src="/img/logo.png" width="48" height="48" alt="logo">
         </a>
+        <Notification />
       </div>
     </nav>
     <div id="main-app">
@@ -19,17 +20,17 @@
 
 import axios from 'axios';
 import { mapGetters, mapActions, mapState } from 'vuex';
+import Notification from './Notification';
 
 export default {
   created() {
   },
   sockets:{
-    connect: function(){
+    server_connect: function(){
       this.$socket.emit('ADD_ID_CONNECT', this.user.id);
       console.log('socket connected');
     },
     disconnect: function(){
-      this.$socket.emit('REMOVE_ID_CONNECT', this.user.id);
       console.log('socket disconnected');
     }
   },
@@ -50,7 +51,7 @@ export default {
 
   },
   components: {
-
+    Notification
   },
   mounted() {
 

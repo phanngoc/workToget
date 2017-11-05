@@ -25,7 +25,7 @@ var app = new Koa();
 
 app.keys = ['bombay'];
 app.use(session({}, app));
-app.use(logger());
+// app.use(logger());
 app.use(views(config.template.path, config.template.options));
 app.use(bodyParser({multipart: true}));
 app.use(serve('./public'));

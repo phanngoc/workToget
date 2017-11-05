@@ -5,7 +5,9 @@ import Sequelize from 'sequelize';
 import async from 'async';
 import _ from 'lodash';
 import {ioEmitter} from '../../io.js';
-import activity from './helper_activity';
+import activity from '../repo/repo_activity';
+import repo_calendar from '../repo/repo_calendar';
+import {NEW, notification} from '../repo/repo_notification';
 
 class CalendarController {
   constructor(...args) {
@@ -156,6 +158,8 @@ class CalendarController {
       }
     };
     activity(ctx.params.project_id, dataActivity);
+    notification(ctx.user.id, dataActivity);
+
     ctx.body = {status: 200, data: comment};
   }
 
@@ -236,6 +240,7 @@ class CalendarController {
     ioEmitter.to('project_' + ctx.params.project_id).emit('ADD_EVENT', data);
 
     let dataActivity = {
+      type: NEW,
       action: 'add_event',
       owner: ctx.state.user,
       target: {
@@ -255,6 +260,9 @@ class CalendarController {
       }
     };
     activity(ctx.params.project_id, dataActivity);
+    _.forEach(ctx.request.body.with, function(val) {
+      notification(val, dataActivity);
+    });
     ctx.body = {status: 200, data: event};
   }
 
@@ -286,6 +294,7 @@ class CalendarController {
     ioEmitter.to('project_' + ctx.params.project_id).emit('UPDATE_EVENT', data);
 
     let dataActivity = {
+      type: NEW,
       action: 'update_event',
       owner: ctx.state.user,
       target: {
@@ -305,6 +314,9 @@ class CalendarController {
       }
     };
     activity(ctx.params.project_id, dataActivity);
+    _.forEach(ctx.request.body.with, function(val) {
+      notification(val, dataActivity);
+    });
     ctx.body = {status: 200, data: event};
   }
 

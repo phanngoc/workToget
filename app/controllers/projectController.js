@@ -5,7 +5,7 @@ import debug from 'debug';
 import Sequelize from 'sequelize';
 import async from 'async';
 import {ioEmitter} from '../../io.js';
-import {load_activity} from './helper_activity';
+import {load_activity} from '../repo/repo_activity';
 import {createWaitingPeople} from '../repo/repo_project';
 
 class ProjectController {
@@ -265,28 +265,44 @@ class ProjectController {
         typeName: 'add_more_user'
       };
 
-      ioEmitter.to('project_' + ctx.params.project_id).emit('ADD_MORE_USER', data);
+      ioEmitter.to('project_' + ctx.params.project_id).emit('addMoreUser', data);
       ctx.body = {status: 200, data: result};
     } else {
       ctx.body = errors.ServerError;
     }
   }
 
-  async confirmJoinProject(ctx, next) {
-    console.log('confirmJoinProject:', ctx.request.body.user_id);
-
-    let project = await ctx.state.project.createUser(ctx.request.body.user_id).then((result) => {
-      return result;
+  async getInvitation(ctx, next) {
+    let projectUser = await models.ProjectUser.findOne({
+      where: {
+        project_id: ctx.params.project_id,
+        user_id: ctx.state.user.id
+      }
     });
+    if (projectUser) {
+      ctx.body = {status: 200, data: projectUser.role};
+    } else {
+      ctx.body = {status: 400, data: {}};
+    }
+  }
 
-    if (project) {
+  async confirmJoinProject(ctx, next) {
+    let projectUser = await models.ProjectUser.update({
+      role: 'member'
+    }, {
+      where: {
+        project_id: ctx.params.project_id,
+        user_id: ctx.state.user.id
+      }
+    });
+    if (projectUser) {
       let data = {
         type: 'project',
         deltas: ctx.state.user,
         typeName: 'accept_invitation'
       };
 
-      ioEmitter.to('project_' + ctx.params.project_id).emit('ACCEPT_INVITATION', data);
+      ioEmitter.to('project_' + ctx.params.project_id).emit('acceptInvitation', data);
       ctx.body = {status: 200, data: ctx.state.user};
     } else {
       ctx.body = errors.ServerError;

@@ -36,7 +36,13 @@ let wrapIo = function (server) {
   io.adapter(redis({ host: '127.0.0.1', port: 6379, subClient: sub, pubClient: pub}));
 
   io.on('connection', function(socket) {
-    console.log("io connection");
+    console.log('fire connect');
+    socket.emit('server_connect');
+
+    socket.on('disconnect', (reason) => {
+      console.log('disconnect', reason);
+    });
+
     socket.on('ADD_ID_CONNECT', (userId) => {
       console.log('ADD_ID_CONNECT', userId, socket.id);
       client.hmset("socket_ids" ,
@@ -44,18 +50,10 @@ let wrapIo = function (server) {
           console.log('response ne:', res, err);
         });
     });
-    socket.on('REMOVE_ID_CONNECT', (userId) => {
-      console.log('REMOVE_ID_CONNECT', userId, socket.id);
-      // client.hdel("socket_ids" ,
-      //   userId, function (err, res) {
-      //     console.log('response remove ne:', res, err);
-      //   });
-    });
 
     socket.on('JOIN_PROJECT', (projectId, userId) => {
       socket.join('project_' + projectId, () => {
         let rooms = Object.keys(socket.rooms);
-        // console.log('JOIN_PROJECT', rooms);  // [ <socket.id>, 'room 237' ]
       });
     });
   });
