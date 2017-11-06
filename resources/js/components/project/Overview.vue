@@ -4,8 +4,10 @@
       <div class="card-block">
         <h4 class="card-title">{{project.name}}</h4>
         <p class="card-text">{{project.description}}</p>
+        <Welcome />
+        <Invitation />
         <AddPeople />
-        <div class="list-features">
+        <div class="list-features" v-if="!isInvita">
           <div class="card-group">
             <div class="card feature-item">
               <img class="card-img-top" src="/img/icon_chat.png" alt="Card image cap">
@@ -46,6 +48,8 @@
 import axios from 'axios';
 import { mapGetters, mapActions, mapState } from 'vuex';
 import AddPeople from './AddPeople';
+import Invitation from './Invitation';
+import Welcome from './Welcome';
 
 export default {
   created() {
@@ -60,13 +64,16 @@ export default {
   computed: {
     ...mapState('project', [
         'project',
+        'isInvita'
     ]),
   },
   methods: {
 
   },
   components: {
-    AddPeople
+    AddPeople,
+    Invitation,
+    Welcome
   },
   mounted() {
     var self = this;

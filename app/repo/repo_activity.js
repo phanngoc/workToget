@@ -2,6 +2,7 @@ import redis from 'redis'
 import moment from 'moment'
 import Ajv from 'ajv'
 import _ from 'lodash'
+import {NEW, CHECKED, VISITED} from './repo_notification';
 
 let client = redis.createClient();
 
@@ -36,6 +37,7 @@ export default function activity(project_id, data) {
   let current = moment().unix();
   var schema = {
     "properties": {
+      "type": {"enum": [NEW, CHECKED, VISITED]},
       "action": {
         "type": "string",
       },

@@ -54,43 +54,28 @@ module.exports = function(app) {
 
   /* Route for chat */
   apiRouter.get('/projects/:project_id/messages', chatController.loadMessages);
-
   apiRouter.post('/projects/:project_id/messages/create', chatController.createMessage);
-
   apiRouter.delete('/projects/:project_id/messages/:id/delete', chatController.deleteMessage);
 
   /* Route for trello */
 
   apiRouter.delete('/projects/:project_id/frames/:id/delete', projectController.deleteFrame);
-
   apiRouter.put('/projects/:project_id/frames/:id/update', projectController.updateFrame);
-
   apiRouter.post('/projects/:project_id/frames', projectController.createFrame);
-
   apiRouter.post('/projects/:project_id/tasks', taskController.createTask);
-
   apiRouter.get('/projects/:id/frames', projectController.getFrames);
-
   apiRouter.get('/projects/:id/labels', projectController.getLabels);
-
   apiRouter.post('/projects/:id/update', projectController.update);
-
   apiRouter.post('/projects/:id/update-sort-frame', projectController.updateSortFrame);
-
   apiRouter.post('/projects/:id/update-sort-task', projectController.updateSortTask);
-
   apiRouter.put('/projects/:id/update-pin', projectController.updatePin);
-
   apiRouter.get('/task/:id/comments', taskController.getListCommentTask);
   apiRouter.post('/projects/:project_id/task/:id/comment', taskController.addCommentTask);
   apiRouter.put('/projects/:project_id/task/:task_id/comment/:id', taskController.updateCommentTask);
   apiRouter.delete('/projects/:project_id/tasks/:task_id/comments/:id/delete', taskController.deleteCommentTask);
-
   apiRouter.put('/projects/:project_id/task/:id/update-due-date', taskController.updateDueDate);
-
   apiRouter.delete('/task/:id/delete', taskController.deleteLabel);
   apiRouter.put('/task/:id/update', taskController.updateTask);
-
   apiRouter.delete('/projects/:project_id/labels/:id/delete', taskController.deleteLabel);
   apiRouter.put('/projects/:project_id/labels/:id/update', taskController.updateLabel);
   apiRouter.post('/projects/:project_id/labels/create', taskController.createLabel);
@@ -110,6 +95,13 @@ module.exports = function(app) {
 
   /* Route for activity */
   apiRouter.get('/projects/:project_id/activities', projectController.getActivities);
+
+  /* Route for project */
+  apiRouter.get('/projects/:project_id/load-invitation', projectController.getInvitation);
+
+  /* Route for notification */
+  apiRouter.get('/users/load-notification', userController.loadNotification);
+  apiRouter.post('/users/check-notification', userController.checkNotification);
 
   /* Load user search */
   apiRouter.get('/users/load', userController.loadUsers);

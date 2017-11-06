@@ -6,7 +6,7 @@ import Sequelize from 'sequelize';
 import async from 'async';
 import _ from 'lodash';
 import {ioEmitter} from '../../io.js';
-import activity from './helper_activity';
+import activity from '../repo/repo_activity';
 
 let slugUrl = function(text) {
   return text

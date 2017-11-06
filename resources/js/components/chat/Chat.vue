@@ -30,6 +30,11 @@ import ChatLine from './ChatLine';
 import Divider from './Divider';
 
 export default {
+  sockets:{
+    ADD_MESSAGE: function(val) {
+      this.scrollToBottom();
+    }
+  },
   created() {
     this.$store.dispatch('chat/loadChatMessage');
     this.$socket.emit('JOIN_PROJECT', this.$route.params.id);

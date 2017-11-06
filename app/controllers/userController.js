@@ -7,6 +7,8 @@ import _ from 'lodash';
 import {ioEmitter} from '../../io.js';
 import fs from 'fs';
 import path from 'path';
+import {list_notify, check_list_notify, visit_notify} from '../repo/repo_notification';
+import moment from 'moment';
 
 class UserController {
   constructor(...args) {
@@ -18,6 +20,27 @@ class UserController {
     });
 
     ctx.body = {status: 200, data: users};
+  }
+
+  async loadNotification(ctx, next) {
+    let time = moment().unix();
+    let results = await list_notify(ctx.state.user.id, time);
+    ctx.body = {status: 200, data: results};
+  }
+
+  async checkNotification(ctx, next) {
+    let time = moment().unix();
+    let data = ctx.request.body.data;
+    // data must be array 2 item.
+    let results = await check_list_notify(ctx.state.user.id, data);
+    ctx.body = {status: 200, data: results};
+  }
+
+  async visitNotification(ctx, next) {
+    let time = moment().unix();
+    let data = ctx.request.body.data;
+    let results = await visit_notify(ctx.state.user.id, data);
+    ctx.body = {status: 200, data: results};
   }
 };
 

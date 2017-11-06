@@ -3,6 +3,9 @@ export const LOGIN = 'LOGIN'
 export const LOGOUT = 'LOGOUT'
 export const SET_USER = 'SET_USER'
 export const LOAD_USERS = 'LOAD_USERS'
+export const LOAD_NOTIFICATION = 'LOAD_NOTIFICATION'
+export const SOCKET_NOTIFICATION = 'SOCKET_NOTIFICATION'
+export const CHECK_NOTIFICATION = 'CHECK_NOTIFICATION'
 
 import axios from 'axios'
 
@@ -10,7 +13,8 @@ const state = {
   authenticated: false,
   access_token: {},
   user: {},
-  users: []
+  users: [],
+  notifications: []
 }
 
 // getters
@@ -45,10 +49,36 @@ const mutations = {
 
     [LOAD_USERS](state, users) {
       state.users = users;
+    },
+
+    [LOAD_NOTIFICATION] (state, data) {
+      state.notifications = data;
+    },
+
+    [SOCKET_NOTIFICATION] (state, data) {
+      state.notifications.unshift(data);
+    },
+
+    [CHECK_NOTIFICATION] (state, data) {
+      state.notifications = data;
     }
 };
 
 const actions = {
+  checkNotification({commit}, data) {
+    axios.get('/api/users/check-notification').then(function(res) {
+      if (res.status == 200) {
+        commit(CHECK_NOTIFICATION, res.data.data);
+      }
+    });
+  },
+  loadNotification({commit}, data) {
+    axios.get('/api/users/load-notification').then(function(res) {
+      if (res.status == 200) {
+        commit(LOAD_NOTIFICATION, res.data.data);
+      }
+    });
+  },
   check({ commit }) {
     commit(CHECK);
   },
