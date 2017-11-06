@@ -102,6 +102,7 @@ module.exports = function(app) {
   /* Route for notification */
   apiRouter.get('/users/load-notification', userController.loadNotification);
   apiRouter.post('/users/check-notification', userController.checkNotification);
+  apiRouter.post('/users/visit-notification', userController.visitNotification);
 
   /* Load user search */
   apiRouter.get('/users/load', userController.loadUsers);

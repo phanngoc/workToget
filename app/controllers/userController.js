@@ -18,13 +18,13 @@ class UserController {
   async loadUsers(ctx, next) {
     let users = await models.User.findAll({
     });
-
     ctx.body = {status: 200, data: users};
   }
 
   async loadNotification(ctx, next) {
     let time = moment().unix();
-    let results = await list_notify(ctx.state.user.id, time);
+    let offset = !_.isUndefined(ctx.request.query.offset) ? ctx.request.query.offset : 0;
+    let results = await list_notify(ctx.state.user.id, offset, 4);
     ctx.body = {status: 200, data: results};
   }
 

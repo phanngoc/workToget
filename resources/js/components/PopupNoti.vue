@@ -46,6 +46,11 @@ export default {
         this.description = this.showLess(this.notification.target.data.note, 50);
         this.action = 'added event';
         break;
+      case "update_event":
+        this.title = this.showLess(this.notification.target.data.title, 40);
+        this.description = this.showLess(this.notification.target.data.note, 50);
+        this.action = 'updated event';
+        break;
       default:
 
     }

@@ -1,6 +1,7 @@
 <template lang="html">
-  <li class="li-item">
-    <router-link :to="{ name: notification.target.link.name, params: notification.target.link.params}" class='at-link'>
+  <li :class="'li-item type_link_' + notification.type">
+    <router-link class="at-link" @click.native="visitLink"
+      :to="{ name: notification.target.link.name, params: notification.target.link.params}">
       <div class="wr-avatar"><div class="notify-img">
         <img :src="'/img/' + notification.owner.avatar" alt="" class="avatar">
       </div></div>
@@ -46,7 +47,9 @@ export default {
 
   },
   methods: {
-
+    visitLink: function() {
+      this.$store.dispatch('auth/visitNotification', [JSON.stringify(this.notification), this.time]);
+    }
   },
   components: {
 
@@ -57,6 +60,12 @@ export default {
         this.title = this.showLess(this.notification.target.data.title, 40);
         this.description = this.showLess(this.notification.target.data.note, 50);
         this.action = 'added event';
+        break;
+
+      case "update_event":
+        this.title = this.showLess(this.notification.target.data.title, 40);
+        this.description = this.showLess(this.notification.target.data.note, 50);
+        this.action = 'updated event';
         break;
       default:
 
@@ -73,5 +82,8 @@ export default {
 .line-info, .info-target{
   text-decoration: none;
   color: black;
+}
+.type_link_0, .type_link_1{
+  background-color: antiquewhite;
 }
 </style>
