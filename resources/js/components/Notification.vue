@@ -12,8 +12,13 @@
       <!-- end notify title -->
       <!-- notify content -->
       <div class="drop-content">
-      	<NotiItem v-for="(notification, index) in notifications" :key="index"
+      	<NotiItem v-for="(notification, index) in notifications" :key="notification[0].uuid"
           :notification="notification[0]" :time="notification[1]"/>
+        <div class="wr-loader" v-if="loading">
+          <div class="loader">
+
+          </div>
+        </div>
       </div>
       <div class="notify-drop-footer text-center">
       	<a href=""><i class="fa fa-eye"></i> Tümünü Göster</a>
@@ -54,7 +59,9 @@ export default {
       numNewNoti: 0,
       title: '',
       description: '',
-      action: ''
+      action: '',
+      loading: false,
+      isLast: false
     }
   },
   computed: {
@@ -105,12 +112,42 @@ export default {
     NotiItem
   },
   mounted() {
+    let self = this;
+    $(".drop-content").scroll(function(){
+      if(($(this).scrollTop() + $(this).height()) == $(this)[0].scrollHeight && !self.isLast && !self.loading) {
+        self.loading = true;
 
+        self.$store.dispatch('auth/loadMoreNotification').then((res) => {
+          self.loading = false;
+          if (res.data.status == 200) {
+            if (res.data.data.length == 0) {
+              self.isLast = true;
+            }
+          }
+        });
+
+      }
+    });
   }
 }
 </script>
 
 <style lang="scss">
+.loader {
+    border: 8px solid #f3f3f3; /* Light grey */
+    border-top: 8px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    animation: spin 2s linear infinite;
+    margin: 4px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 .drop-content{
   .li-item{
     .at-link{
@@ -132,7 +169,7 @@ export default {
   left: auto;
   min-width: 330px;
   background-color: #fff;
-  min-height: 360px;
+  min-height: 367px;
   max-height: 360px;
   .notify-drop-title {
     border-bottom: 1px solid #e2e2e2;
@@ -164,7 +201,7 @@ export default {
         display: block;
       }
       &:hover {
-        background-color: #fcfcfc;
+        // background-color: #ececec;
       }
       &:last-child {
         border-bottom: none;

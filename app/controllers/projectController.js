@@ -7,6 +7,7 @@ import async from 'async';
 import {ioEmitter} from '../../io.js';
 import {load_activity} from '../repo/repo_activity';
 import {createWaitingPeople} from '../repo/repo_project';
+import _ from 'lodash';
 
 class ProjectController {
   constructor(...args) {
@@ -128,13 +129,19 @@ class ProjectController {
 
   async createFrame(ctx, next) {
     let max_order = await models.Frame.max('order', {where : {'project_id': ctx.params.project_id}});
+    max_order = _.isNaN(max_order) ? 0 : max_order;
     let frame = await models.Frame
         .create({
           name: ctx.request.body.name,
           order: max_order+1,
           project_id: ctx.params.project_id
+        }, {
+          include: [
+              {model: models.Task, as: 'Tasks'}
+          ]
         });
-
+    frame = frame.toJSON();
+    frame.Tasks = [];
     let data = {
       type: 'trello',
       deltas: frame,

@@ -30,7 +30,6 @@ app.use(views(config.template.path, config.template.options));
 app.use(bodyParser({multipart: true}));
 app.use(serve('./public'));
 
-
 passport.use(new LocalStrategy({
     usernameField: 'username',
     passwordField: 'password',

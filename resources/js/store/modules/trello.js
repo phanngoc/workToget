@@ -210,7 +210,7 @@ const actions = {
     commit(CLOSE_EDIT_TASK);
   },
   saveSimpleTask ({ commit, state, rootState }, task) {
-    axios.put('/api/task/' + task.id + '/update', {
+    axios.put('/api/projects/' + rootState.route.params.id + '/task/' + task.id + '/update', {
       title: task.title,
       description: task.description,
       project_id: rootState.route.params.id
@@ -420,8 +420,10 @@ const mutations = {
     var taskSet = _.find(frame.Tasks, function(o) { return o.id == task.id; });
     taskSet.title = task.title;
     taskSet.description = task.description;
-
-    state.activeTask = Object.assign({}, taskSet);
+    console.log(SOCKET_SAVE_SIMPLE_TASK, task);
+    _.assign(taskSet, task);
+    _.assign(state.activeTask, task);
+    // state.activeTask = Object.assign({}, taskSet);
   },
   [SOCKET_UPDATE_LABEL] (state, data) {
     let labelD = data.deltas;
@@ -440,7 +442,6 @@ const mutations = {
     let labels = data.deltas;
     var frame = _.find(state.frames, function(o) { return o.id == data.frameId; });
     var taskSet = _.find(frame.Tasks, function(o) { return o.id == data.taskId; });
-    console.log(SOCKET_UPDATE_LABEL_FOR_TASK, labels, taskSet);
     taskSet.Labels = labels;
     state.activeTask = Object.assign({}, taskSet);
   },

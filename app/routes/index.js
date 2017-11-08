@@ -15,6 +15,8 @@ import mount from 'koa-mount';
 import compose from 'koa-compose';
 import Router from 'koa-router';
 import {load_project} from './params';
+import graphqlHTTP from 'koa-graphql';
+import schema from '../graphql/schema';
 
 module.exports = function(app) {
 
@@ -27,6 +29,7 @@ module.exports = function(app) {
 
   var router = new Router();
   var apiRouter = new Router();
+  var graphRouter = new Router();
 
   apiRouter.param('project_id', load_project);
 
@@ -75,7 +78,7 @@ module.exports = function(app) {
   apiRouter.delete('/projects/:project_id/tasks/:task_id/comments/:id/delete', taskController.deleteCommentTask);
   apiRouter.put('/projects/:project_id/task/:id/update-due-date', taskController.updateDueDate);
   apiRouter.delete('/task/:id/delete', taskController.deleteLabel);
-  apiRouter.put('/task/:id/update', taskController.updateTask);
+  apiRouter.put('/projects/:project_id/task/:id/update', taskController.updateTask);
   apiRouter.delete('/projects/:project_id/labels/:id/delete', taskController.deleteLabel);
   apiRouter.put('/projects/:project_id/labels/:id/update', taskController.updateLabel);
   apiRouter.post('/projects/:project_id/labels/create', taskController.createLabel);
@@ -102,10 +105,17 @@ module.exports = function(app) {
   /* Route for notification */
   apiRouter.get('/users/load-notification', userController.loadNotification);
   apiRouter.post('/users/check-notification', userController.checkNotification);
+  apiRouter.post('/users/visit-notification', userController.visitNotification);
 
   /* Load user search */
   apiRouter.get('/users/load', userController.loadUsers);
 
+  graphRouter.all('/', graphqlHTTP({
+    schema: schema,
+    graphiql: true
+  }));
+
+  app.use(mount('/graphql', graphRouter.middleware(), graphRouter.allowedMethods()));
   app.use(mount('/api', compose([jwt({secret: process.env.SECRET}), apiRouter.middleware(), apiRouter.allowedMethods()])));
   app.use(mount('/', router.middleware(), router.allowedMethods()));
 };

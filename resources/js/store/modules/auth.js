@@ -6,6 +6,8 @@ export const LOAD_USERS = 'LOAD_USERS'
 export const LOAD_NOTIFICATION = 'LOAD_NOTIFICATION'
 export const SOCKET_NOTIFICATION = 'SOCKET_NOTIFICATION'
 export const CHECK_NOTIFICATION = 'CHECK_NOTIFICATION'
+export const VISIT_NOTIFICATION = 'VISIT_NOTIFICATION'
+export const LOAD_MORE_NOTIFICATION = 'LOAD_MORE_NOTIFICATION'
 
 import axios from 'axios'
 
@@ -61,12 +63,48 @@ const mutations = {
 
     [CHECK_NOTIFICATION] (state, data) {
       state.notifications = data;
+    },
+
+    [VISIT_NOTIFICATION] (state, data) {
+      let noti = JSON.parse(data[0]);
+      let keyItem = _.findKey(state.notifications, function(o) {
+        let notiTem = JSON.parse(o[0]);
+        return notiTem.uuid == noti.uuid;
+      });
+
+      state.notifications[keyItem] = data;
+    },
+
+    [LOAD_MORE_NOTIFICATION] (state, data) {
+      _.forEach(data, function(value) {
+        state.notifications.push(value);
+      });
     }
 };
 
 const actions = {
-  checkNotification({commit}, data) {
-    axios.get('/api/users/check-notification').then(function(res) {
+  loadMoreNotification({commit, state}) {
+    let offset = state.notifications.length;
+    return axios.get('/api/users/load-notification', {
+      params: {
+        offset: offset
+      }
+    }).then(function(res) {
+      if (res.status == 200) {
+        commit(LOAD_MORE_NOTIFICATION, res.data.data);
+      }
+      return res;
+    });
+  },
+  visitNotification({commit, state}, data) {
+    axios.post('/api/users/visit-notification', {data: data}).then(function(res) {
+      if (res.status == 200) {
+        commit(VISIT_NOTIFICATION, res.data.data);
+      }
+    });
+  },
+  checkNotification({commit, state}) {
+    axios.post('/api/users/check-notification', {data: state.notifications}).then(function(res) {
       if (res.status == 200) {
         commit(CHECK_NOTIFICATION, res.data.data);
       }

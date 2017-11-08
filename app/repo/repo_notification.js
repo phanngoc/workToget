@@ -5,6 +5,7 @@ import _ from 'lodash'
 import bluebird from 'bluebird'
 import {ioEmitter} from '../../io.js';
 import uuidv1 from 'uuid/v1';
+import async from 'async';
 
 bluebird.promisifyAll(redis.RedisClient.prototype);
 bluebird.promisifyAll(redis.Multi.prototype);
@@ -29,19 +30,23 @@ export async function visit(user_id, time, data) {
 }
 
 export async function check(user_id, time, data) {
-  await client.zremAsync("notification:" + user_id, data);
   let newData = JSON.parse(data);
-  newData.type = CHECKED;
-  let stringNewData = JSON.stringify(newData);
-  await client.zaddAsync("notification:" + user_id, time, stringNewData);
-  return [stringNewData, time];
+  if (newData.type == NEW) {
+    await client.zremAsync("notification:" + user_id, data);
+    newData.type = CHECKED;
+    let stringNewData = JSON.stringify(newData);
+    await client.zaddAsync("notification:" + user_id, time, stringNewData);
+    return [stringNewData, time];
+  } else {
+    return [data, time];
+  }
 }
 
-export async function list_notify(user_id, time) {
+export async function list_notify(user_id, offset, count) {
   let results = [];
-  let min = moment().subtract(1, 'months').unix();
   return new Promise((resolve, reject) => {
-    client.zrevrangebyscore('notification:' + user_id, time, min, 'withscores', function(err, members) {
+    client.zrevrangebyscore('notification:' + user_id, '+inf', '-inf', 'withscores',
+      'LIMIT', offset, count, function(err, members) {
       console.log(err, members);
       if (err) {
         reject(err);
@@ -66,7 +71,9 @@ export async function check_list_notify(user_id, data) {
   return new Promise((resolve, reject) => {
     async.map(data, function(item, callback) {
       check(user_id, item[1], item[0]).then((res) => {
-        callback(res);
+        callback(null, res);
+      }).catch((err) => {
+        callback(err);
       });
     }, function(err, results) {
       if (err) {

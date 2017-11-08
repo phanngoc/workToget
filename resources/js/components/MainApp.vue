@@ -2,9 +2,14 @@
   <div id="surface">
     <nav class="navbar nav-menu">
       <div class="container">
-        <a class="navbar-brand" href="#">
+        <router-link class="navbar-brand" :to="{ name: 'homepage'}">
           <img src="/img/logo.png" width="48" height="48" alt="logo">
-        </a>
+        </router-link>
+        <div class="wr-create-project">
+          <router-link :to="{ name: 'create_project' }">
+            Create project
+          </router-link>
+        </div>
         <Notification />
       </div>
     </nav>
@@ -60,5 +65,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
+  .wr-create-project{
+    float: right;
+  }
 </style>

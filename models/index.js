@@ -74,6 +74,11 @@ export function setupModels(client) {
     m.Project.hasMany(m.Frame, {as: 'Frames', foreignKey: 'project_id'});
     m.Project.hasMany(m.Chat, {as: 'Chats', foreignKey: 'project_id'});
     m.Project.belongsToMany(m.User, { as: 'Users', through: m.ProjectUser, foreignKey: 'project_id'});
+    m.Project.belongsTo(m.User, {
+        foreignKey: 'owner_id',
+        constraints: false,
+        as: 'User'
+    });
 
     m.User.hasMany(m.Chat, {as: 'Chats', foreignKey: 'user_id'});
     // m.User.hasMany(m.ProjectUser, {as: 'project_users', foreignKey: 'user_id'});
