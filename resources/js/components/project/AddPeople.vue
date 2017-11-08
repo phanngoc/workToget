@@ -91,10 +91,7 @@ export default {
      }
   },
   watch: {
-    // users: function(val, oldVal) {
-    //   console.log('users,', val);
-    //
-    // }
+  
   },
   components: {
     People

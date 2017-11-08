@@ -138,7 +138,7 @@ export default {
           var href, url;
 
           if (xhr.status === 200) {
-            url = href = '/img/' + key;
+            url = href = '/uploads/' + key;
             let response = JSON.parse(xhr.responseText);
             let data = {link: url, name: response.data.name, size: response.data.size};
             resolve(JSON.stringify(data));

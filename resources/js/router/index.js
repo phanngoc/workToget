@@ -14,12 +14,16 @@ import TreeProject from '../components/project/TreeProject.vue'
 import MainApp from '../components/MainApp.vue'
 import Activity from '../components/project/Activity.vue'
 import ShowEvent from '../components/calendar/ShowEvent.vue'
+import HomePage from '../components/home/HomePage.vue'
+import CreateProject from '../components/home/CreateProject.vue'
 
 const router = [
     ...authGuard([
       {
         path: '/', component: MainApp,
         children: [
+          { path: '/', component: HomePage, name: 'homepage' },
+          { path: '/create_project', component: CreateProject, name: 'create_project' },
           { path: '/projects/:id', component: Overview, name: 'overview_project' },
           { path: '/projects/:id', component: TreeProject,
             children: [

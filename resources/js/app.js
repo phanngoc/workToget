@@ -13,6 +13,37 @@ import FullCalendar from 'vue-full-calendar';
 import infiniteScroll from 'vue-infinite-scroll';
 import MainApp from './components/MainApp.vue';
 
+import ApolloClient from 'apollo-client';
+import { HttpLink } from 'apollo-link-http';
+import { InMemoryCache } from 'apollo-cache-inmemory'
+import VueApollo from 'vue-apollo'
+import { ApolloLink } from 'apollo-link';
+
+const httpLink = new HttpLink({ uri: 'http://localhost:3000/graphql' });
+
+const authMiddleware = new ApolloLink((operation, forward) => {
+  // add the authorization to the headers
+  operation.setContext({
+    headers: {
+      authorization: localStorage.getItem('access_token') || null,
+    }
+  });
+
+  return forward(operation);
+});
+
+const apolloClient = new ApolloClient({
+  link: authMiddleware.concat(httpLink),
+  cache: new InMemoryCache().restore(window.__APOLLO_STATE__),
+});
+
+// Install the vue plugin
+Vue.use(VueApollo)
+
+const apolloProvider = new VueApollo({
+  defaultClient: apolloClient,
+})
+
 Vue.use(infiniteScroll)
 
 Vue.use(FullCalendar);
@@ -84,6 +115,7 @@ const unsync = sync(store, router)
 
 const app = new Vue({
     el: '#app',
+    apolloProvider,
     store,
     router,
 });
