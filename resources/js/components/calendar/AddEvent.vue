@@ -17,8 +17,8 @@
              ></el-date-picker>
            </el-form-item>
          </el-col>
-         <el-col class="line" :span="1" style="text-align: center;">-</el-col>
-         <el-col :span="6">
+         <el-col class="line" :span="1" style="text-align: center;" v-if="!form.is_allday">-</el-col>
+         <el-col :span="6" v-if="!form.is_allday">
            <el-form-item prop="start.time">
              <el-time-select type="fixed-time" placeholder="Pick a time"
               :picker-options="{ start: '00:00', step: '00:15', end: '23:45' }" style="width:100%" v-model="form.start.time"></el-time-select>
@@ -32,8 +32,8 @@
                v-model="form.end.day"></el-date-picker>
            </el-form-item>
          </el-col>
-         <el-col class="line" :span="1" style="text-align: center;">-</el-col>
-         <el-col :span="6">
+         <el-col class="line" :span="1" style="text-align: center;" v-if="!form.is_allday">-</el-col>
+         <el-col :span="6" v-if="!form.is_allday">
            <el-form-item prop="lttime">
              <el-time-select type="fixed-time" placeholder="Pick a time" style="width:100%" v-model="form.end.time"
               :picker-options="{ start: '00:00', step: '00:15', end: '23:45' }"></el-time-select>
