@@ -1,20 +1,17 @@
 <template lang="html">
-  <div class="form-wrap" >
-    <form id="form-login" v-on:submit.prevent="submitLogin">
-      <div class="form-group">
-        <label for="email">Username</label>
-        <input type="text" v-model="username" name="username" class="form-control" id="username">
-      </div>
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" v-model="password" name="password" class="form-control" id="password">
-      </div>
-      <div class="checkbox">
-        <label><input type="checkbox"> Remember me</label>
-      </div>
-      <button type="submit" class="btn btn-default">Submit</button>
-    </form>
-  </div>
+  <el-card class="box-card form-wrap">
+    <el-form ref="login_form" :model="form" label-width="120px" :rules="rules" id="form-login">
+      <el-form-item label="Username" prop="username">
+        <el-input v-model="form.username"></el-input>
+      </el-form-item>
+      <el-form-item label="Password" prop="password">
+        <el-input type="password" v-model="form.password"></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="success" @click="submitLogin">Login</el-button>
+      </el-form-item>
+    </el-form>
+  </el-card>
 </template>
 
 <script>
@@ -29,8 +26,20 @@ export default {
   props: [],
   data: function() {
     return {
-      username: '',
-      password: ''
+      form: {
+        username: '',
+        password: ''
+      },
+      rules: {
+        username: [
+          {required: true, message: "Username is required", trigger: 'blur'},
+          {min: 4, max: 20, message: 'Length should be 4 to 20', trigger: 'blur'},
+        ],
+        password: [
+          {required: true, message: "Password is required", trigger: 'blur'},
+          {min: 5, max: 20, message: 'Length should be 5 to 20', trigger: 'blur'}
+        ]
+      },
     }
   },
   computed: {
@@ -38,10 +47,24 @@ export default {
 
   methods: {
     submitLogin: function(e) {
+      let that = this;
       e.preventDefault();
-      this.$store.dispatch('auth/login', {
-        username: this.username,
-        password: this.password
+      this.$refs['login_form'].validate((valid) => {
+        if (valid) {
+          this.$store.dispatch('auth/login', {
+            username: this.form.username,
+            password: this.form.password
+          }).then(function(result) {
+            if (result.status == 200) {
+              that.$router.push({ name: 'homepage'});
+            }
+          }).catch((err) => {
+            console.log(err);
+          });
+        } else {
+          this.$message.error('Login failed !');
+          return false;
+        }
       });
     }
   },

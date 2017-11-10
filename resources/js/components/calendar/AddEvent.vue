@@ -12,14 +12,14 @@
         </el-form-item>
         <el-form-item label="Start">
          <el-col :span="6">
-           <el-form-item prop="start.day">
+           <el-form-item prop="ltday">
              <el-date-picker type="date" placeholder="Pick a day" style="width:100%" v-model="form.start.day"
              ></el-date-picker>
            </el-form-item>
          </el-col>
          <el-col class="line" :span="1" style="text-align: center;" v-if="!form.is_allday">-</el-col>
          <el-col :span="6" v-if="!form.is_allday">
-           <el-form-item prop="start.time">
+           <el-form-item prop="ltday">
              <el-time-select type="fixed-time" placeholder="Pick a time"
               :picker-options="{ start: '00:00', step: '00:15', end: '23:45' }" style="width:100%" v-model="form.start.time"></el-time-select>
            </el-form-item>
@@ -32,9 +32,9 @@
                v-model="form.end.day"></el-date-picker>
            </el-form-item>
          </el-col>
-         <el-col class="line" :span="1" style="text-align: center;" v-if="!form.is_allday">-</el-col>
+         <el-col class="line" :span="1" style="text-align: center;">-</el-col>
          <el-col :span="6" v-if="!form.is_allday">
-           <el-form-item prop="lttime">
+           <el-form-item prop="ltday">
              <el-time-select type="fixed-time" placeholder="Pick a time" style="width:100%" v-model="form.end.time"
               :picker-options="{ start: '00:00', step: '00:15', end: '23:45' }"></el-time-select>
            </el-form-item>
@@ -74,9 +74,6 @@ export default {
   data: function() {
     let that = this;
     let checkLarger = (rule, value, callback) => {
-      // console.log(rule, value);
-      // console.log(moment(that.form.end.day).format('YYYY-MM-DD')+' '+that.form.end.time);
-      // console.log(moment(that.form.start.day).format('YYYY-MM-DD')+' '+that.form.start.time);
       let end = moment(moment(that.form.end.day).format('YYYY-MM-DD')+' '+that.form.end.time);
       let start = moment(moment(that.form.start.day).format('YYYY-MM-DD')+' '+that.form.start.time);
       if (!start.isBefore(end)) {
@@ -110,10 +107,7 @@ export default {
           {required: true, message: "End time is required"},
         ],
         ltday: [
-          {validator: checkLarger, trigger: 'blur'}
-        ],
-        lttime: [
-          {validator: checkLarger, trigger: 'blur'}
+          {validator: checkLarger, trigger: 'change'}
         ]
       },
     };

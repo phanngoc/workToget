@@ -1,5 +1,5 @@
 <template lang="html">
-  <div class="dropdown">
+  <div class="dropdown wr-noti">
     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
       aria-haspopup="true" :aria-expanded="stateOpen" @click="toggleStateOpen">Notification (<b>{{numNewNoti}}</b>)</a>
     <ul class="dropdown-menu notify-drop">
@@ -27,9 +27,7 @@
   </div>
 </template>
 
-
 <script>
-
 import axios from 'axios';
 import { mapGetters, mapActions, mapState } from 'vuex';
 import NotiItem from './NotiItem';
