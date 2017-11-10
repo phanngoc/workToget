@@ -13,14 +13,14 @@
         </el-form-item>
         <el-form-item label="Start">
          <el-col :span="6">
-           <el-form-item prop="start.day">
+           <el-form-item prop="lesday">
              <el-date-picker type="date" placeholder="Pick a day" style="width:100%" v-model="form.start.day"
              ></el-date-picker>
            </el-form-item>
          </el-col>
-         <el-col class="line" :span="1" style="text-align: center;">-</el-col>
-         <el-col :span="6">
-           <el-form-item prop="start.time">
+         <el-col class="line" :span="1" style="text-align: center;" v-if="!form.is_allday">-</el-col>
+         <el-col :span="6" v-if="!form.is_allday">
+           <el-form-item prop="lestime">
              <el-time-select type="fixed-time" placeholder="Pick a time"
               :picker-options="{ start: '00:00', step: '00:15', end: '23:45' }" style="width:100%" v-model="form.start.time"></el-time-select>
            </el-form-item>
@@ -33,8 +33,8 @@
                v-model="form.end.day"></el-date-picker>
            </el-form-item>
          </el-col>
-         <el-col class="line" :span="1" style="text-align: center;">-</el-col>
-         <el-col :span="6">
+         <el-col class="line" :span="1" style="text-align: center;" v-if="!form.is_allday">-</el-col>
+         <el-col :span="6" v-if="!form.is_allday">
            <el-form-item prop="lttime">
              <el-time-select type="fixed-time" placeholder="Pick a time" style="width:100%" v-model="form.end.time"
               :picker-options="{ start: '00:00', step: '00:15', end: '23:45' }"></el-time-select>
@@ -44,10 +44,10 @@
         <el-form-item label="Notify">
           <el-select v-model="form.with" multiple placeholder="Select Users">
               <el-option
-                v-for="item in users"
-                :key="item.User.id"
-                :label="item.User.fullname"
-                :value="item.User.id">
+                v-for="item in usersCan"
+                :key="item.id"
+                :label="item.fullname"
+                :value="item.id">
               </el-option>
             </el-select>
         </el-form-item>
@@ -74,7 +74,23 @@ export default {
   },
   data: function() {
     let that = this;
-    let checkLarger = (rule, value, callback) => {
+    let checkLessDayStart = (rule, value, callback) => {
+      let end = moment(moment(that.form.end.day).format('YYYY-MM-DD')+' '+that.form.end.time);
+      let start = moment(moment(that.form.start.day).format('YYYY-MM-DD')+' '+that.form.start.time);
+      if (!start.isBefore(end)) {
+        callback(new Error('Start day must be less than end date'));
+      }
+      callback();
+    };
+    let checkLessTimeStart = (rule, value, callback) => {
+      let end = moment(moment(that.form.end.day).format('YYYY-MM-DD')+' '+that.form.end.time);
+      let start = moment(moment(that.form.start.day).format('YYYY-MM-DD')+' '+that.form.start.time);
+      if (!start.isBefore(end)) {
+        callback(new Error('Start day must be less than end date'));
+      }
+      callback();
+    };
+    let checkLargerDayEnd = (rule, value, callback) => {
       let end = moment(moment(that.form.end.day).format('YYYY-MM-DD')+' '+that.form.end.time);
       let start = moment(moment(that.form.start.day).format('YYYY-MM-DD')+' '+that.form.start.time);
       if (!start.isBefore(end)) {
@@ -82,6 +98,15 @@ export default {
       }
       callback();
     };
+    let checkLargerTimeEnd = (rule, value, callback) => {
+      let end = moment(moment(that.form.end.day).format('YYYY-MM-DD')+' '+that.form.end.time);
+      let start = moment(moment(that.form.start.day).format('YYYY-MM-DD')+' '+that.form.start.time);
+      if (!start.isBefore(end)) {
+        callback(new Error('End day must be after start day'));
+      }
+      callback();
+    };
+
     return {
       form: {
         id: 0,
@@ -96,23 +121,17 @@ export default {
         title: [
           {required: true, message: "Title is required"},
         ],
-        'start.day': [
-          {required: true, message: "Start day is required"},
+        lesday: [
+          {validator: checkLessDayStart, trigger: 'none'}
         ],
-        'start.time': [
-          {required: true, message: "Start time is required"},
-        ],
-        'end.day': [
-          {required: true, message: "End day is required"},
-        ],
-        'end.time': [
-          {required: true, message: "End time is required"},
+        lestime: [
+          {validator: checkLessTimeStart, trigger: 'none'}
         ],
         ltday: [
-          {validator: checkLarger, trigger: 'blur'}
+          {validator: checkLargerDayEnd, trigger: 'none'}
         ],
         lttime: [
-          {validator: checkLarger, trigger: 'blur'}
+          {validator: checkLargerTimeEnd, trigger: 'none'}
         ]
       },
     };
@@ -121,6 +140,23 @@ export default {
     ...mapState('calendar', [
         'users',
     ]),
+    ...mapState('auth', [
+        'user',
+    ]),
+    usersCan: {
+      get() {
+        let that = this;
+        let users = _.map(this.users, function(value) {
+          return value.User;
+        });
+        return _.filter(users, function(value) {
+          return value.id != that.user.id;
+        });
+      },
+      set(value) {
+
+      }
+    },
     eventEdited: {
         get() {
           let that = this;
@@ -152,7 +188,7 @@ export default {
          type: 'warning'
       }).then(() => {
        that.$store.dispatch('calendar/archiveEvent', that.form.id);
-       this.$router.go(-1);
+       that.$router.go(-1);
       }).catch(() => {
 
       });

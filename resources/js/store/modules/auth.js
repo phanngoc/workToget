@@ -40,9 +40,9 @@ const mutations = {
 
     [LOGOUT](state) {
       state.authenticated = false
-      state.user = ''
+      state.user = {};
       localStorage.removeItem('access_token')
-      axios.defaults.headers.common['Authorization']
+      axios.defaults.headers.common['Authorization'] = ''
     },
 
     [SET_USER](state, user) {
@@ -121,10 +121,15 @@ const actions = {
     commit(CHECK);
   },
   login({ commit }, data) {
-    axios.post('/authenticate', data).then(function(res) {
-      if (res.status == 200) {
-        commit(LOGIN, res.data.data);
-      }
+    return new Promise((resolve, reject) => {
+      axios.post('/authenticate', data).then(function(res) {
+        if (res.status == 200 && res.data.status == 200) {
+          commit(LOGIN, res.data.data);
+          resolve(res.data);
+        } else {
+          reject(res.data);
+        }
+      });
     });
   },
   logout({ commit }) {

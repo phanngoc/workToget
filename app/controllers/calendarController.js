@@ -280,6 +280,11 @@ class CalendarController {
     event.is_allday = ctx.request.body.is_allday;
     event.with_user = JSON.stringify(ctx.request.body.with);
 
+    if (ctx.request.body.is_allday) {
+      event.start = ctx.request.body.start.substr(0, 10);
+      event.end = ctx.request.body.end.substr(0, 10);
+    }
+
     let result = await event.save().tap(function(event) {
     }).then(function(res){
       return res;

@@ -22,7 +22,6 @@ const router = [
       {
         path: '/', component: MainApp,
         children: [
-          { path: '/', component: HomePage, name: 'homepage' },
           { path: '/create_project', component: CreateProject, name: 'create_project' },
           { path: '/projects/:id', component: Overview, name: 'overview_project' },
           { path: '/projects/:id', component: TreeProject,
@@ -60,7 +59,13 @@ const router = [
       // },
     ]),
     ...guestGuard([
-      { path: '/login', component: Login, name: 'login' },
+      {
+        path: '/', component: MainApp,
+        children: [
+          { path: '/login', component: Login, name: 'login' },
+          { path: '/', component: HomePage, name: 'homepage' },
+        ]
+      }
     ])
 ]
 
