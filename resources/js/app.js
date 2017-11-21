@@ -71,6 +71,42 @@ Vue.mixin({
     }
   },
   methods: {
+    me_activity(activity) {
+      let type = activity.action;
+      let action = "";
+      switch (type) {
+        case "save_edit_comment":
+          action = "updated comment on";
+          break;
+        case "save_add_comment":
+          action = "added comment on";
+          break;
+        case "event_add_comment":
+          action = "added comment on";
+          break;
+        case "event_update_comment":
+          action = "updated comment on";
+          break;
+        case "event_delete_comment":
+          action = "deleted comment on";
+          break;
+        case "add_event":
+          action = "created event";
+          break;
+        case "create_label":
+          action = "created label name";
+          break;
+        case "save_add_task":
+          action = "created task name";
+          break;
+        default:
+
+      }
+      return {action: action};
+    },
+    me_notification(notification) {
+
+    },
     slugUrl: function(text) {
       return text
         .toLowerCase()

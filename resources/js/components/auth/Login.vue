@@ -1,17 +1,22 @@
 <template lang="html">
-  <el-card class="box-card form-wrap">
-    <el-form ref="login_form" :model="form" label-width="120px" :rules="rules" id="form-login">
-      <el-form-item label="Username" prop="username">
-        <el-input v-model="form.username"></el-input>
-      </el-form-item>
-      <el-form-item label="Password" prop="password">
-        <el-input type="password" v-model="form.password"></el-input>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="success" @click="submitLogin">Login</el-button>
-      </el-form-item>
-    </el-form>
-  </el-card>
+  <div class="d-flex flex-column">
+    <el-card class="box-card form-wrap mr-auto ml-auto">
+      <div slot="header" class="clearfix">
+        <span>Login</span>
+      </div>
+      <el-form ref="login_form" :model="form" label-width="120px" :rules="rules" id="form-login">
+        <el-form-item label="Username" prop="username">
+          <el-input v-model="form.username"></el-input>
+        </el-form-item>
+        <el-form-item label="Password" prop="password">
+          <el-input type="password" v-model="form.password"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="success" @click="submitLogin">Login</el-button>
+        </el-form-item>
+      </el-form>
+    </el-card>
+  </div>
 </template>
 
 <script>

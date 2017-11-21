@@ -9,12 +9,12 @@ import activity from '../repo/repo_activity';
 import repo_calendar from '../repo/repo_calendar';
 import {NEW, notification} from '../repo/repo_notification';
 
-class CalendarController {
+class CheckinController {
   constructor(...args) {
     this.args = args;
   }
 
-  async createComment(ctx, next) {
+  async createCheckin(ctx, next) {
     let event = await models.Event.findOne({
       where: {
         id: ctx.params.event_id
@@ -159,7 +159,7 @@ class CalendarController {
     };
     activity(ctx.params.project_id, dataActivity);
     let usersNoti = JSON.parse(event.with_user);
-    
+
     _.forEach(usersNoti, function(value) {
       notification(value, dataActivity);
     });

@@ -1,6 +1,6 @@
 <template lang="html">
   <div class="container-fluid wr-activity">
-    <div class="in-activity text-center col-md-8 ml-auto mr-auto">
+    <div class="in-activity col-md-8 ml-auto mr-auto">
       <div class="row">
         <h2>Activity</h2>
         <div class="timeline">
