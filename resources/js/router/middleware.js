@@ -22,7 +22,7 @@ export default function router(routes) {
     router.beforeEach((to, from, next) => {
         const components = router.getMatchedComponents(to)
         const access_token = localStorage.getItem('access_token')
-        console.log('before check:', access_token, to);
+
         //check access token exists within Api local storage
         if (!store.state.auth.authenticated && access_token) {
             store.dispatch('auth/check')
@@ -52,9 +52,7 @@ export default function router(routes) {
  * @return {Array}
  */
 export function authGuard(routes) {
-  console.log('co auth guard:');
   return guard(routes, (to, from, next) => {
-    console.log('co vao guide ne', store.state.auth.authenticated);
     if (store.state.auth.authenticated) {
       next()
     } else {

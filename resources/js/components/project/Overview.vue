@@ -8,33 +8,34 @@
         <Invitation />
         <AddPeople />
         <div class="list-features" v-if="!isInvita">
-          <div class="card-group">
-            <div class="card feature-item">
-              <img class="card-img-top" src="/img/icon_chat.png" alt="Card image cap">
-              <div class="card-block">
-                <h4 class="card-title">Chat</h4>
-                <p class="card-text">Chat each other</p>
-                <router-link :to="{ name: 'chat.index', params: { id: project.id}}">Go</router-link>
+          <div class="card-wr-list">
+            <router-link class="link-card" :to="{ name: 'chat.index', params: { id: project.id}}">
+              <div class="card feature-item">
+                <img class="card-img-top" src="/img/icon_chat.png" alt="Card image cap">
+                <div class="card-block">
+                  <h4 class="card-title">Chat</h4>
+                  <p class="card-text">Chat each other</p>
+                </div>
               </div>
-            </div>
-
-            <div class="card feature-item">
-              <img class="card-img-top" src="/img/icon_trello.png" alt="Card image cap">
-              <div class="card-block">
-                <h4 class="card-title">Trello</h4>
-                <p class="card-text">Manage project with board.</p>
-                <router-link :to="{ name: 'trello', params: { id: project.id}}">Go</router-link>
+            </router-link>
+            <router-link class="link-card" :to="{ name: 'trello', params: { id: project.id}}">
+              <div class="card feature-item">
+                <img class="card-img-top" src="/img/icon_trello.png" alt="Card image cap">
+                <div class="card-block">
+                  <h4 class="card-title">Trello</h4>
+                  <p class="card-text">Manage project with board.</p>
+                </div>
               </div>
-            </div>
-
-            <div class="card feature-item">
-              <img class="card-img-top" src="/img/icon_calendar.png" alt="Card image cap">
-              <div class="card-block">
-                <h4 class="card-title">Calendar</h4>
-                <p class="card-text">Manage Event.</p>
-                <router-link :to="{ name: 'calendar.list_event', params: { id: project.id}}">Go</router-link>
+            </router-link>
+            <router-link class="link-card" :to="{ name: 'calendar.list_event', params: { id: project.id}}">
+              <div class="card feature-item">
+                <img class="card-img-top" src="/img/icon_calendar.png" alt="Card image cap">
+                <div class="card-block">
+                  <h4 class="card-title">Calendar</h4>
+                  <p class="card-text">Manage Event.</p>
+                </div>
               </div>
-            </div>
+            </router-link>
           </div>
           <!-- Just test -->
         </div>
@@ -88,8 +89,27 @@ export default {
 
     }
   }
-  .feature-item {
-    width: 20rem;
-    margin: 4px;
+  .card-wr-list{
+    display: flex;
+    flex-flow: row nowrap;
+    .link-card{
+      display: block;
+      text-decoration: none;
+      flex: 1 0 0%;
+      width: 20rem;
+      margin: 4px;
+      .feature-item {
+        .card-img-top{
+          opacity: 0.2;
+        }
+      }
+      .card-title{
+        color: #913e3e;
+      }
+      .card-text{
+        color: black;
+      }
+    }
   }
+
 </style>

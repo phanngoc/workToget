@@ -25,9 +25,17 @@ export async function processUploadMiddleware(ctx, next) {
    reader.pipe(stream);
 
    let sym = await fs.symlink(path.resolve('./resources/public/uploads/'), path.resolve('./public/uploads/'), 'file', (err) => {
-     if (err) {
-       console.log(err);
-     }
+    if (err) {
+      console.log(err);
+      let isWin = /^win/.test(process.platform);
+      if (!fs.existsSync('public/uploads/')){
+          fs.mkdirSync('public/uploads/');
+      }
+      if (isWin) {
+        const streamPublic = fs.createWriteStream(path.join('public/uploads/', key));
+        reader.pipe(streamPublic);
+      }
+    }
    });
 
    ctx.body = {status: 200, data: {name: key, size: file.size}};

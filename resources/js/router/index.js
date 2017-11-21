@@ -18,55 +18,53 @@ import HomePage from '../components/home/HomePage.vue'
 import CreateProject from '../components/home/CreateProject.vue'
 
 const router = [
-    ...authGuard([
-      {
-        path: '/', component: MainApp,
-        children: [
-          { path: '/create_project', component: CreateProject, name: 'create_project' },
-          { path: '/projects/:id', component: Overview, name: 'overview_project' },
-          { path: '/projects/:id', component: TreeProject,
-            children: [
-              { path: 'trello', component: Trello,
-                children: [
-                    { path: '/', component: Trello, name: 'trello' },
-                    { path: ':task_id/:title', component: Trello, name: 'trello.modal' },
-                ]
-              },
-              { path: 'activity', component: Activity, name: 'activity' },
-              { path: 'chat', component: Chat, name: 'chat.index' },
-              { path: 'calendar',
-                component: Calendar,
-                children: [
-                    { path: '/', component: ListCalendar, name: 'calendar.list_event' },
-                    { path: 'add-event', component: AddEvent, name: 'calendar.add_event' },
-                    { path: 'edit-event/:event_id', component: EditEvent, name: 'calendar.edit_event' },
-                    { path: 'show-event/:event_id', component: ShowEvent, name: 'calendar.show_event' },
-                ]
-              },
-            ]
-          },
-        ]
-      }
-      // { path: '/projects/:id/trello', component: Trello, name: 'trello' },
-      // { path: '/projects/:id/chat', component: Chat, name: 'chat.index' },
-      // { path: '/projects/:id/calendar',
-      //   component: Calendar,
-      //   children: [
-      //       { path: '/', component: ListCalendar, name: 'calendar.list_event' },
-      //       { path: 'add-event', component: AddEvent, name: 'calendar.add_event' },
-      //       { path: 'edit-event/:event_id', component: EditEvent, name: 'calendar.edit_event' },
-      //   ]
-      // },
-    ]),
-    ...guestGuard([
-      {
-        path: '/', component: MainApp,
-        children: [
-          { path: '/login', component: Login, name: 'login' },
-          { path: '/', component: HomePage, name: 'homepage' },
-        ]
-      }
-    ])
+  {
+    path: '/', component: MainApp,
+    children: [
+      { path: '/login', component: Login, name: 'login' },
+      { path: '/', component: HomePage, name: 'homepage' },
+    ]
+  },
+  ...authGuard([
+    {
+      path: '/', component: MainApp,
+      children: [
+        { path: '/create_project', component: CreateProject, name: 'create_project' },
+        { path: '/projects/:id', component: Overview, name: 'overview_project' },
+        { path: '/projects/:id', component: TreeProject,
+          children: [
+            { path: 'trello', component: Trello,
+              children: [
+                  { path: '/', component: Trello, name: 'trello' },
+                  { path: ':task_id/:title', component: Trello, name: 'trello.modal' },
+              ]
+            },
+            { path: 'activity', component: Activity, name: 'activity' },
+            { path: 'chat', component: Chat, name: 'chat.index' },
+            { path: 'calendar',
+              component: Calendar,
+              children: [
+                  { path: '/', component: ListCalendar, name: 'calendar.list_event' },
+                  { path: 'add-event', component: AddEvent, name: 'calendar.add_event' },
+                  { path: 'edit-event/:event_id', component: EditEvent, name: 'calendar.edit_event' },
+                  { path: 'show-event/:event_id', component: ShowEvent, name: 'calendar.show_event' },
+              ]
+            },
+          ]
+        },
+      ]
+    }
+    // { path: '/projects/:id/trello', component: Trello, name: 'trello' },
+    // { path: '/projects/:id/chat', component: Chat, name: 'chat.index' },
+    // { path: '/projects/:id/calendar',
+    //   component: Calendar,
+    //   children: [
+    //       { path: '/', component: ListCalendar, name: 'calendar.list_event' },
+    //       { path: 'add-event', component: AddEvent, name: 'calendar.add_event' },
+    //       { path: 'edit-event/:event_id', component: EditEvent, name: 'calendar.edit_event' },
+    //   ]
+    // },
+  ]),
 ]
 
 export default router
