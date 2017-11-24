@@ -25,7 +25,13 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false
       },
-  
+
+      date_created: {
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+        allowNull: false
+      },
+
       question_id: {
         type: Sequelize.INTEGER,
         allowNull: false

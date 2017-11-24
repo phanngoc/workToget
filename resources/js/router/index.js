@@ -16,6 +16,11 @@ import Activity from '../components/project/Activity.vue'
 import ShowEvent from '../components/calendar/ShowEvent.vue'
 import HomePage from '../components/home/HomePage.vue'
 import CreateProject from '../components/home/CreateProject.vue'
+import Checkin from '../components/checkin/Checkin.vue'
+import AskQuestion from '../components/checkin/AskQuestion.vue'
+import ListQuestion from '../components/checkin/ListQuestion.vue'
+import CreateAnswer from '../components/checkin/CreateAnswer.vue'
+import ShowQuestion from '../components/checkin/ShowQuestion.vue'
 
 const router = [
   {
@@ -48,6 +53,16 @@ const router = [
                   { path: 'add-event', component: AddEvent, name: 'calendar.add_event' },
                   { path: 'edit-event/:event_id', component: EditEvent, name: 'calendar.edit_event' },
                   { path: 'show-event/:event_id', component: ShowEvent, name: 'calendar.show_event' },
+              ]
+            },
+            { path: 'checkin',
+              component: Checkin,
+              children: [
+                  { path: '/', component: ListQuestion, name: 'checkin.list_question' },
+                  { path: 'new-question', component: AskQuestion, name: 'checkin.new_question' },
+                  { path: 'show-question/:question_id', component: ShowQuestion, name: 'checkin.show_question' },
+                  { path: 'edit-question/:question_id', component: AskQuestion, name: 'checkin.edit_question' },
+                  { path: ':question_id/answers/new', component: CreateAnswer, name: 'checkin.new_answer' },
               ]
             },
           ]

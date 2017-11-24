@@ -1,4 +1,6 @@
 require('babel-core/register');
+import dotenv from 'dotenv';
+dotenv.config();
 
 import { Strategy as LocalStrategy } from 'passport-local';
 import bodyParser from 'koa-body';
@@ -10,12 +12,9 @@ import views from 'koa-views';
 import config from 'config';
 import serve from 'koa-static';
 import models from './models';
-import dotenv from 'dotenv';
 import nodemon from 'nodemon';
 import {ioEmitter, wrapIo} from './io';
 import logger from 'koa-logger';
-
-dotenv.config();
 
 const {
   User

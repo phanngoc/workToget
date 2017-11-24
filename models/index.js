@@ -4,6 +4,7 @@
 import Sequelize from 'sequelize';
 import { database as config } from 'config';
 
+
 /**
  * Database connection.
  */
@@ -64,6 +65,8 @@ export function setupModels(client) {
     'Notification',
     'Frame',
     'Event',
+    'Checkin',
+    'Answer'
   ].forEach((model) => {
     m[model] = client.import(`${__dirname}/${model}`);
   });

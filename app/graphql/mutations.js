@@ -62,8 +62,6 @@ const mutations = {
             });
           }],
         }, function(err, results) {
-            console.log('err = ', err);
-            console.log('results = ', results);
             if (err) {
               reject(err);
             } else {
