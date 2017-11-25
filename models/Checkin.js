@@ -14,7 +14,22 @@ export default function (Sequelize, DataTypes) {
       allowNull: false
     },
 
+    with_user: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+
+    project_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+
     cron: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+
+    schedule: {
       type: DataTypes.STRING,
       allowNull: false
     },

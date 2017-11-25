@@ -4,6 +4,7 @@ import TaskController from '../controllers/taskController';
 import ChatController from '../controllers/chatController';
 import CalendarController from '../controllers/calendarController';
 import UserController from '../controllers/userController';
+import CheckinController from '../controllers/checkinController';
 
 import passport from 'koa-passport';
 import {isAuthenticated} from '../lib/auth';
@@ -26,6 +27,7 @@ module.exports = function(app) {
   var chatController = new ChatController;
   var calendarController = new CalendarController;
   var userController = new UserController;
+  var checkinController = new CheckinController;
 
   var router = new Router();
   var apiRouter = new Router();
@@ -34,8 +36,6 @@ module.exports = function(app) {
   apiRouter.param('project_id', load_project);
 
   router.get('/seed', homeController.seed);
-
-  // router.get('/login', homeController.login);
 
   router.post('/login', passport.authenticate('local', { failureRedirect: '/login' }), homeController.postLogin);
 
@@ -54,6 +54,17 @@ module.exports = function(app) {
   apiRouter.put('/projects/:project_id/users/add-people', projectController.addMorePeople);
   apiRouter.put('/projects/:project_id/users/accept-join', projectController.confirmJoinProject);
 
+  /* Route for answers */
+  apiRouter.get('/projects/:project_id/checkin/:question_id/answers', checkinController.loadAnwers);
+  apiRouter.post('/projects/:project_id/checkin/:question_id/create', checkinController.createAnswer);
+  apiRouter.put('/projects/:project_id/checkin/:question_id', checkinController.updateAnswer);
+
+  /* Route for checkin */
+  apiRouter.get('/projects/:project_id/checkin', checkinController.load);
+  apiRouter.post('/projects/:project_id/checkin/create', checkinController.create);
+  apiRouter.put('/projects/:project_id/checkin/:id/update', checkinController.update);
+  apiRouter.delete('/projects/:project_id/checkin/:id', checkinController.archive);
+  apiRouter.get('/projects/:project_id/checkin/:id', checkinController.show);
 
   /* Route for chat */
   apiRouter.get('/projects/:project_id/messages', chatController.loadMessages);
@@ -61,7 +72,6 @@ module.exports = function(app) {
   apiRouter.delete('/projects/:project_id/messages/:id/delete', chatController.deleteMessage);
 
   /* Route for trello */
-
   apiRouter.delete('/projects/:project_id/frames/:id/delete', projectController.deleteFrame);
   apiRouter.put('/projects/:project_id/frames/:id/update', projectController.updateFrame);
   apiRouter.post('/projects/:project_id/frames', projectController.createFrame);

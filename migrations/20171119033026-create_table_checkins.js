@@ -21,7 +21,22 @@ module.exports = {
         allowNull: false
       },
 
+      with_user: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+
+      project_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+      },
+
       cron: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+
+      schedule: {
         type: Sequelize.STRING,
         allowNull: false
       },

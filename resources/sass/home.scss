@@ -23,7 +23,7 @@ html, body, #app, #surface {
     padding: 0px 1rem;
     background-color: #FBF8F4;
   }
- 
+
   #main-app{
     flex-grow: 1;
     display: flex;
@@ -56,4 +56,17 @@ html, body, #app, #surface {
 @import url('https://fonts.googleapis.com/css?family=Varela+Round');
 body{
   font-family: 'Varela Round', Helvetica, Arial, sans-serif;
+}
+
+.centered {
+  text-align: center;
+}
+
+.text-link {
+  text-decoration: none !important;
+  color: black;
+}
+
+.flush{
+  margin: 0 !important;
 }

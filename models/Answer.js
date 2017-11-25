@@ -19,6 +19,12 @@ export default function (Sequelize, DataTypes) {
       allowNull: false
     },
 
+    date_created: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+      allowNull: false
+    },
+
     question_id: {
       type: DataTypes.INTEGER,
       allowNull: false
@@ -52,5 +58,5 @@ export default function (Sequelize, DataTypes) {
     }
   });
 
-  return Chat;
+  return Answer;
 }

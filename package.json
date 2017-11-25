@@ -4,9 +4,9 @@
   "description": "A simple Koajs application starter template.",
   "main": "index.js",
   "scripts": {
-    "start": "node --harmony index.js",
+    "start": "nodemon --watch app --watch models --ignore 'resources/' index.js -x babel-node",
     "test": "mocha --harmony",
-    "dev": "nodemon --ignore resources/ index.js -x babel-node",
+    "dev": "nodemon --watch app --watch models --ignore 'resources/' index.js -x babel-node",
     "watch": "cross-env NODE_ENV=development webpack --watch --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
     "hot": "NODE_ENV=development webpack-dev-server --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
     "production": "NODE_ENV=production webpack --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
@@ -40,6 +40,8 @@
     "bootstrap": "^4.0.0-beta",
     "co": "^4.6.0",
     "config": "^1.12.0",
+    "cron": "^1.3.0",
+    "cronstrue": "^0.10.10",
     "dataloader-sequelize": "^1.5.3",
     "dotenv": "^4.0.0",
     "ect": "^0.5.9",

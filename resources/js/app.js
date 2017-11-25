@@ -18,6 +18,7 @@ import { HttpLink } from 'apollo-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import VueApollo from 'vue-apollo'
 import { ApolloLink } from 'apollo-link';
+import cronstrue from 'cronstrue';
 
 const httpLink = new HttpLink({ uri: 'http://localhost:3000/graphql' });
 
@@ -68,6 +69,16 @@ Vue.mixin({
     },
     timeAgo: function(value) {
       return moment(value).fromNow();
+    },
+    imageLoad: function(name, type) {
+      if (type == 'img') {
+        return '/img/' + name;
+      } else if (type == 'upload') {
+        return '/uploads/' + name;
+      }
+    },
+    cron: function (value) {
+      return cronstrue.toString(value);
     }
   },
   methods: {
