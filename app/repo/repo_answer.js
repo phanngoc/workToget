@@ -63,27 +63,43 @@ export async function loadMore(question_id, page) {
     limit: 3,
     offset: (page - 1) * 3
   });
-  _.forEach(days, function(value) {
 
+  return new Promise((resolve, reject) => {
+    async.map(days, function(item, callback) {
+      models.Answer.findAll({
+        where: {question_id: question_id, date_created: item.date_created},
+        order: [['updated_at', 'DESC']],
+        include: [{
+          model: models.User,
+          as: 'User'
+        }],
+      }).then(function(answers) {
+        callback(null, {date: item.date_created, answers: answers});
+      }).catch(err => {
+        callback(err);
+      });
+    }, function(err, results) {
+        console.log('arra results', results);
+        if (err) {
+          reject(err);
+        } else {
+          resolve(results);
+        }
+    });
   });
-  return results;
 }
 
 
-export async function load(project_id) {
-  var toType = function(obj) {
-    return ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase()
-  }
-
-  let checkins = await models.Checkin.findAll({
-    where: {project_id: project_id},
+export async function findOne(id) {
+  let answer = await models.Answer.findOne({
+    where: {id: id},
+    include: [
+      {
+        model: models.User,
+        as: 'User'
+      }
+    ]
   }, {raw: true});
-  let results = [];
-  for (var i = 0, len = checkins.length; i < len; i++) {
-    let userIds = JSON.parse('[' + checkins[i].with_user + ']');
-    let checkinObjJson = checkins[i].toJSON();
-    checkinObjJson.Users = await loadAttachUser(userIds);
-    results.push(checkinObjJson);
-  }
-  return results;
+  return answer;
 }
+  

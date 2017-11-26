@@ -3,6 +3,7 @@ export const LOAD_QUESTION = 'LOAD_QUESTION'
 export const LOAD_QUESTION_EDITED = 'LOAD_QUESTION_EDITED'
 export const LOAD_ANSWERS = 'LOAD_ANSWERS'
 export const ADD_ANSWER = 'ADD_ANSWER'
+export const ADD_ANSWER_EDITED = 'ADD_ANSWER_EDITED'
 
 import axios from 'axios'
 import _ from 'lodash'
@@ -10,7 +11,8 @@ import _ from 'lodash'
 const state = {
   questions: [],
   questionEdited: {},
-  answers: []
+  answers: [],
+  answerEdited: {}
 }
 
 // getters
@@ -39,10 +41,24 @@ const mutations = {
       _.forEach(data, function(value) {
         state.answers.push(value);
       });
+    },
+    [ADD_ANSWER_EDITED](state, data) {
+      state.answerEdited = data;
     }
 };
 
 const actions = {
+  loadAnswerEdited({commit, state, rootState}, data) {
+    let url = '/api/projects/'+rootState.route.params.id+'/checkin/'+rootState.route.params.question_id+'/answers/'+rootState.route.params.answer_id+'/edit';
+    return axios.get(url).then(function(res) {
+      if (res.status == 200) {
+        commit(ADD_ANSWER_EDITED, res.data.data);
+      }
+    });
+  },
+  goEditAnswer({commit, state, rootState}, data) {
+    commit(ADD_ANSWER_EDITED, data);
+  },
   createAnswer({commit, state, rootState}, data) {
     return axios.post('/api/projects/'+rootState.route.params.id+'/checkin/'+rootState.route.params.question_id+'/create', data).then(function(res) {
       if (res.status == 200) {

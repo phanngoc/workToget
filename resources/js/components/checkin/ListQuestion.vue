@@ -1,31 +1,31 @@
 <template lang="html">
-    <el-card class="box-card wr-list-question">
-      <div slot="header" class="clearfix">
-        <span>Automatic Check-ins</span>
-      </div>
-      <el-button type="success" @click="goToNewQuestion">Set up an automatic check-in</el-button>
+  <el-card class="box-card wr-list-question">
+    <div slot="header" class="clearfix">
+      <span>Automatic Check-ins</span>
+    </div>
+    <el-button type="success" @click="goToNewQuestion">Set up an automatic check-in</el-button>
 
-      <div class="list-question centered">
-        <article class="questionnaire__question" v-for="(checkin, index) in questions" :key="checkin.id">
-          <h2 class="flush">
-            <router-link :to="{name: 'checkin.show_question', params: {id: $store.state.route.params.id , question_id: checkin.id}}" class="text-link">
-              {{checkin.question}}
-            </router-link>
-          </h2>
-          <p class="flush">
-            <router-link :to="{name: 'checkin.show_question', params: {id: $store.state.route.params.id , question_id: checkin.id}}" class="text-link">
-              <i class="fa fa-refresh" aria-hidden="true"></i>
-              {{'Asking ' + checkin.Users.length + ' people ' }}{{checkin.cron | cron}}
-            </router-link>
-          </p>
-          <section class="questionnaire__answers avatar-group">
-            <div class="item-avatar" v-for="user in checkin.Users" :key="user.id">
-              <img :src="'/img/' + user.avatar" :alt="user.fullname" class="small-avatar"/>
-            </div>
-          </section>
-        </article>
-      </div>
-    </el-card>
+    <div class="list-question centered">
+      <article class="questionnaire__question" v-for="(checkin, index) in questions" :key="checkin.id">
+        <h2 class="flush">
+          <router-link :to="{name: 'checkin.show_question', params: {id: $store.state.route.params.id , question_id: checkin.id}}" class="text-link">
+            {{checkin.question}}
+          </router-link>
+        </h2>
+        <p class="flush">
+          <router-link :to="{name: 'checkin.show_question', params: {id: $store.state.route.params.id , question_id: checkin.id}}" class="text-link">
+            <i class="fa fa-refresh" aria-hidden="true"></i>
+            {{'Asking ' + checkin.Users.length + ' people ' }}{{checkin.cron | cron}}
+          </router-link>
+        </p>
+        <section class="questionnaire__answers avatar-group">
+          <div class="item-avatar" v-for="user in checkin.Users" :key="user.id">
+            <img :src="'/img/' + user.avatar" :alt="user.fullname" class="small-avatar"/>
+          </div>
+        </section>
+      </article>
+    </div>
+  </el-card>
 </template>
 
 

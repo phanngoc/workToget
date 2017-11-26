@@ -109,9 +109,8 @@ class CheckinController {
   }
 
   async loadAnwers(ctx, next) {
-    
-    console.log('loadAnswers', days);
-    ctx.body = {status: 200, data: days};
+    let results = await repo_answer.loadMore(ctx.params.question_id, ctx.query.page);
+    ctx.body = {status: 200, data: results};
   }
 
   async createAnswer(ctx, next) {
@@ -121,6 +120,11 @@ class CheckinController {
 
   async updateAnswer(ctx, next) {
     let checkin = await repo_answer.create(ctx.request.body, ctx.params.project_id, ctx.params.question_id);
+  }
+
+  async editAnswer(ctx, next) {
+    let answer = await repo_answer.findOne(ctx.params.answer_id);
+    ctx.body = {status: 200, data: answer};
   }
 };
 

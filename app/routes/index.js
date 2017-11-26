@@ -55,9 +55,10 @@ module.exports = function(app) {
   apiRouter.put('/projects/:project_id/users/accept-join', projectController.confirmJoinProject);
 
   /* Route for answers */
+  apiRouter.get('/projects/:project_id/checkin/:question_id/answers/:answer_id/edit', checkinController.editAnswer);
+  apiRouter.put('/projects/:project_id/checkin/:question_id/answers/:answer_id/update', checkinController.editAnswer);
   apiRouter.get('/projects/:project_id/checkin/:question_id/answers', checkinController.loadAnwers);
   apiRouter.post('/projects/:project_id/checkin/:question_id/create', checkinController.createAnswer);
-  apiRouter.put('/projects/:project_id/checkin/:question_id', checkinController.updateAnswer);
 
   /* Route for checkin */
   apiRouter.get('/projects/:project_id/checkin', checkinController.load);

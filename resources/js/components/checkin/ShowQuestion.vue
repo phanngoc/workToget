@@ -9,12 +9,17 @@
         </h2>
         <p class="flush">
           <i class="fa fa-refresh" aria-hidden="true"></i>
-          {{'Asking ' + questionEdited.Users.length + ' people ' }}{{questionEdited.cron | cron}}
+          {{'Asking ' + numPeople + ' people ' }}{{questionEdited.cron | cron}}
         </p>
         <div class="wr-add-answer">
           <el-button type="success" round>Add your answer</el-button>
         </div>
       </article>
+      <div class="list-answers">
+        <div class="activity-feed">
+          <ItemAnswer v-for="(answer, key) in answers" :answer="answer" :key="answer.date" />
+        </div>
+      </div>
     </el-card>
 </template>
 
@@ -24,11 +29,12 @@
 import { mapGetters, mapActions, mapState } from 'vuex';
 import _ from 'lodash';
 import moment from 'moment';
+import ItemAnswer from './ItemAnswer';
 
 export default {
   created() {
     this.$store.dispatch('checkin/loadQuestionEdited');
-    this.$store.dispatch('checkin/loadAnswers', 1);
+    this.$store.dispatch('checkin/loadAnswerEdited');
   },
   data: function() {
     let that = this;
@@ -39,8 +45,18 @@ export default {
   computed: {
     ...mapState('checkin', [
       'questionEdited',
-      'answers'
     ]),
+    numPeople: {
+      get() {
+        console.log('co vao');
+        if (!_.isEmpty(this.questionEdited)) {
+          console.log('co vao 1');
+          return questionEdited.Users.length;
+        } else {
+          return 'no one';
+        }
+      }
+    }
   },
   watch: {
 
@@ -51,7 +67,7 @@ export default {
     }
   },
   components: {
-
+    ItemAnswer
   },
   mounted() {
     let that = this;
@@ -60,7 +76,130 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
   @import "../../../sass/_vars.scss";
+  .report-in-days {
+    background-color: #d4d4d4;
+    border-radius: 12px;
+    position: absolute;
+    margin-left: -48px;
+    margin-top: 20px;
+    padding: 6px 5px 2px 5px;
+  }
 
+  .activity-feed {
+    padding:30px;
+  }
+
+  .activity-feed .feed-item {
+    position: relative;
+    padding-bottom: 220px;
+    padding-left: 30px;
+    border-left: 2px solid #E2B104;
+  }
+
+  .activity-feed .feed-item:after {
+      content: "";
+      display: block;
+      position: absolute;
+      top: 0;
+      left: -10px;
+      width: 20px;
+      height: 20px;
+      border-radius: 13px;
+      background: #fff;
+      border: 1px solid #E2B104;
+  }
+
+  .media-list{
+    padding-left: 0px;
+    .wr-avatar{
+      margin-right: 5px;
+    }
+  }
+    .reviews {
+      color: #555;
+      font-weight: bold;
+      // margin: 10px auto 20px;
+    }
+
+    .media .media-object {
+      max-width: 120px;
+    }
+
+    .media-body {
+      position: relative;
+    }
+
+    .media-date {
+      position: absolute;
+      right: 25px;
+      top: 25px;
+      li {
+        padding: 0;
+        display: inline-block;
+        &:first-child:before {
+          content: '';
+        }
+        &:before {
+          content: '';
+          margin-left: -2px;
+          margin-right: 2px;
+        }
+      }
+    }
+
+    .media-comment {
+      margin-bottom: 20px;
+    }
+
+    .media-replied {
+      margin: 0 0 20px 50px;
+      .media-heading {
+        padding-left: 6px;
+      }
+    }
+
+    .btn-circle {
+      font-weight: bold;
+      font-size: 12px;
+      padding: 6px 15px;
+      border-radius: 20px;
+      span {
+        padding-right: 6px;
+      }
+    }
+
+    .embed-responsive {
+      margin-bottom: 20px;
+    }
+
+    input[type="file"] {
+      z-index: 999;
+      line-height: 0;
+      font-size: 0;
+      position: absolute;
+      opacity: 0;
+      filter: alpha(opacity = 0);
+      -ms-filter: "alpha(opacity=0)";
+      margin: 0;
+      padding: 0;
+      left: 0;
+    }
+
+    .uploadPhoto {
+      position: absolute;
+      top: 25%;
+      left: 25%;
+      display: none;
+      width: 50%;
+      height: 50%;
+      color: #fff;
+      text-align: center;
+      line-height: 60px;
+      text-transform: uppercase;
+      background-color: rgba(0, 0, 0, 0.3);
+      border-radius: 50px;
+      cursor: pointer;
+    }
 </style>
