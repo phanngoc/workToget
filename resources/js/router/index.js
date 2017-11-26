@@ -21,6 +21,7 @@ import AskQuestion from '../components/checkin/AskQuestion.vue'
 import ListQuestion from '../components/checkin/ListQuestion.vue'
 import CreateAnswer from '../components/checkin/CreateAnswer.vue'
 import ShowQuestion from '../components/checkin/ShowQuestion.vue'
+import EditAnswer from '../components/checkin/EditAnswer.vue'
 
 const router = [
   {
@@ -63,6 +64,7 @@ const router = [
                   { path: 'show-question/:question_id', component: ShowQuestion, name: 'checkin.show_question' },
                   { path: 'edit-question/:question_id', component: AskQuestion, name: 'checkin.edit_question' },
                   { path: ':question_id/answers/new', component: CreateAnswer, name: 'checkin.new_answer' },
+                  { path: ':question_id/answers/:answer_id/edit', component: EditAnswer, name: 'checkin.edit_answer' },
               ]
             },
           ]
