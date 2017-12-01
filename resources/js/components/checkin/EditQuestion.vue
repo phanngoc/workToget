@@ -4,7 +4,7 @@
         <span>Set up an automatic check-in</span>
         <el-button style="float: right;" type="primary" @click="backCalendar">Back</el-button>
        </div>
-      <el-form ref="add_question_form" :model="form" :rules="rules" :label-position="'top'" label-width="300px">
+      <el-form ref="edit_question_form" :model="form" :rules="rules" :label-position="'top'" label-width="300px">
         <el-form-item label="What question do you want to ask?" prop="question">
           <el-input v-model="form.question"></el-input>
         </el-form-item>
@@ -33,7 +33,7 @@
         </el-form-item>
 
         <el-form-item label="How often do you want to ask?">
-          <el-collapse v-model="activeName" accordion @change="changeModeDay">
+          <el-collapse v-model="form.cron.type" accordion @change="changeModeDay">
             <el-collapse-item title="Daily on" name="daily">
               <el-checkbox-group v-model="form.cron.days">
                 <el-checkbox label="Mo"></el-checkbox>
@@ -94,7 +94,7 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button type="success" @click="onSubmit()">Start collecting user</el-button>
+          <el-button type="success" @click="onSubmit()">Update question</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -113,8 +113,25 @@ export default {
   },
   data: function() {
     let that = this;
+    this.$nextTick(function () {
+      this.form.id = this.questionEdited.id;
+      this.form.question = this.questionEdited.question;
+      this.form.with_user = this.questionEdited.with_user;
+      this.form.cron = JSON.parse(this.questionEdited.schedule);
+      let userIds = this.form.with_user.split(',');
+      _.forEach(userIds, (userId) => {
+        let userSelect = _.find(this.users, function(user) {
+          return user.id == userId;
+        });
+        if (userSelect) {
+          this.$refs.multipleUsers.toggleRowSelection(userSelect);
+        }
+      });
+    });
+
     return {
       form: {
+        id: '',
         question: '',
         with_user: '',
         cron: {
@@ -124,7 +141,6 @@ export default {
           time: ''
         },
       },
-      activeName: 'daily',
       rules: {
         question: [
           {required: true, message: "Question is required"},
@@ -136,13 +152,19 @@ export default {
     ...mapState('project', [
       'users',
     ]),
+    ...mapState('checkin', [
+      'questionEdited',
+    ]),
   },
   watch: {
 
   },
   methods: {
     onSubmit: function() {
-      this.$store.dispatch('checkin/createQuestion', this.form);
+      this.$store.dispatch('checkin/updateQuestion', this.form).then((response) => {
+        console.log('response', response);
+        this.$router.push({name: 'checkin.list_question', params: {id: this.$route.params.id}});
+      });
     },
     changeModeDay: function(name) {
       this.form.cron.type = name;
@@ -155,7 +177,7 @@ export default {
     handleSelectionChange: function(idsChoose) {
       let arrIds = _.map(idsChoose, function(val) {
         return val.id;
-      })
+      });
       this.form.with_user = arrIds.join();
     }
   },

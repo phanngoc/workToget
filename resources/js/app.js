@@ -20,7 +20,9 @@ import VueApollo from 'vue-apollo'
 import { ApolloLink } from 'apollo-link';
 import cronstrue from 'cronstrue';
 
-const httpLink = new HttpLink({ uri: 'http://localhost:3000/graphql' });
+var BASE_URL = $('meta[name="baseUrl"]').attr('content');
+
+const httpLink = new HttpLink({ uri: BASE_URL + '/graphql' });
 
 const authMiddleware = new ApolloLink((operation, forward) => {
   // add the authorization to the headers
@@ -51,7 +53,7 @@ Vue.use(FullCalendar);
 
 Vue.use(require('vue-moment'));
 
-Vue.use(VueSocketio, 'http://localhost:3000', store);
+Vue.use(VueSocketio, BASE_URL, store);
 
 Vue.use(Element);
 
@@ -59,12 +61,12 @@ Vue.mixin({
   data: function() {
     return {
       get baseUrl() {
-        return $('meta[name="baseUrl"]').attr('content');
+        return BASE_URL;
       }
     }
   },
   filters: {
-    calendar: function (value) {
+    calendar: function(value) {
       return moment(value).calendar();
     },
     timeAgo: function(value) {
@@ -78,7 +80,18 @@ Vue.mixin({
       }
     },
     cron: function (value) {
-      return cronstrue.toString(value);
+      if (typeof value !== 'undefined') {
+        return cronstrue.toString(value);
+      }
+      return '';
+    },
+    isImage: function(type) {
+      var ValidImageTypes = ["image/gif", "image/jpeg", "image/png"];
+      if ($.inArray(type, ValidImageTypes) < 0) {
+        return false;
+      } else {
+        return true;
+      }
     }
   },
   methods: {
@@ -124,8 +137,17 @@ Vue.mixin({
         .replace(/[^\w ]+/g,'')
         .replace(/ +/g,'-');
     },
-    showLess: function (text, length, textMore) {
+    showLess: function (text, length, textMore, isTrip) {
       textMore = (typeof textMore !== 'undefined') ?  textMore : "...";
+      isTrip = (typeof isTrip !== 'undefined') ?  isTrip : false;
+      let strip = function (html) {
+         var tmp = document.createElement("div");
+         tmp.innerHTML = html;
+         return tmp.textContent || tmp.innerText || "";
+      };
+      if (isTrip) {
+        text = strip(text);
+      }
       return text.slice(0, length) + ' ...';
     },
     getColorByTime: function(time) {

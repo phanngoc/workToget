@@ -3,8 +3,9 @@
     <div slot="header" class="clearfix">
       <span>Automatic Check-ins</span>
     </div>
-    <el-button type="success" @click="goToNewQuestion">Set up an automatic check-in</el-button>
-
+    <div class="form-actions" style="text-align:center">
+      <el-button type="success" @click="goToNewQuestion">Set up an automatic check-in</el-button>
+    </div>
     <div class="list-question centered">
       <article class="questionnaire__question" v-for="(checkin, index) in questions" :key="checkin.id">
         <h2 class="flush">
@@ -15,7 +16,7 @@
         <p class="flush">
           <router-link :to="{name: 'checkin.show_question', params: {id: $store.state.route.params.id , question_id: checkin.id}}" class="text-link">
             <i class="fa fa-refresh" aria-hidden="true"></i>
-            {{'Asking ' + checkin.Users.length + ' people ' }}{{checkin.cron | cron}}
+            {{'Asking ' + numPeople + ' people ' }}{{checkin.cron | cron}}
           </router-link>
         </p>
         <section class="questionnaire__answers avatar-group">
@@ -51,6 +52,15 @@ export default {
     ...mapState('checkin', [
       'questions',
     ]),
+    numPeople: {
+      get() {
+        if (!_.isEmpty(this.questionEdited)) {
+          return this.questionEdited.Users.length;
+        } else {
+          return 'no one';
+        }
+      }
+    }
   },
   watch: {
     eventCreated: function(val, oldVal) {
@@ -80,6 +90,10 @@ export default {
 
 <style lang="scss" scoped>
   @import "../../../sass/_vars.scss";
+  .form-actions {
+    text-align: center;
+    padding: 10px 0px;
+  }
   .list-question{
     .questionnaire__question{
       padding: 2rem 0;

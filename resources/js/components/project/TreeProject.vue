@@ -38,6 +38,8 @@
 
 import axios from 'axios';
 import { mapGetters, mapActions, mapState } from 'vuex';
+import _ from 'lodash';
+import store from '../../store';
 
 export default {
   created() {
@@ -57,6 +59,48 @@ export default {
       this.handleLink();
     }
   },
+  beforeRouteEnter (to, from, next) {
+    let params = to.params;
+    let cPromises = [];
+    if (_.has(params, 'id')) {
+      cPromises.push(store.dispatch('project/loadProject', params.id));
+    };
+    if (_.has(params, 'question_id')) {
+      cPromises.push(store.dispatch('checkin/loadQuestionEdited', params));
+    };
+    if (_.has(params, 'answer_id')) {
+      cPromises.push(store.dispatch('checkin/loadAnswerEdited', params));
+    };
+
+    Promise.all(cPromises).then(values => {
+      console.log(values);
+      next();
+    }).catch((err) => {
+      console.log('err', err);
+      next();
+    });
+  },
+  beforeRouteUpdate (to, from, next) {
+    let params = to.params;
+    let cPromises = [];
+    if (_.has(params, 'id')) {
+      cPromises.push(this.$store.dispatch('project/loadProject', params.id));
+    };
+    if (_.has(params, 'question_id')) {
+      cPromises.push(this.$store.dispatch('checkin/loadQuestionEdited', params));
+    };
+    if (_.has(params, 'answer_id')) {
+      cPromises.push(this.$store.dispatch('checkin/loadAnswerEdited', params));
+    };
+    console.log('beforeRouteUpdate');
+    Promise.all(cPromises).then(values => {
+      console.log(values);
+      next();
+    }).catch((err) => {
+      console.log('err', err);
+      next();
+    });
+  },
   methods: {
     handleCommand(command) {
       this.$router.push({ name: command, params: { id: this.$route.params.id }})
@@ -65,6 +109,122 @@ export default {
       var name = this.$route.name;
       this.links = [];
       switch (name) {
+        case 'checkin.new_answer':
+          this.links.push({
+            title: 'Automatic Check-ins',
+            clickable: true,
+            url: {name: 'checkin.list_question', params: {id: this.$route.params.id}}
+          });
+          this.links.push({
+            title: this.$store.state.checkin.questionEdited.question,
+            clickable: true,
+            url: {name: 'checkin.show_question', params: {id: this.$route.params.id,
+              question_id: this.$route.params.question_id}}
+          });
+          this.links.push({
+            title: "New Answer",
+            clickable: false,
+            url: {}
+          });
+          break;
+        case 'checkin.edit_question':
+          this.links.push({
+            title: 'Automatic Check-ins',
+            clickable: true,
+            url: {name: 'checkin.list_question', params: {id: this.$route.params.id}}
+          });
+          this.links.push({
+            title: "Edit",
+            clickable: false,
+            url: {}
+          });
+          break;
+        case 'checkin.new_question':
+          this.links.push({
+            title: 'Automatic Check-ins',
+            clickable: true,
+            url: {name: 'checkin.list_question', params: {id: this.$route.params.id}}
+          });
+          this.links.push({
+            title: "New",
+            clickable: false,
+            url: {}
+          });
+          break;
+        case 'checkin.edit_answer':
+          this.links.push({
+            title: 'Automatic Check-ins',
+            clickable: true,
+            url: {name: 'checkin.list_question', params: {id: this.$route.params.id}}
+          });
+          this.links.push({
+            title: this.$store.state.checkin.questionEdited.question,
+            clickable: true,
+            url: {name: 'checkin.show_question', params: {id: this.$route.params.id,
+              question_id: this.$store.state.checkin.questionEdited.id}}
+          });
+          this.links.push({
+            title: "Answer to: \""+this.showLess(this.$store.state.checkin.answerEdited.content, 60, '...', true)+"\"",
+            clickable: true,
+            url: {name: 'checkin.show_answer', params: {id: this.$route.params.id,
+              question_id: this.$route.params.question_id,
+              answer_id: this.$route.params.answer_id}}
+          });
+          this.links.push({
+            title: 'Edit',
+            clickable: false,
+            url: {}
+          });
+          break;
+        case 'checkin.show_answer':
+          this.links.push({
+            title: 'Automatic Check-ins',
+            clickable: true,
+            url: {name: 'checkin.list_question', params: {id: this.$route.params.id}}
+          });
+          this.links.push({
+            title: this.$store.state.checkin.questionEdited.question,
+            clickable: true,
+            url: {name: 'checkin.show_question', params: {id: this.$route.params.id,
+              question_id: this.$store.state.checkin.questionEdited.id}}
+          });
+          this.links.push({
+            title: this.$store.state.checkin.answerEdited.User.fullname + '’s answer',
+            clickable: false,
+            url: {}
+          });
+          break;
+        case 'checkin.list_question':
+          this.links.push({
+            title: 'Automatic Check-ins',
+            clickable: false,
+            url: {}
+          });
+          break;
+        case 'checkin.show_question':
+          this.links.push({
+            title: 'Automatic Check-ins',
+            clickable: true,
+            url: {name: 'checkin.list_question', params: {id: this.$route.params.id}}
+          });
+          this.links.push({
+            title: this.$store.state.checkin.questionEdited.question,
+            clickable: false,
+            url: {}
+          });
+          break;
+        case 'checkin.edit_question':
+          this.links.push({
+            title: 'Automatic Check-ins',
+            clickable: true,
+            url: {name: 'checkin.list_question', params: {id: this.$route.params.id}}
+          });
+          this.links.push({
+            title: "Edit:" + this.$store.state.checkin.questionEdited.question,
+            clickable: false,
+            url: {}
+          });
+          break;
         case 'activity':
           this.links.push({
             title: 'Activity',

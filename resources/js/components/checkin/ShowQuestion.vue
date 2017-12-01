@@ -1,7 +1,8 @@
 <template lang="html">
     <el-card class="box-card wr-show-question">
       <div slot="header" class="clearfix">
-        <el-button style="float: right;" type="primary" @click="back">Back</el-button>
+        <el-button style="float: left;" type="default" @click="back">Back</el-button>
+        <el-button style="float: right;" type="primary" @click="edit">Edit</el-button>
       </div>
       <article class="questionnaire__question centered">
         <h2 class="flush">
@@ -12,7 +13,7 @@
           {{'Asking ' + numPeople + ' people ' }}{{questionEdited.cron | cron}}
         </p>
         <div class="wr-add-answer">
-          <el-button type="success" round>Add your answer</el-button>
+          <el-button type="success" round @click="goCreateAnswer">Add your answer</el-button>
         </div>
       </article>
       <div class="list-answers">
@@ -33,8 +34,8 @@ import ItemAnswer from './ItemAnswer';
 
 export default {
   created() {
-    this.$store.dispatch('checkin/loadQuestionEdited');
-    this.$store.dispatch('checkin/loadAnswerEdited');
+    // this.$store.dispatch('checkin/loadQuestionEdited');
+    this.$store.dispatch('checkin/loadAnswers', 1);
   },
   data: function() {
     let that = this;
@@ -45,13 +46,12 @@ export default {
   computed: {
     ...mapState('checkin', [
       'questionEdited',
+      'answers'
     ]),
     numPeople: {
       get() {
-        console.log('co vao');
         if (!_.isEmpty(this.questionEdited)) {
-          console.log('co vao 1');
-          return questionEdited.Users.length;
+          return this.questionEdited.Users.length;
         } else {
           return 'no one';
         }
@@ -63,7 +63,16 @@ export default {
   },
   methods: {
     back: function() {
-
+      this.$router.go(-1);
+    },
+    edit: function() {
+      this.$router.push({name: 'checkin.edit_question', params: {id: this.$route.params.id,
+          question_id: this.questionEdited.id}})
+    },
+    goCreateAnswer: function() {
+      let project_id = this.$route.params.id;
+      this.$router.push({name: 'checkin.new_answer', params: {id: project_id,
+          question_id: this.questionEdited.id}})
     }
   },
   components: {
@@ -81,9 +90,8 @@ export default {
   .report-in-days {
     background-color: #d4d4d4;
     border-radius: 12px;
-    position: absolute;
-    margin-left: -48px;
-    margin-top: 20px;
+    margin-left: -15px;
+    margin-top: 15px;
     padding: 6px 5px 2px 5px;
   }
 
@@ -92,23 +100,21 @@ export default {
   }
 
   .activity-feed .feed-item {
-    position: relative;
-    padding-bottom: 220px;
-    padding-left: 30px;
+    margin-top: 10px;
     border-left: 2px solid #E2B104;
-  }
-
-  .activity-feed .feed-item:after {
+    .label-date{
+      margin-left: 20px;
+    }
+    &::before {
       content: "";
       display: block;
-      position: absolute;
-      top: 0;
-      left: -10px;
+      margin-left: -11px;
       width: 20px;
       height: 20px;
       border-radius: 13px;
       background: #fff;
       border: 1px solid #E2B104;
+    }
   }
 
   .media-list{

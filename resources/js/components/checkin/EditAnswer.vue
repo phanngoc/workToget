@@ -22,7 +22,7 @@
         </el-date-picker>
       </el-form-item>
       <el-form-item>
-        <Trix id="x-content" name="content" :model="form.content" />
+        <Trix ref="x_content" id="x-content" name="content" :change="changeContent" :value="form.content"/>
       </el-form-item>
       <el-form-item>
         <el-button type="success" @click="onSubmit()">Update my answer</el-button>
@@ -41,11 +41,10 @@ import Trix from '../common/Trix';
 
 export default {
   created() {
-    this.$store.dispatch('checkin/loadQuestionEdited');
-    this.$store.dispatch('checkin/loadAnswerEdited');
+    // this.$store.dispatch('checkin/loadQuestionEdited');
+    // this.$store.dispatch('checkin/loadAnswerEdited');
   },
   data: function() {
-    let that = this;
     return {
       form: {
         date_created: '',
@@ -64,18 +63,23 @@ export default {
       'questionEdited'
     ]),
     answerEdited: {
-        get() {
-          let that = this;
-          let answerEdited = this.$store.state.checkin.answerEdited;
-          if (!_.isEmpty(answerEdited)) {
-            this.convertToForm(answerEdited);
-            return answerEdited;
-          } else {
-            return {};
-          }
-        },
-        set(value) {
+      get() {
+        let that = this;
+        let answerEdited = this.$store.state.checkin.answerEdited;
+        if (!_.isEmpty(answerEdited)) {
+          // We must use nexttick because child Trix component han't been rerendered
+          this.$nextTick(() => {
+            this.$refs.x_content.init(answerEdited.content);
+          })
+
+          this.convertToForm(answerEdited);
+          return answerEdited;
+        } else {
+          return {};
         }
+      },
+      set(value) {
+      }
     },
     numPeople: {
       get() {
@@ -86,12 +90,18 @@ export default {
       }
     }
   },
+  beforeUpdate() {
+
+  },
   watch: {
     answerEdited: function(val, oldVal) {
 
     }
   },
   methods: {
+    changeContent: function(value) {
+      this.form.content = value;
+    },
     onSubmit: function() {
       this.$store.dispatch('checkin/updateAnswer', this.form);
     },
@@ -99,7 +109,7 @@ export default {
       this.$router.go(-1);
     },
     convertToForm: function(answerEdited) {
-      _.assign(this.form, answerEdited);
+      this.form = Object.assign({}, answerEdited);
     }
   },
   components: {
@@ -107,9 +117,6 @@ export default {
   },
   mounted() {
     let that = this;
-    document.addEventListener('trix-change', function(e) {
-      that.form.content = e.target.value;
-    });
   }
 }
 </script>

@@ -9,7 +9,7 @@ import CheckinController from '../controllers/checkinController';
 import passport from 'koa-passport';
 import {isAuthenticated} from '../lib/auth';
 import {authenticate, authenticateUsernameAndPass, authenticateTokenGetUser} from '../controllers/middleware';
-import {uploadMiddeware, processUploadMiddleware} from '../controllers/uploadMiddeware';
+import {uploadMiddeware, processUploadMiddleware, removeUpload} from '../controllers/uploadMiddeware';
 import debug from 'debug';
 import jwt from 'koa-jwt';
 import mount from 'koa-mount';
@@ -42,28 +42,33 @@ module.exports = function(app) {
   router.post('/authenticate', authenticateUsernameAndPass);
 
   router.get(/^\/(.*)(?:\/|$)/, homeController.index);
-
+  /* Route for manage upload */
   apiRouter.post('/upload', processUploadMiddleware);
+  apiRouter.post('/remove-upload', removeUpload);
+
 
   apiRouter.get('/user', authenticateTokenGetUser);
-
   apiRouter.get('/:id/projects', projectController.getProjects);
-
   apiRouter.get('/projects/:id', projectController.show);
-
   apiRouter.put('/projects/:project_id/users/add-people', projectController.addMorePeople);
   apiRouter.put('/projects/:project_id/users/accept-join', projectController.confirmJoinProject);
 
+  /* Route for comment answers */
+  apiRouter.get('/projects/:project_id/checkin/:question_id/answers/:answer_id/comments', checkinController.loadMoreComment);
+  apiRouter.put('/projects/:project_id/checkin/:question_id/answers/:answer_id/comments/:comment_id', checkinController.updateComment);
+  apiRouter.post('/projects/:project_id/checkin/:question_id/answers/:answer_id/comments', checkinController.createComment);
+  apiRouter.delete('/projects/:project_id/checkin/:question_id/answers/:answer_id/comments/:comment_id', checkinController.deleteComment);
+
   /* Route for answers */
-  apiRouter.get('/projects/:project_id/checkin/:question_id/answers/:answer_id/edit', checkinController.editAnswer);
-  apiRouter.put('/projects/:project_id/checkin/:question_id/answers/:answer_id/update', checkinController.editAnswer);
+  apiRouter.get('/projects/:project_id/checkin/:question_id/answers/:answer_id', checkinController.editAnswer);
+  apiRouter.put('/projects/:project_id/checkin/:question_id/answers/:answer_id', checkinController.updateAnswer);
   apiRouter.get('/projects/:project_id/checkin/:question_id/answers', checkinController.loadAnwers);
   apiRouter.post('/projects/:project_id/checkin/:question_id/create', checkinController.createAnswer);
 
   /* Route for checkin */
   apiRouter.get('/projects/:project_id/checkin', checkinController.load);
   apiRouter.post('/projects/:project_id/checkin/create', checkinController.create);
-  apiRouter.put('/projects/:project_id/checkin/:id/update', checkinController.update);
+  apiRouter.put('/projects/:project_id/checkin/:id', checkinController.update);
   apiRouter.delete('/projects/:project_id/checkin/:id', checkinController.archive);
   apiRouter.get('/projects/:project_id/checkin/:id', checkinController.show);
 

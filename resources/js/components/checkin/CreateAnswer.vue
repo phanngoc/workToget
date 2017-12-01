@@ -22,9 +22,7 @@
         </el-date-picker>
       </el-form-item>
       <el-form-item>
-        <textarea id="x-content" style="display:none;" name="content" class="form-control" v-model="form.content" rows="5" cols="80">
-        </textarea>
-        <trix-editor class="trix-content" input="x-content"></trix-editor>
+        <Trix id="x-content" name="content" :change="(value) => {this.form.content = value}" :value="form.content"/>
       </el-form-item>
       <el-form-item>
         <el-button type="success" @click="onSubmit()">Post my answer</el-button>
@@ -39,10 +37,10 @@
 import { mapGetters, mapActions, mapState } from 'vuex';
 import _ from 'lodash';
 import moment from 'moment';
+import Trix from '../common/Trix';
 
 export default {
   created() {
-    this.$store.dispatch('checkin/loadQuestionEdited');
   },
   data: function() {
     let that = this;
@@ -64,7 +62,7 @@ export default {
     ]),
     numPeople: {
       get() {
-         return (typeof this.questionEdited.Users !== 'undefined') ? this.questionEdited.Users.length : 'no one';
+        return (typeof this.questionEdited.Users !== 'undefined') ? this.questionEdited.Users.length : 'no one';
       },
       set(value) {
 
@@ -76,7 +74,9 @@ export default {
   },
   methods: {
     onSubmit: function() {
-      this.$store.dispatch('checkin/createAnswer', this.form);
+      this.$store.dispatch('checkin/createAnswer', this.form).then((response) => {
+        this.$router.push({name: 'checkin.show_question', params: {id: this.$route.params.id, question_id: this.$route.params.question_id}});
+      });
     },
     backCalendar: function() {
       this.$router.go(-1);
@@ -84,7 +84,7 @@ export default {
 
   },
   components: {
-
+    Trix
   },
   mounted() {
     let that = this;

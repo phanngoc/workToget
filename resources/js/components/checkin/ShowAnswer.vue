@@ -1,23 +1,20 @@
 <template lang="html">
-  <div class="wr-show-event">
+  <div class="wr-show-answer">
     <el-card class="box-card box-main">
       <div slot="header" class="clearfix">
         <el-button style="float: left;" type="default" @click="backCalendar">Back</el-button>
-        <el-button style="float: right;" type="primary" icon="edit" @click="editEvent">Edit</el-button>
+        <el-button style="float: right;" type="primary" icon="edit" @click="editAnswer">Edit</el-button>
       </div>
       <div class="body">
-        <h4 class="title">{{eventShow.title}}</h4>
-        <p class="time">{{eventShow.start | calendar}}</p>
-        <hr>
         <div class="notes">
-          <label for="">Notes</label>
-          <p class="no-text">{{eventShow.note}}</p>
+          <p class="no-text" v-html="answerEdited.content"></p>
         </div>
+        <hr>
         <div class="info-more">
           <span class="line-info">Posted by</span>
-          <a href="javascript:" class="name-person">{{eventShow.User.fullname}}</a>
+          <a href="javascript:" class="name-person">{{answerEdited.User.fullname}}</a>
           .
-          <span class='line-info'>{{eventShow.created_at | timeAgo}}</span>
+          <span class='line-info'>{{answerEdited.update_at | timeAgo}}</span>
         </div>
       </div>
     </el-card>
@@ -57,39 +54,41 @@ import Trix from '../common/Trix';
 
 export default {
   created() {
-    this.$store.dispatch('calendar/getEventShow', this.$route.params.event_id);
+    this.$store.dispatch('checkin/loadComments', 1);
   },
   data: function() {
     return {
-      newComment: '',
-      element: {},
+      newComment: ''
     };
   },
   filters: {
 
   },
   computed: {
-    ...mapState('calendar', [
-      'events',
-      'eventShow'
-    ]),
+    answerEdited: {
+      get() {
+        if (_.isEmpty(this.$store.state.checkin.answerEdited)) {
+          return {User: {}};
+        }
+        return this.$store.state.checkin.answerEdited;
+      },
+      set(value) {
+
+      }
+    },
+    comments: {
+      get() {
+        return this.$store.state.checkin.comments;
+      },
+      set(value) {
+
+      }
+    },
     ...mapState('auth', [
       'user',
     ]),
-    ...mapState('calendar', [
-      'comments',
-    ]),
   },
   watch: {
-    '$route': function(val, oldVal) {
-      this.$store.dispatch('calendar/getEventShow', this.$route.params.event_id);
-    },
-    eventShow: function(val, oldVal) {
-
-    },
-    comments: function(val, oldVal) {
-
-    }
   },
   methods: {
     addComment: function() {
@@ -99,15 +98,17 @@ export default {
           type: 'error'
         });
       } else {
-        this.$store.dispatch('calendar/addComment', {
+        this.$store.dispatch('checkin/addComment', {
           content: this.newComment,
         });
         this.$refs.x_comment.reset();
         this.newComment = "";
       }
     },
-    editEvent: function() {
-      this.$router.push({name: 'calendar.edit_event', params: {id: this.$route.params.id, event_id: this.$route.params.event_id}});
+    editAnswer: function() {
+      this.$router.push({name: 'checkin.edit_answer', params: {id: this.$route.params.id,
+        question_id: this.$route.params.question_id,
+        answer_id: this.$route.params.answer_id}});
     },
     backCalendar: function() {
       this.$router.go(-1);

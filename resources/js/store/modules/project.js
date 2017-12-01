@@ -88,9 +88,10 @@ const actions = {
     });
   },
   loadProject({ commit }, projectId) {
-    axios.get('/api/projects/' + projectId).then(function(res) {
+    return axios.get('/api/projects/' + projectId).then(function(res) {
       if (res.status == 200) {
         commit(LOAD_PROJECT, res.data.data);
+        return Promise.resolve(res.data.data);
       }
     });
   },

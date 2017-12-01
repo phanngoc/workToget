@@ -47,7 +47,6 @@ import People from './People';
 export default {
   created() {
     this.$store.dispatch('auth/loadUsers');
-    this.$store.dispatch('project/loadProject', this.$route.params.id);
   },
   data: () => {
     return {
@@ -91,7 +90,7 @@ export default {
      }
   },
   watch: {
-  
+
   },
   components: {
     People

@@ -36,6 +36,15 @@
                 </div>
               </div>
             </router-link>
+            <router-link class="link-card" :to="{ name: 'checkin.list_question', params: { id: project.id}}">
+              <div class="card feature-item">
+                <img class="card-img-top" src="/img/icon_checkin.png" alt="Card image cap">
+                <div class="card-block">
+                  <h4 class="card-title">Checkin</h4>
+                  <p class="card-text">Manage Event.</p>
+                </div>
+              </div>
+            </router-link>
           </div>
           <!-- Just test -->
         </div>
@@ -55,7 +64,6 @@ import Welcome from './Welcome';
 export default {
   created() {
     this.$socket.emit('JOIN_PROJECT', this.$route.params.id);
-    this.$store.dispatch('project/loadProject', this.$route.params.id);
   },
   data: () => {
     return {

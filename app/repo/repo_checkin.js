@@ -22,7 +22,7 @@ function convertCron(obj) {
   let result = '';
   let hour = obj.time.substr(0, 2);
   let minute = obj.time.substr(3, 2);
-
+  let listDate = "";
   if (obj.type == 'daily') {
     _.forEach(obj.days, function(val) {
       listDate += arNumDay.indexOf(val) + ',';
@@ -61,25 +61,26 @@ export async function create(data, project_id) {
 }
 
 export async function update(data) {
-  return new Promise((resolve, reject) => {
-    models.Checkin.find({ where: { id: data.id } })
-    .on('success', function (checkin) {
+  return models.Checkin.find({ where: { id: data.id } })
+    .then(checkin => {
       if (checkin) {
-        checkin.updateAttributes({
+        return checkin.updateAttributes({
           question: data.question,
           with_user: data.with_user,
           cron: convertCron(data.cron),
           schedule: JSON.stringify(data.cron),
-          time: data.time
-        })
-        .success(function () {
-          resolve(checkin);
-        })
+          time: data.cron.time
+        }).then(function (checkinUp) {
+          return Promise.resolve(checkinUp);
+        }).catch((err) => {
+          return Promise.reject(err);
+        });
       } else {
-        reject(checkin);
+        return Promise.reject(checkin);
       }
-    })
-  });
+    }).catch((err) => {
+      return Promise.reject(err);
+    });
 }
 
 async function loadAttachUser(userIds) {
@@ -119,7 +120,6 @@ export async function load(project_id) {
 }
 
 export async function findOne(id) {
-
   let checkin = await models.Checkin.findOne({
     where: {id: id},
   }, {raw: true});

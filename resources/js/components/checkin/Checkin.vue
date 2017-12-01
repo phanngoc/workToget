@@ -15,7 +15,6 @@ import moment from 'moment';
 
 export default {
   created() {
-    this.$store.dispatch('project/loadProject', this.$route.params.id);
   },
   data: function() {
     let that = this;
