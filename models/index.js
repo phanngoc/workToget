@@ -81,6 +81,15 @@ export function setupModels(client) {
       as: 'User'
     });
 
+    m.Answer.hasMany(m.Comment, {
+      foreignKey: 'commentable_id',
+      constraints: false,
+      scope: {
+          commentable: 'answer'
+      },
+      as: 'Comment'
+    });
+
     m.Project.hasMany(m.Frame, {as: 'Frames', foreignKey: 'project_id'});
     m.Project.hasMany(m.Chat, {as: 'Chats', foreignKey: 'project_id'});
     m.Project.belongsToMany(m.User, { as: 'Users', through: m.ProjectUser, foreignKey: 'project_id'});
@@ -127,13 +136,13 @@ export function setupModels(client) {
     m.Event.belongsTo(m.User, {as: 'User', foreignKey: 'user_id'});
     m.Event.belongsTo(m.Project, {as: 'Project', foreignKey: 'project_id'});
     m.Event.hasMany(m.Comment, {
-        foreignKey: 'commentable_id',
-        constraints: false,
-        scope: {
-            commentable: 'event'
-        },
-        as: 'Comment'
-     });
+      foreignKey: 'commentable_id',
+      constraints: false,
+      scope: {
+          commentable: 'event'
+      },
+      as: 'Comment'
+    });
 
     m.Comment.belongsTo(m.Board, {
         foreignKey: 'commentable_id',

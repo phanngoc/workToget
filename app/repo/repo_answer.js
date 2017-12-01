@@ -2,35 +2,45 @@ import models from '../../models';
 import _ from 'lodash';
 import async from 'async';
 
-export async function create(data, question_id, user_id) {
+// export async function updateAnswer(data) {
+//   let result = await models.Answer.update({
+//           content: data.content,
+//           date_created: data.date_created
+//         }, {where: {id: data.id} });
+//
+//   return result;
+// }
+
+export async function create(data, question_id, user) {
   return await models.Answer.create({
     content: data.content,
     question_id: question_id,
-    user_id: user_id,
+    user_id: user.id,
     date_created: data.date_created
-  }).then((value) => {
-    return value;
+  }).then((answer) => {
+    answer = answer.toJSON();
+    answer.User = user;
+    return answer;
   });
 }
 
 export async function update(data) {
   return new Promise((resolve, reject) => {
-    models.Answer.find({ where: { id: data.id } })
-    .on('success', function (checkin) {
+    models.Answer.findOne({where: {id: data.id}})
+    .then((answer) => {
       // Check if record exists in db
-      if (checkin) {
-        checkin.updateAttributes({
-          question: data.question,
-          with_user: data.with_user,
-          cron: convertCron(data.cron),
-          schedule: JSON.stringify(data.cron),
-          time: data.time
+      if (answer) {
+        answer.updateAttributes({
+          content: data.content,
+          date_created: data.date_created,
         })
-        .success(function () {
-          resolve(checkin);
+        .then(function (result) {
+          console.log('da update', result);
+          resolve(answer);
         })
       } else {
-        reject(checkin);
+        console.log('ko co nhe');
+        reject(answer);
       }
     })
   });
@@ -79,7 +89,6 @@ export async function loadMore(question_id, page) {
         callback(err);
       });
     }, function(err, results) {
-        console.log('arra results', results);
         if (err) {
           reject(err);
         } else {
@@ -102,4 +111,3 @@ export async function findOne(id) {
   }, {raw: true});
   return answer;
 }
-  

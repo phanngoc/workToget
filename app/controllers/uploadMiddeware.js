@@ -4,7 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import _ from 'lodash';
 import promise from 'bluebird';
-let symlinkAsync = promise.promisify(fs.symlink);
+promise.promisifyAll(fs);
 
 let createStorageKey = function(file) {
   var date, day, time;
@@ -16,7 +16,6 @@ let createStorageKey = function(file) {
 export async function processUploadMiddleware(ctx, next) {
    const file = ctx.request.body.files.file;
    let key = ctx.request.body.fields.key;
-
     if (_.isUndefined(key)) {
       key = createStorageKey(file);
     }
@@ -38,7 +37,23 @@ export async function processUploadMiddleware(ctx, next) {
     }
    });
 
-   ctx.body = {status: 200, data: {name: key, size: file.size}};
+   ctx.body = {status: 200, data: {name: key, size: file.size, type: file.type}};
+}
+
+export async function removeUpload(ctx, next) {
+    let filename = ctx.request.body.filename;
+    let pathFile = path.join('resources/public/uploads/', filename);
+
+    fs.stat(pathFile, function(err, stats) {
+      console.log(err, stats);
+      if (!err) {
+        fs.unlink(pathFile, function(err){
+          if (err) return console.log(err);
+        });
+      }
+    });
+
+    ctx.body = {status: 200};
 }
 
 const upload = multer({ dest: 'resources/public/uploads/' });

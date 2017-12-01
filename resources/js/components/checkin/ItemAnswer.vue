@@ -1,6 +1,6 @@
 <template lang="html">
   <div class="feed-item">
-    <span style="color:#E2B104 ">{{answer.date | calendar}}</span>      
+    <span style="color:#E2B104 " class="label-date">{{answer.date | calendar}}</span>
     <div class="col-sm-12 col-xs-12 report-in-days">
         <ul class="media-list">
           <li class="media" v-for="(ans, key) in answer.answers" :key="ans.id">
@@ -16,11 +16,11 @@
                     <p class="media-comment" v-html="ans.content">
                     </p>
                     <div class="bottom clearfix">
-                        <el-button type="success" @click="discuss">Discuss</el-button>
+                        <el-button type="success" @click="discuss(ans)">Discuss</el-button>
                         <span class="glyphicon glyphicon-comment"></span> 2 comments
                         <el-button type="text" @click="edit(ans)">Edit</el-button>
                     </div>
-                </div>              
+                </div>
               </div>
               <div class="collapse" id="replyOne">
                   <ul class="media-list">
@@ -40,7 +40,7 @@
                                   Nice job Maria.
                               </p>
                               <a class="btn btn-info btn-circle text-uppercase" href="#" id="reply"><span class="glyphicon glyphicon-share-alt"></span> Reply</a>
-                          </div>              
+                          </div>
                           </div>
                       </li>
                       <li class="media media-replied" id="replied">
@@ -59,13 +59,13 @@
                                   Thank you Guys!
                               </p>
                               <a class="btn btn-info btn-circle text-uppercase" href="#" id="reply"><span class="glyphicon glyphicon-share-alt"></span> Reply</a>
-                          </div>              
+                          </div>
                           </div>
                       </li>
-                  </ul>  
+                  </ul>
               </div>
-          </li>          
-        </ul> 
+          </li>
+        </ul>
     </div> <!-- .morningdetail -->
   </div> <!-- .feed-item -->
 </template>
@@ -96,18 +96,20 @@ export default {
 
   },
   watch: {
-    
+
   },
   methods: {
     onSubmit: function(form) {
 
     },
-    discuss: function() {
-
+    discuss: function(ans) {
+      this.$router.push({name: 'checkin.show_answer', params: {id: this.$route.params.id,
+                          question_id: this.$route.params.question_id,
+                          answer_id: ans.id}})
     },
     edit: function(ans) {
       this.$store.dispatch('checkin/goEditAnswer', ans);
-      this.$router.push({name: 'checkin.edit_answer', params: {id: this.$route.params.id, 
+      this.$router.push({name: 'checkin.edit_answer', params: {id: this.$route.params.id,
                           question_id: this.$route.params.question_id,
                           answer_id: ans.id}})
     }
@@ -117,12 +119,11 @@ export default {
   },
   mounted() {
     let that = this;
-
   }
 }
 </script>
 
 <style lang="scss" scoped>
   @import "../../../sass/_vars.scss";
- 
+
 </style>

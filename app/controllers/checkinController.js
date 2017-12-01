@@ -9,6 +9,7 @@ import activity from '../repo/repo_activity';
 import {NEW, notification} from '../repo/repo_notification';
 import * as repo_checkin from '../repo/repo_checkin';
 import * as repo_answer from '../repo/repo_answer';
+import * as repo_ans_com from '../repo/repo_ans_com';
 
 class CheckinController {
   constructor(...args) {
@@ -43,28 +44,7 @@ class CheckinController {
 
   async update(ctx, next) {
     let checkin = await repo_checkin.update(ctx.request.body);
-
-    let dataActivity = {
-      action: 'update_question',
-      owner: ctx.state.user,
-      target: {
-        type: 'Comment',
-        data: comment,
-        link: {
-          name: 'checkin.show_question',
-          params: {
-            id: ctx.params.project_id,
-            question_id: checkin.id,
-          }
-        }
-      },
-      rely_on: {
-        type: 'Project',
-        data: ctx.state.project
-      }
-    };
-    activity(ctx.params.project_id, dataActivity);
-    ctx.body = {status: 200, data: comment};
+    ctx.body = {status: 200, data: checkin};
   }
 
   async archive(ctx, next) {
@@ -114,17 +94,38 @@ class CheckinController {
   }
 
   async createAnswer(ctx, next) {
-    let checkin = await repo_answer.create(ctx.request.body, ctx.params.project_id, ctx.params.question_id);
-    ctx.body = {status: 200, data: checkin};
+    let answer = await repo_answer.create(ctx.request.body, ctx.params.question_id, ctx.state.user);
+    ctx.body = {status: 200, data: answer};
   }
 
   async updateAnswer(ctx, next) {
-    let checkin = await repo_answer.create(ctx.request.body, ctx.params.project_id, ctx.params.question_id);
+    let result = await repo_answer.update(ctx.request.body);
+    ctx.body = {status: 200, data: result};
   }
 
   async editAnswer(ctx, next) {
     let answer = await repo_answer.findOne(ctx.params.answer_id);
     ctx.body = {status: 200, data: answer};
+  }
+
+  async loadMoreComment(ctx, next) {
+    let comments = await repo_ans_com.loadMore(ctx.params.answer_id, ctx.query.page);
+    ctx.body = {status: 200, data: comments};
+  }
+
+  async createComment(ctx, next) {
+    let comment = await repo_ans_com.create(ctx.request.body, ctx.params.answer_id, ctx.state.user);
+    ctx.body = {status: 200, data: comment};
+  }
+
+  async updateComment(ctx, next) {
+    let comment = await repo_ans_com.update(ctx.request.body);
+    ctx.body = {status: 200, data: comment};
+  }
+
+  async deleteComment(ctx, next) {
+    let comment = await repo_ans_com.destroy(ctx.params.comment_id);
+    ctx.body = {status: 200, data: comment};
   }
 };
 
