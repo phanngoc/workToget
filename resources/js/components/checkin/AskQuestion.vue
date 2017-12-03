@@ -167,7 +167,9 @@ export default {
   },
   methods: {
     onSubmit: function() {
-      this.$store.dispatch('checkin/createQuestion', this.form);
+      this.$store.dispatch('checkin/createQuestion', this.form).then((question) => {
+        this.$router.push({name: 'checkin.show_question', params:{id: this.$route.params.id, question_id: question.id}});
+      });
     },
     changeModeDay: function(name) {
       this.form.cron.type = name;

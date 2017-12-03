@@ -22,7 +22,7 @@
         </el-date-picker>
       </el-form-item>
       <el-form-item>
-        <Trix id="x-content" name="content" :change="(value) => {this.form.content = value}" :value="form.content"/>
+        <Trix ref="trix_editor" id="x-content" name="content" :change="changeValue" :value="form.content"/>
       </el-form-item>
       <el-form-item>
         <el-button type="success" @click="onSubmit()">Post my answer</el-button>
@@ -41,12 +41,13 @@ import Trix from '../common/Trix';
 
 export default {
   created() {
+    console.log("create answer", this.form);
   },
   data: function() {
     let that = this;
     return {
       form: {
-        date_created: '',
+        date_created: (new Date()).toISOString(),
         content: '',
       },
       rules: {
@@ -75,22 +76,22 @@ export default {
   methods: {
     onSubmit: function() {
       this.$store.dispatch('checkin/createAnswer', this.form).then((response) => {
+        this.$refs.trix_editor.reset();
         this.$router.push({name: 'checkin.show_question', params: {id: this.$route.params.id, question_id: this.$route.params.question_id}});
       });
     },
     backCalendar: function() {
       this.$router.go(-1);
     },
-
+    changeValue: function(value) {
+      this.form.content = value;
+    }
   },
   components: {
     Trix
   },
   mounted() {
     let that = this;
-    document.addEventListener('trix-change', function(e) {
-      that.form.content = e.target.value;
-    });
   }
 }
 </script>

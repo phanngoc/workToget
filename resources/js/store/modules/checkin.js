@@ -203,7 +203,10 @@ const actions = {
     return axios.post('/api/projects/'+rootState.route.params.id+'/checkin/create', data).then(function(res) {
       if (res.status == 200) {
         commit(ADD_QUESTION, res.data.data);
+        return Promise.resolve(res.data.data);
       }
+    }).catch((err) => {
+      return Promise.reject(err);
     });
   },
   loadCheckin({commit, state, rootState}) {

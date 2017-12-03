@@ -127,6 +127,21 @@ class CheckinController {
     let comment = await repo_ans_com.destroy(ctx.params.comment_id);
     ctx.body = {status: 200, data: comment};
   }
+
+  async authCalendar(ctx, next) {
+    let authUrl = await repo_answer.authorize();
+    ctx.redirect(authUrl);
+  }
+
+  async receiveToken(ctx, next) {
+    repo_answer.getNewToken(ctx);
+  }
+
+  async getListCalendar(ctx, next) {
+    let oauth = await repo_answer.authorize();
+    await repo_answer.insertEvent(oauth);
+    
+  }
 };
 
 export default CheckinController;

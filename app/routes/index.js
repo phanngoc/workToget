@@ -41,11 +41,14 @@ module.exports = function(app) {
 
   router.post('/authenticate', authenticateUsernameAndPass);
 
+  router.get('/auth-calendar', checkinController.authCalendar);
+  router.get('/auth-code', checkinController.receiveToken);
+  router.get('/list-event', checkinController.getListCalendar);
+
   router.get(/^\/(.*)(?:\/|$)/, homeController.index);
   /* Route for manage upload */
   apiRouter.post('/upload', processUploadMiddleware);
   apiRouter.post('/remove-upload', removeUpload);
-
 
   apiRouter.get('/user', authenticateTokenGetUser);
   apiRouter.get('/:id/projects', projectController.getProjects);
